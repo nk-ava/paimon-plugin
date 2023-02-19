@@ -69,7 +69,7 @@ export default class MysCKUser {
     }
 
     creatUser(){
-        let yaml = MysCKUser.getCkByUid(e.user_id);
+        let yaml = MysCKUser.getCkByUid(this.uid);
         this.mysCk = yaml.mysCK;
         return this;
     }

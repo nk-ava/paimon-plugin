@@ -30,13 +30,18 @@ export class mysCoin extends Plugin {
                 {
                     reg: '^#*(开启|关闭)米游社自动签到$',
                     fnc: 'mysAuto'
+                },
+                {
+                    reg:'taskTest',
+                    fnc:'taskSign'
                 }
             ]
         });
         this.task = {
-            cron: '0 2 0 * * ?',
+            cron: '0 5 0 * * ?',
             name: '米游币每日获取',
-            fnc: () => this.taskSign()
+            fnc: this.taskSign,
+            log: false
         }
     }
 
@@ -152,7 +157,7 @@ export class mysCoin extends Plugin {
     mysAuto(e) {
         if (e.msg.includes("开启")) {
             let ck = MysCKUser.getCkByUid(e.user_id);
-            if(ck.autoSign===false) {
+            if (ck.autoSign === false) {
                 ck.autoSign = true;
                 let yaml = YAML.stringify(ck);
                 fs.writeFileSync(`./data/ltUidCk/${e.user_id}.yaml`, yaml, "utf8");
@@ -160,7 +165,7 @@ export class mysCoin extends Plugin {
             e.reply("开启成功！！");
         } else {
             let ck = MysCKUser.getCkByUid(e.user_id);
-            if(ck.autoSign===true) {
+            if (ck.autoSign === true) {
                 ck.autoSign = false;
                 let yaml = YAML.stringify(ck);
                 fs.writeFileSync(`./data/ltUidCk/${e.user_id}.yaml`, yaml, "utf8");

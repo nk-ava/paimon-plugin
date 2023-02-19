@@ -3,9 +3,9 @@ import fs from "node:fs";
 
 if (Bot?.logger?.info) {
     Bot.logger.info("---------^_^---------");
-    Bot.logger.info(`PaiMon-Plugin${Version.version}初始化~`)
+    Bot.logger.info(`[PaiMon-Plugin]：v${Version.version}初始化~`)
 } else {
-    console.log(`PaiMon-Plugin${Version.version}初始化~`);
+    console.log(`[PaiMon-Plugin]：v${Version.version}初始化~`);
 }
 
 let files = fs.readdirSync("./plugins/paimon-plugin/apps").filter(file => file.endsWith(".js"));
