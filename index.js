@@ -1,0 +1,53 @@
+import {Version} from "./components/index.js";
+import fs from "node:fs";
+
+if (Bot?.logger?.info) {
+    Bot.logger.info("---------^_^---------");
+    Bot.logger.info(`PaiMon-Plugin${Version.version}初始化~`)
+} else {
+    console.log(`PaiMon-Plugin${Version.version}初始化~`);
+}
+
+let files = fs.readdirSync("./plugins/paimon-plugin/apps").filter(file => file.endsWith(".js"));
+let ret = [];
+
+files.forEach(file => {
+    ret.push(import(`./apps/${file}`));
+})
+ret = await Promise.allSettled(ret);
+
+global.ISCMD = false;
+global.process.on("uncaughtException", (error) => {
+    //*********************
+});
+try {
+    fs.writeFileSync("./plugins/paimon-plugin/components/models/cmd.js", "");
+    await import("./components/models/loading.js");
+    logger.info("PaiMon-Plugin组件加载成功！！");
+}catch(err){
+    logger.info("PaiMon-Plugin组件加载失败！！");
+    logger.error(err);
+}
+let command = false;
+fs.watch("./plugins/paimon-plugin/components/models/cmd.js", async (event, filename) => {
+    if(command){
+        return;
+    }
+    command = true;
+    setTimeout(async () => {
+        await import(`./components/models/cmd.js?version=${new Date().getTime()}`);
+        Bot.logger.mark(`更新${filename}成功`);
+        command = false;
+    }, 500);
+})
+let apps = {}
+for (let i in files) {
+    let name = files[i].replace(".js", "");
+    if (ret[i].status != "fulfilled") {
+        logger.error(`载入插件错误：${logger.red(name)}`)
+        logger.error(ret[i].reason)
+        continue
+    }
+    apps[name] = ret[i].value[Object.keys(ret[i].value)[0]]
+}
+export {apps}
