@@ -30,10 +30,6 @@ export class mysCoin extends Plugin {
                 {
                     reg: '^#*(开启|关闭)米游社自动签到$',
                     fnc: 'mysAuto'
-                },
-                {
-                    reg:'taskTest',
-                    fnc:'taskSign'
                 }
             ]
         });
