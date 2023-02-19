@@ -16,17 +16,13 @@ export class shareMusic extends Plugin {
                 {
                     reg: '^#点歌(.*)$',
                     fnc: 'chooseSong'
-                },
-                {
-                    reg: '',
-                    fnc: 'get'
                 }
             ]
         });
     }
 
     //接收json消息
-    async get(e) {
+    async accept(e) {
         if (e.from_id === selfUid && e.isPrivate) {
             let mss = e.message[0];
             let data = mss.data;

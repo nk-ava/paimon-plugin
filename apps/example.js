@@ -7,7 +7,7 @@ import request from "request";
 export class example extends Plugin {
     constructor(e) {
         super({
-            name: '样例',
+            name: 'PM插件',
             dsc: 'js插件',
             event: 'message',
             priority: 100,
