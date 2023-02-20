@@ -3,9 +3,14 @@ import Plugin from "../../../lib/plugins/plugin.js";
 import fs from "node:fs";
 import request from "request";
 import util from "util";
-import {sendPm} from "../app/ai.js";
+import {SendPm,Version} from "../components/index.js";
 import {createContext, Script} from "vm";
 
+
+let data = {};
+let sandboxEnv = {};
+let sandboxContext = {};
+let selfUid = global.Bot.uin;
 export class sandbox extends Plugin {
     constructor(e) {
         super({
@@ -17,72 +22,25 @@ export class sandbox extends Plugin {
                 {
                     reg: "^#*(开启|关闭)命令模式$",
                     fnc: 'cmdSwitch'
-                },
-                {
-                    reg: "noCheck",
-                    fnc: 'cmdMode'
                 }
             ]
         });
-        this.data = {};
-        this.sandbox = {};
-        this.sandboxContext;
-        this.selfUid = global.BotConfig.account.qq;
-    }
-    strify(key, value) {
-        if (typeof value === "function") {
-            return value.toString();
-        }
-        return value;
-    }
-    prs(key, value) {
-        try {
-            let obj = eval("(" + value + ")");
-            if (typeof obj === "object") {
-                return obj;
-            } else if (typeof obj === "function") {
-                return obj;
-            } else return value;
-        } catch (err) {
-            return value;
-        }
-    }
-    genArgs(str) {
-        let kh = 0, jkh = 0, zkh = 0, dyh = 0, syh = 0;
-        let lastIndex = 0;
-        let ans = [];
-        for (let i = 0; i < str.length; i++) {
-            if (str[i] === "\'") dyh++;
-            else if (str[i] === "\"") syh++;
-            else if (str[i] === " ") {
-                if (!(dyh % 2) && !(syh % 2)) {
-                    ans.push(str.substr(lastIndex, i - lastIndex));
-                    lastIndex = i + 1;
-                }
-            }
-        }
-        ans.push(str.substr(lastIndex, str.length - lastIndex));
-        if (dyh % 2 == 0 && syh % 2 == 0) {
-            ans = "(" + ans.join(",") + ")";
-            return ans;
-        } else return false;
     }
     //命令模式
-    async cmdMode() {
+    async accept(e) {
         if (ISCMD) {
             let flag = false;
-            data = {...this.e};
-            delete data.groupConfig;
-            delete data.getMysApi;
-            delete data.checkAuth;
-            delete data.replyNew;
-            delete data.reply;
-            sandbox.data = data;
+            data = {...e};
+            delete data['replyNew']
+            delete data['runtime']
+            delete data['user']
+            delete data['reply']
+            sandboxEnv.data = data;
             if (data.group) data.group = {};
             if (data.friend) data.friend = {};
-            let msg = this.e.toString();
+            let msg = e.toString();
             let cqcode = /\[CQ:[^\]]+\]/;
-            if (/while|for/g.test(msg) && !this.e.isMaster) return false;
+            if (/while|for/g.test(msg) && !e.isMaster) return false;
             msg = msg.replace(/this\.?/g, "");
             if (cqcode.test(msg)) msg = toStr(msg);
             if (msg[0] === "\\") {
@@ -106,38 +64,38 @@ export class sandbox extends Plugin {
                             result = srp.runInContext(sandboxContext);
                         }
                         let mss = segment.fromCqcode(result);
-                        this.e.reply(mss);
+                        e.reply(mss);
                         return true;
                     }
-                    this.e.reply(toString(result));
+                    e.reply(toString(result));
                 } else {
-                    if (flag) this.e.reply(toString(result));
+                    if (flag) e.reply(toString(result));
                 }
                 return true;
             } catch (err) {
-                if (flag) this.e.reply(err.toString());
+                if (flag) e.reply(err.toString());
                 return false;
             }
         }
     }
     //命令模式开关
-    cmdSwitch() {
-        if (!this.e.isMaster) {
+    cmdSwitch(e) {
+        if (!e.isMaster) {
             return true;
         }
-        if (this.e.msg.includes("开启")) {
-            if (!fs.existsSync("./lib/example/user_functions.json")) {
-                fs.writeFileSync("./lib/example/user_functions.json", "{}");
+        if (e.msg.includes("开启")) {
+            if (!fs.existsSync("./plugins/paimon-plugin/resources/user_functions.json")) {
+                fs.writeFileSync("./plugins/paimon-plugin/resources/user_functions.json", "{}");
             }
             if (!ISCMD) {
                 ISCMD = true;
-                let user_Fc = fs.readFileSync("./lib/example/user_functions.json", "utf8");
+                let user_Fc = fs.readFileSync("./plugins/paimon-plugin/resources/user_functions.json", "utf8");
                 user_Fc = JSON.parse(user_Fc, prs);
-                this.sandbox = Object.assign(user_Fc, {
+                sandboxEnv = Object.assign(user_Fc, {
                     request,
                     alert,
                     segment,
-                    sendPm,
+                    SendPm,
                     qq,
                     qun,
                     process,
@@ -145,21 +103,41 @@ export class sandbox extends Plugin {
                     NoteCookie,
                     Bot
                 });
-                this.sandboxContext = createContext(sandbox);
+                sandboxContext = createContext(sandboxEnv);
             }
-            this.e.reply("命令模式已开启");
+            e.reply("命令模式已开启");
         } else {
             if (ISCMD) {
                 ISCMD = false;
-                let ss = JSON.stringify(sandbox, this.strify, "\t");
-                fs.writeFileSync("./lib/example/user_functions.json", ss);
-                this.sandbox = {};
+                let ss = JSON.stringify(sandboxEnv, strify, "\t");
+                fs.writeFileSync("./plugins/paimon-plugin/resources/user_functions.json", ss);
+                sandboxEnv = {};
             }
-            this.e.reply("命令模式已关闭");
+            e.reply("命令模式已关闭");
         }
         return true;
     }
 }
+
+function strify(key, value) {
+    if (typeof value === "function") {
+        return value.toString();
+    }
+    return value;
+}
+function prs(key, value) {
+    try {
+        let obj = eval("(" + value + ")");
+        if (typeof obj === "object") {
+            return obj;
+        } else if (typeof obj === "function") {
+            return obj;
+        } else return value;
+    } catch (err) {
+        return value;
+    }
+}
+
 function toString() {
     let s = util.format.apply(null, arguments);
     return s;
@@ -174,8 +152,8 @@ function qq(e = data) {
 }
 
 function alert(msg) {
-    if (!qun()) global.Bot.pickFriend(qq()).sendMsg(msg);
-    else global.Bot.pickGroup(qun()).sendMsg(msg);
+    if (!qun()) Bot.pickFriend(qq()).sendMsg(msg);
+    else Bot.pickGroup(qun()).sendMsg(msg);
 }
 
 function toStr(msg) {
@@ -192,6 +170,27 @@ function toStr(msg) {
         } else str += msg[i];
     }
     return str;
+}
+
+function genArgs(str) {
+    let kh = 0, jkh = 0, zkh = 0, dyh = 0, syh = 0;
+    let lastIndex = 0;
+    let ans = [];
+    for (let i = 0; i < str.length; i++) {
+        if (str[i] === "\'") dyh++;
+        else if (str[i] === "\"") syh++;
+        else if (str[i] === " ") {
+            if (!(dyh % 2) && !(syh % 2)) {
+                ans.push(str.substr(lastIndex, i - lastIndex));
+                lastIndex = i + 1;
+            }
+        }
+    }
+    ans.push(str.substr(lastIndex, str.length - lastIndex));
+    if (dyh % 2 == 0 && syh % 2 == 0) {
+        ans = "(" + ans.join(",") + ")";
+        return ans;
+    } else return false;
 }
 
 //重写process
@@ -213,13 +212,13 @@ let process = {
 //重写BotConfig
 let BotConfig = {
     account: {
-        qq: self_uid,
+        qq: selfUid,
         password: "************",
         platform: 1,
         autoFriend: 1,
         autoQuit: 1,
     },
-    masterQQ: [3530766280],
+    masterQQ: Version.masterQQ,
     cookieDoc: "docs.qq.com/doc/DUWNVQVFTU3liTVlO",
     note: "略略略，就是不给你看",
 }
@@ -249,6 +248,6 @@ let Bot = {
         } else return "请输入账号和密码";
     },
     name: "PaiMon",
-    qq: self_uid,
-    masterQQ: 3530766280,
+    qq: selfUid,
+    masterQQ: Version.masterQQ,
 }

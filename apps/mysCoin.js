@@ -34,7 +34,7 @@ export class mysCoin extends Plugin {
             ]
         });
         this.task = {
-            cron: '0 5 0 * * ?',
+            cron: '0 0/5 * * * ?',
             name: '米游币每日获取',
             fnc: this.taskSign,
             log: false

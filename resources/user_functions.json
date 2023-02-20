@@ -1,0 +1,94 @@
+{
+	"request": "function request (uri, options, callback) {\n  if (typeof uri === 'undefined') {\n    throw new Error('undefined is not a valid uri or options object.')\n  }\n\n  var params = initParams(uri, options, callback)\n\n  if (params.method === 'HEAD' && paramsHaveRequestBody(params)) {\n    throw new Error('HTTP HEAD requests MUST NOT include a request body.')\n  }\n\n  return new request.Request(params)\n}",
+	"alert": "function alert(msg) {\r\n    if (!qun()) Bot.pickFriend(qq()).sendMsg(msg);\r\n    else Bot.pickGroup(qun()).sendMsg(msg);\r\n}",
+	"segment": {
+		"text": "text(text) {\n        return {\n            type: \"text\", text\n        };\n    }",
+		"face": "face(id) {\n        return {\n            type: \"face\", id\n        };\n    }",
+		"sface": "sface(id, text) {\n        return {\n            type: \"sface\", id, text\n        };\n    }",
+		"bface": "bface(file, text) {\n        return {\n            type: \"bface\", file, text\n        };\n    }",
+		"rps": "rps(id) {\n        return {\n            type: \"rps\", id\n        };\n    }",
+		"dice": "dice(id) {\n        return {\n            type: \"dice\", id\n        };\n    }",
+		"at": "at(qq, text, dummy) {\n        if (typeof qq === \"number\" || qq === \"all\") {\n            return {\n                type: \"at\", qq, text, dummy\n            };\n        }\n        // 频道中的AT\n        return {\n            type: \"at\", qq: 0, id: String(qq), text, dummy\n        };\n    }",
+		"image": "image(file, cache, timeout, headers) {\n        return {\n            type: \"image\", file, cache, timeout, headers\n        };\n    }",
+		"flash": "flash(file, cache, timeout, headers) {\n        return {\n            type: \"flash\", file, cache, timeout, headers\n        };\n    }",
+		"record": "record(file) {\n        return {\n            type: \"record\", file\n        };\n    }",
+		"video": "video(file) {\n        return {\n            type: \"video\", file\n        };\n    }",
+		"json": "json(data) {\n        return {\n            type: \"json\", data\n        };\n    }",
+		"xml": "xml(data, id) {\n        return {\n            type: \"xml\", data, id\n        };\n    }",
+		"mirai": "mirai(data) {\n        return {\n            type: \"mirai\", data\n        };\n    }",
+		"share": "share(url, title, image, content) {\n        return {\n            type: \"share\", url, title, image, content\n        };\n    }",
+		"location": "location(lat, lng, address, id) {\n        return {\n            type: \"location\", lat, lng, address, id\n        };\n    }",
+		"poke": "poke(id) {\n        return {\n            type: \"poke\", id\n        };\n    }",
+		"fromCqcode": "fromCqcode(str) {\n        const elems = [];\n        const res = str.matchAll(/\\[CQ:[^\\]]+\\]/g);\n        let prev_index = 0;\n        for (let v of res) {\n            const text = str.slice(prev_index, v.index).replace(/&#91;|&#93;|&amp;/g, unescapeCQ);\n            if (text)\n                elems.push({ type: \"text\", text });\n            const element = v[0];\n            let cq = element.replace(\"[CQ:\", \"type=\");\n            cq = cq.substr(0, cq.length - 1);\n            elems.push(qs(cq));\n            prev_index = v.index + element.length;\n        }\n        if (prev_index < str.length) {\n            const text = str.slice(prev_index).replace(/&#91;|&#93;|&amp;/g, unescapeCQ);\n            if (text)\n                elems.push({ type: \"text\", text });\n        }\n        return elems;\n    }"
+	},
+	"SendPm": "function sendPm(content) {\r\n    let faceDir = \"./plugins/paimon-plugin/resources/paimon/\";\r\n    if (typeof inFo == \"undefined\") {\r\n        let inFo = fs.readFileSync(faceDir + \"info.json\");\r\n        global.inFo = JSON.parse(inFo);\r\n    }\r\n    if (inFo[content]) {\r\n        return faceDir + content + Math.floor(Math.random() * inFo[content]) + \".jpg\";\r\n    }\r\n    return '';\r\n}",
+	"qq": "function qq(e = data) {\r\n    return e.user_id;\r\n}",
+	"qun": "function qun(e = data) {\r\n    return e.group_id;\r\n}",
+	"process": {
+		"exit": "() => {\r\n        return '爪巴';\r\n    }",
+		"env": "() => {\r\n        return \"蒙德城\"\r\n    }",
+		"platform": "() => {\r\n        return \"提瓦特智能手机\"\r\n    }",
+		"title": "() => {\r\n        return \"派蒙\"\r\n    }"
+	},
+	"BotConfig": {
+		"account": {
+			"qq": 3557843637,
+			"password": "************",
+			"platform": 1,
+			"autoFriend": 1,
+			"autoQuit": 1
+		},
+		"masterQQ": [
+			3530766280
+		],
+		"cookieDoc": "docs.qq.com/doc/DUWNVQVFTU3liTVlO",
+		"note": "略略略，就是不给你看"
+	},
+	"NoteCookie": {
+		"read": "() => {\r\n        return \"好看吗\"\r\n    }",
+		"delete": "() => {\r\n        return \"删不掉的哦\"\r\n    }",
+		"Cookie": "() => {\r\n        return \"Cookie=*************,ltoken=*****************\"\r\n    }",
+		"note": "略略略，就是不给你看"
+	},
+	"Bot": {
+		"logout": "() => {\r\n        return \"登出账号成功，请Bot.login()登入账号\"\r\n    }",
+		"login": "(qq, pwd) => {\r\n        if (qq && pwd) {\r\n            return \"登入成功\";\r\n        } else return \"请输入账号和密码\";\r\n    }",
+		"name": "PaiMon",
+		"qq": 3557843637,
+		"masterQQ": 3530766280
+	},
+	"data": {
+		"post_type": "message",
+		"message_id": "0nM3yAAAQF16ylprY/LeHQA=",
+		"user_id": 3530766280,
+		"time": 1676860957,
+		"seq": 16477,
+		"rand": 2060081771,
+		"font": "宋体",
+		"message": [
+			{
+				"type": "text",
+				"text": "#关闭命令模式"
+			}
+		],
+		"raw_message": "#关闭命令模式",
+		"message_type": "private",
+		"sub_type": "friend",
+		"sender": {
+			"user_id": 3530766280,
+			"nickname": "ㅤ",
+			"card": "ㅤ"
+		},
+		"from_id": 3530766280,
+		"to_id": 3557843637,
+		"auto_reply": false,
+		"friend": {},
+		"reply": "async (msg = '', quote = false, data = {}) => {\r\n        if (!msg) return false\r\n\r\n        /** 禁言中 */\r\n        if (e.isGroup && e?.group?.mute_left > 0) return false\r\n\r\n        let { recallMsg = 0, at = '' } = data\r\n\r\n        if (at && e.isGroup) {\r\n          let text = ''\r\n          if (e?.sender?.card) {\r\n            text = lodash.truncate(e.sender.card, { length: 10 })\r\n          }\r\n          if (at === true) {\r\n            at = Number(e.user_id)\r\n          } else if (!isNaN(at)) {\r\n            let info = e.group.pickMember(at).info\r\n            text = info?.card ?? info?.nickname\r\n            text = lodash.truncate(text, { length: 10 })\r\n          }\r\n\r\n          if (Array.isArray(msg)) {\r\n            msg = [segment.at(at, text), ...msg]\r\n          } else {\r\n            msg = [segment.at(at, text), msg]\r\n          }\r\n        }\r\n\r\n        let msgRes\r\n        try {\r\n          msgRes = await e.replyNew(this.checkStr(msg), quote)\r\n        } catch (err) {\r\n          if (typeof msg != 'string') {\r\n            if (msg.type == 'image' && Buffer.isBuffer(msg?.file)) msg.file = {}\r\n            msg = lodash.truncate(JSON.stringify(msg), { length: 300 })\r\n          }\r\n          logger.error(`发送消息错误:${msg}`)\r\n          logger.error(err)\r\n        }\r\n\r\n        if (recallMsg > 0 && msgRes?.message_id) {\r\n          if (e.isGroup) {\r\n            setTimeout(() => e.group.recallMsg(msgRes.message_id), recallMsg * 1000)\r\n          } else if (e.friend) {\r\n            setTimeout(() => e.friend.recallMsg(msgRes.message_id), recallMsg * 1000)\r\n          }\r\n        }\r\n\r\n        this.count(e, msg)\r\n        return msgRes\r\n      }",
+		"self_id": 3557843637,
+		"msg": "#关闭命令模式",
+		"logText": "[私聊][ㅤ(3530766280)]",
+		"isPrivate": true,
+		"isMaster": true,
+		"original_msg": "#关闭命令模式"
+	}
+}

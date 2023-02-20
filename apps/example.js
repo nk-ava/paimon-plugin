@@ -100,7 +100,6 @@ export class example extends Plugin {
         let mss;
         if (e.isPrivate) mss = await t.getChatHistory(e.source.time + 1, 1);
         else mss = await t.getChatHistory(e.source.seq, 1);
-        console.log(mss);
         if (typeof mss === "undefined" || mss.length === 0) {
             e.reply("未获得到聊天记录");
             return true;

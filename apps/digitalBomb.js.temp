@@ -1,0 +1,150 @@
+﻿import { segment } from "oicq";
+
+export const rule = {
+    gameName: {
+        reg: "#数字炸弹",
+        priority: 48,
+        describe:"开始数字炸弹",
+    },
+    cfgGame: {
+        reg: "noCheck",
+        priority: 49,
+        describe:"选择参与人数",
+    },
+    gameOver: {
+        reg: "#结束游戏",
+        priority: 48,
+        describe:"结束当前进行的游戏",
+    },
+    getNum: {
+        reg: "noCheck",
+        priority: 49,
+        describe:"获取数字",
+    },
+
+}
+
+let isCfg = {}, isStart = {};
+let groupCfg = {};
+let ans = {};
+let low = {}, high = {};
+
+export function gameName(e, flag = true) {
+    if (!e.isGroup) {
+        e.reply("这个游戏只能在群里玩");
+        return true;
+    }
+    if (!isPlaying[e.group_id]) {
+        isPlaying[e.group_id] = 1;
+        let msg1 = "游戏规则：\n在一个数字范围内，有一个数字作为炸弹，谁猜中这个炸弹就被惩罚.比如范围是1~99，炸弹是60，然后猜了一个数字是30，30不是炸"
+            + "弹，那么猜数字的范围就缩小到30~100。(开启后会屏蔽一切命令，【#结束游戏】可结束正在进行的游戏";
+        groupCfg[e.group_id] = {};
+        groupCfg[e.group_id].joinPerson = [];
+        groupCfg[e.group_id].joinPerson.push(e.user_id);
+        let msg2 = [segment.at(e.user_id), " 请输入炸弹范围：例：0,99\n", "请@群成员确定参与人员(注：不要@自己，自己默认为参与人员)"];
+        if (flag) e.reply(msg1);
+        e.reply(msg2);
+        isCfg[e.group_id] = true;
+    } else {
+        let game = "";
+        if (isPlaying[e.group_id] == 1) game = "数字炸弹";
+        else if (isPlaying[e.group_id] == 2) game = "井字棋";
+        else if (isPlaying[e.group_id] == 3) game = "五子棋";
+        e.reply(`当前正在进行${game}，一个群同时只能打开一个游戏`);
+    }
+    return true;
+}
+
+export function cfgGame(e) {
+    if (!isCfg[e.group_id]) return false;
+    if (groupCfg[e.group_id].joinPerson[0] == e.user_id) {
+        let reg = /\d,\d/;
+        let s = "";
+        if (reg.test(e.msg)) {
+            let mss = e.message;
+            for (var i in mss) {
+                if (mss[i].type === "text") s += mss[i].text;
+                else if (mss[i].type === "at") {
+                    if (mss[i].qq != e.user_id) groupCfg[e.group_id].joinPerson.push(mss[i].qq);
+                }
+            }
+            s = s.split(",");
+        } else {
+            e.reply("未正确输入，请按规则输入");
+            return true;
+        }
+        low[e.group_id] = s[0].replace(/[^\d]/g, "");
+        high[e.group_id] = s[1].replace(/[^\d]/g, "");
+        if (low[e.group_id] * 1 >= high[e.group_id] * 1 || high[e.group_id] * 1 - low[e.group_id] * 1 == 1) {
+            e.reply("数字定义不合规则，请重新输入");
+            return true;
+        }
+        groupCfg[e.group_id].pers = groupCfg[e.group_id].joinPerson.length;
+        if (groupCfg[e.group_id].pers <= 1) {
+            e.reply("至少两个人参与");
+            return true;
+        }
+        e.reply("游戏开始\n参与人数：" + groupCfg[e.group_id].pers);
+        groupCfg[e.group_id].cnt = 0;
+        ans[e.group_id] = Math.floor(Math.random() * (high[e.group_id] * 1.0 - 1.0 - low[e.group_id] * 1.0) + low[e.group_id] * 1.0 + 1.0);
+        let ns = groupCfg[e.group_id].cnt;
+        let msg = [segment.at(groupCfg[e.group_id].joinPerson[ns]), " 请在" + low[e.group_id] + "~" + high[e.group_id] + "之间猜一个数"];
+        e.reply(msg);
+        isCfg[e.group_id] = false;
+        isStart[e.group_id] = true;
+    } else return false;
+    return true;
+}
+
+export function gameOver(e, flag = true) {
+    if (isPlaying[e.group_id] == 1) {
+        delete isPlaying[e.group_id];
+        delete groupCfg[e.group_id];
+        isStart[e.group_id] = false;
+        isCfg[e.group_id] = false;
+        if (flag) e.reply("数字炸弹已结束");
+        return true;
+    }
+}
+
+export async function getNum(e) {
+    if (!isStart[e.group_id]) return false;
+    let ns = groupCfg[e.group_id].cnt;
+    let number;
+    if (e.user_id == groupCfg[e.group_id].joinPerson[ns]) {
+        try {
+            number = e.msg.replace(/[^\d]/g, "");
+        } catch (err) {
+            e.reply("请输入数字");
+            return true;
+        }
+        if (number * 1 <= low[e.group_id] * 1 || number * 1 >= high[e.group_id] * 1) {
+            e.reply("请看清数字范围再输入");
+            return true;
+        }
+        if (number * 1 == ans[e.group_id] * 1) {
+            let msg = [segment.at(e.user_id), ` 恭喜你猜中了炸弹，本次炸弹是：${ans[e.group_id]}`];
+            e.reply(msg);
+            let list = groupCfg[e.group_id].joinPerson;
+            for (var i in list) {
+                let sum = await redis.get(`game:digital-sum:${list[i]}`) || 0;
+                sum = sum * 1 + 1;
+                await redis.set(`game:digital-sum:${list[i]}`, sum);
+            }
+            let rate = await redis.get(`game:digital-win:${e.user_id}`) || 0;
+            rate = rate * 1 + 1;
+            await redis.set(`game:digital-win:${e.user_id}`, rate);
+            isStart[e.group_id] = false;
+            gameOver(e, false);
+            gameName(e, false);
+            return true;
+        } else if (number * 1 > ans[e.group_id] * 1) {
+            high[e.group_id] = number;
+        } else {
+            low[e.group_id] = number;
+        }
+        ns = groupCfg[e.group_id].cnt = (groupCfg[e.group_id].cnt + 1) % groupCfg[e.group_id].pers;
+        let msg = [segment.at(groupCfg[e.group_id].joinPerson[ns]), " 请在" + low[e.group_id] + "~" + high[e.group_id] + "之间猜一个数"];
+        e.reply(msg);
+    } else return false;
+}
