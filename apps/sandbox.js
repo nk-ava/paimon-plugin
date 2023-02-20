@@ -152,8 +152,8 @@ function qq(e = data) {
 }
 
 function alert(msg) {
-    if (!qun()) Bot.pickFriend(qq()).sendMsg(msg);
-    else Bot.pickGroup(qun()).sendMsg(msg);
+    if (!qun()) global.Bot.pickFriend(qq()).sendMsg(msg);
+    else global.Bot.pickGroup(qun()).sendMsg(msg);
 }
 
 function toStr(msg) {
