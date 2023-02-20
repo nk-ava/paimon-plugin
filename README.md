@@ -6,12 +6,13 @@ yunzai-bot插件，仅支持v3
 1.克隆项目
 >在YunZai-V3项目的plugins目录下
 ```
-git clone 
+git clone https://github.com/zlh-debug/paimon-plugin.git
 ```
 2.安装依赖
 >在YunZai根目录下，注：不是在plugins目录下
 ```
-pnpm install -w
+pnpm install request -w
+pnpm install node-uuid -w
 ```
 ### 常用命令
 
