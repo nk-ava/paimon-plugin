@@ -17,6 +17,7 @@ files.forEach(file => {
 ret = await Promise.allSettled(ret);
 
 global.ISCMD = false;
+global.isPmPlaying = {};
 global.process.on("uncaughtException", (error) => {
     //*********************
 });
