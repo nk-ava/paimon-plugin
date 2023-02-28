@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+	</head>
+	<body>
+		<style>
+			* {
+				margin: 0;
+				padding: 0;
+			}
+
+			.out {
+				border-top: 1px solid #000;
+				border-left: 1px solid #000;
+				width: 193px;
+				overflow: hidden;
+			}
+
+			.in {
+				text-align: center;
+				font-weight: bold;
+				color: #000;
+				border-right: 1px solid #000;
+				border-bottom: 1px solid #000;
+				width: 20px;
+				height: 20px;
+				float: left;
+			}
+			
+			.bottom-true{
+				border-bottom: 3px solid #000;
+			}
+			
+			.right-2{
+				border-right: 3px solid #000;
+			}
+			
+			.right-5{
+				border-right: 3px solid #000;
+			}
+			
+			.backred-true{
+				background-color: #ff3d40;
+			}
+		</style>
+		<div style="padding: 10px;width: 196px;" id="container">
+			<div class="out">
+				{{each data val idx}}
+				<div class="in right-{{idx%9}} bottom-{{idx/9>=2&&idx/9<3}} bottom-{{idx/9>=5&&idx/9<6}} backred-{{val.isCheck}}">{{if val.value!=0}}{{val.value}}{{/if}}</div>
+				{{/each}}
+			</div>
+		</div>
+	</body>
+</html>
