@@ -3,6 +3,7 @@ import fs from "node:fs";
 import {segment, core} from "oicq";
 import util from "util";
 import request from "request";
+import browserPuppeteer from "../components/models/BrowserPuppeteer.js";
 
 export class example extends Plugin {
     constructor(e) {
@@ -31,6 +32,14 @@ export class example extends Plugin {
                 {
                     reg: '封号\\[(.*)\\]$',
                     fnc: 'killQQ'
+                },
+                {
+                    reg: '#*(更新)?怪物抗性',
+                    fnc: 'resistance'
+                },
+                {
+                    reg: '^(#用户|#mysUser)\\s(.*)',
+                    fnc: "mysUserInfo"
                 }
             ]
         });
@@ -161,6 +170,49 @@ export class example extends Plugin {
         });
         return true;
     }
+
+    async resistance(e) {
+        if (!fs.existsSync("./data/browserScreenShot/resistance/resistance.png") || e.msg.includes("更新")) {
+            let img = await browserPuppeteer.screenshot("resistance", {
+                jumpUrl: 'https://wiki.biligame.com/ys/%E6%80%AA%E7%89%A9%E6%8A%97%E6%80%A7%E4%B8%80%E8%A7%88',
+                saveName: 'resistance',
+                selector: 'table',
+                pageScript: () => {
+                    let ele = document.querySelector(".wiki-nav");
+                    ele.parentNode.removeChild(ele);
+                }
+            })
+            if (!img) {
+                e.reply("图片生成失败");
+            } else {
+                e.reply(img);
+            }
+            return true
+        } else {
+            e.reply(segment.image("./data/browserScreenShot/resistance/resistance.png"))
+        }
+    }
+
+    async mysUserInfo(e) {
+        let key = e.msg.replace(/(#用户|#mysUser)/, "").trim()
+        let uid = await getUserUid(key)
+        if (!!!uid) {
+            e.reply("未找到该用户");
+            return true;
+        }
+        console.log(uid)
+        let img = await browserPuppeteer.screenshot("mysUserInfo", {
+            jumpUrl: `https://www.miyoushe.com/ys/accountCenter/postList?id=${uid}`,
+            saveName: 'mysUserinfo',
+            selector: '.mhy-container'
+        })
+        if (!img) {
+            e.reply("生成图片失败");
+        } else {
+            e.reply(img)
+        }
+        return true
+    }
 }
 
 function toString() {
@@ -199,4 +251,14 @@ async function getQQInfo(id) {
         return res.result.buddy.info_list;
     }
     return undefined;
+}
+
+async function getUserUid(key) {
+    let url = `https://bbs-api.mihoyo.com/apihub/wapi/search?gids=2&keyword=${key}&size=20`;
+    let response = await fetch(url, {method: "get", headers: {"Referer": "https://bbs.mihoyo.com/"}});
+    if (!response.ok) {
+        return false;
+    }
+    response = await response.json();
+    return response?.data?.users[0]?.uid
 }
