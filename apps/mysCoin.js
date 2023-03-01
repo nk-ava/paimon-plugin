@@ -66,7 +66,7 @@ export class mysCoin extends Plugin {
             }
             let uid = await getAllGameUid(e.mysCk);
             if (!!!uid) {
-                e.reply("米游社ck未获取到uid，可能无法使用【#获取断网链接】");
+                e.reply("米游社ck未获取到uid");
                 return true;
             }
             let stoken = await this.getStoken(ckJson.login_ticket, ckJson.login_uid);
@@ -193,5 +193,6 @@ async function getAllGameUid(ck) {
         method: 'get'
     });
     res = await res.json();
-    return res.data.list.filter(js=>js['game_biz']==="hk4e_cn");
+    console.log(res);
+    return res?.data?.list.filter(js=>js['game_biz']==="hk4e_cn");
 }
