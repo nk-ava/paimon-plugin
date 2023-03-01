@@ -64,6 +64,11 @@ export class mysCoin extends Plugin {
                 e.reply("派蒙得到的cookie不完整(๑•́ωก̀๑),请重新复制");
                 return true;
             }
+            let uid = await getAllGameUid(e.mysCk);
+            if (!!!uid) {
+                e.reply("米游社ck未获取到uid，可能无法使用【#获取断网链接】");
+                return true;
+            }
             let stoken = await this.getStoken(ckJson.login_ticket, ckJson.login_uid);
             if (typeof stoken === "undefined") {
                 e.reply("米游社login_ticket已失效，请登入https://user.mihoyo.com/#/login/captcha重新获取");
@@ -74,8 +79,9 @@ export class mysCoin extends Plugin {
 
             let user = new mysCKUser(e);
             user.mysCk = mysCk;
-            let uid = mysCk.match(/stuid=\d+;/)[0];
-            user.ltuid = uid.replace("stuid=", "").replace(";", "");
+            user.gmUid = uid;
+            let ltuid = mysCk.match(/stuid=\d+;/)[0];
+            user.ltuid = ltuid.replace("stuid=", "").replace(";", "");
             let ret = user.bindMysCkUser();
             if (ret !== true) {
                 e.reply(ret);
@@ -170,4 +176,22 @@ export class mysCoin extends Plugin {
         }
         return true;
     }
+}
+async function getAllGameUid(ck) {
+    let res = await fetch('https://webapi.account.mihoyo.com/Api/get_ticket_by_loginticket', {
+        method: 'post',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'Cookie': ck
+        },
+        body: 'action_type=game_role'
+    });
+    res = await res.json();
+    if (res.code !== 200) return false;
+    let action_ticket = res.data.ticket;
+    res = await fetch(`https://api-takumi.mihoyo.com/binding/api/getUserGameRoles?action_ticket=${action_ticket}`, {
+        method: 'get'
+    });
+    res = await res.json();
+    return res.data.list.filter(js=>js['game_biz']==="hk4e_cn");
 }
