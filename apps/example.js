@@ -200,7 +200,6 @@ export class example extends Plugin {
             e.reply("未找到该用户");
             return true;
         }
-        console.log(uid)
         let img = await browserPuppeteer.screenshot("mysUserInfo", {
             jumpUrl: `https://www.miyoushe.com/ys/accountCenter/postList?id=${uid}`,
             saveName: 'mysUserinfo',

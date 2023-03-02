@@ -193,6 +193,5 @@ async function getAllGameUid(ck) {
         method: 'get'
     });
     res = await res.json();
-    console.log(res);
     return res?.data?.list.filter(js=>js['game_biz']==="hk4e_cn");
 }

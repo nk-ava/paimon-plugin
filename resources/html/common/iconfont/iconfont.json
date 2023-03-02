@@ -1,0 +1,142 @@
+{
+  "id": "3927421",
+  "name": "paimon-plugin",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "25670231",
+      "name": "帮助",
+      "font_class": "bangzhu",
+      "unicode": "fda9",
+      "unicode_decimal": 64937
+    },
+    {
+      "icon_id": "5207076",
+      "name": "语言翻译",
+      "font_class": "yuyanfanyi",
+      "unicode": "e645",
+      "unicode_decimal": 58949
+    },
+    {
+      "icon_id": "1444787",
+      "name": "json",
+      "font_class": "json",
+      "unicode": "e7bd",
+      "unicode_decimal": 59325
+    },
+    {
+      "icon_id": "3420856",
+      "name": "033-cookie",
+      "font_class": "-cookie",
+      "unicode": "e623",
+      "unicode_decimal": 58915
+    },
+    {
+      "icon_id": "3555650",
+      "name": "每日签到",
+      "font_class": "meiriqiandao",
+      "unicode": "e614",
+      "unicode_decimal": 58900
+    },
+    {
+      "icon_id": "4250465",
+      "name": "统计",
+      "font_class": "tongji",
+      "unicode": "e66c",
+      "unicode_decimal": 58988
+    },
+    {
+      "icon_id": "7992297",
+      "name": "指令补发",
+      "font_class": "zhilingbufa",
+      "unicode": "e6e0",
+      "unicode_decimal": 59104
+    },
+    {
+      "icon_id": "8138400",
+      "name": "链接",
+      "font_class": "LINKS",
+      "unicode": "e603",
+      "unicode_decimal": 58883
+    },
+    {
+      "icon_id": "8666821",
+      "name": "点赞",
+      "font_class": "dianzan",
+      "unicode": "e670",
+      "unicode_decimal": 58992
+    },
+    {
+      "icon_id": "8679351",
+      "name": "签到",
+      "font_class": "qiandao",
+      "unicode": "e687",
+      "unicode_decimal": 59015
+    },
+    {
+      "icon_id": "10450968",
+      "name": "message消息信息",
+      "font_class": "message",
+      "unicode": "e64c",
+      "unicode_decimal": 58956
+    },
+    {
+      "icon_id": "11913458",
+      "name": "games",
+      "font_class": "games",
+      "unicode": "e67f",
+      "unicode_decimal": 59007
+    },
+    {
+      "icon_id": "16530775",
+      "name": "用户",
+      "font_class": "yonghu",
+      "unicode": "e643",
+      "unicode_decimal": 58947
+    },
+    {
+      "icon_id": "16530776",
+      "name": "扩展属性",
+      "font_class": "kuozhanshuxing",
+      "unicode": "e644",
+      "unicode_decimal": 58948
+    },
+    {
+      "icon_id": "17618958",
+      "name": "JavaScript",
+      "font_class": "JavaScript",
+      "unicode": "e610",
+      "unicode_decimal": 58896
+    },
+    {
+      "icon_id": "17761087",
+      "name": "绑定记录",
+      "font_class": "bangdingjilu",
+      "unicode": "e61b",
+      "unicode_decimal": 58907
+    },
+    {
+      "icon_id": "24043661",
+      "name": "数字递增",
+      "font_class": "shuzidizeng",
+      "unicode": "e652",
+      "unicode_decimal": 58962
+    },
+    {
+      "icon_id": "24111901",
+      "name": "歌曲",
+      "font_class": "gequ",
+      "unicode": "fc0d",
+      "unicode_decimal": 64525
+    },
+    {
+      "icon_id": "33439307",
+      "name": "炸弹",
+      "font_class": "zhadan",
+      "unicode": "e64a",
+      "unicode_decimal": 58954
+    }
+  ]
+}

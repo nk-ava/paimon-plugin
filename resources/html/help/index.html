@@ -1,0 +1,82 @@
+{{extend defaultLayout}}
+
+{{block 'css'}}
+<link rel="stylesheet" type="text/css" href="{{plusResPath}}/help/index.css"/>
+<style>
+    .help-table .td, .help-table .th {
+        width: 33.333333333333336%
+    }
+
+    .help-title, .help-group {
+        color: #ceb78b
+    }
+
+    .help-title, .help-group {
+        text-shadow: none
+    }
+
+    .help-desc {
+        color: #eee
+    }
+
+    .cont-box {
+        background: rgba(6, 21, 31, .5)
+    }
+
+    .cont-box {
+        backdrop-filter: blur(3px)
+    }
+
+    .help-group {
+        background: rgba(6, 21, 31, .4)
+    }
+
+    .help-table .tr:nth-child(odd) {
+        background: rgba(6, 21, 31, .2)
+    }
+
+    .help-table .tr:nth-child(even) {
+        background: rgba(6, 21, 31, .35)
+    }
+</style>
+{{/block}}
+
+{{block 'main'}}
+
+<div class="info-box">
+    <div class="head-box type{{bgType}}">
+        <div class="title">派蒙帮助</div>
+        <div class="label">Yunzai-Bot & Paimon-Plugin</div>
+    </div>
+</div>
+
+{{each helpGroup group}}
+{{set len = group?.list?.length || 0 }}
+<div class="cont-box">
+    <div class="help-group">{{group.group}}</div>
+    {{if len > 0}}
+    <div class="help-table">
+        <div class="tr">
+            {{each group.list help idx}}
+            <div class="td">
+                <span class="help-icon">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-{{help.icon}}"></use>
+                </svg></span>
+                <strong class="help-title">{{help.title}}</strong>
+                <span class="help-desc">{{help.desc}}</span>
+            </div>
+            {{if idx%colCount === colCount-1 && idx>0 && idx< len-1}}
+        </div>
+        <div class="tr">
+            {{/if}}
+            {{/each}}
+            <% for(let i=(len-1)%colCount; i< colCount-1 ; i++){ %>
+            <div class="td"></div>
+            <% } %>
+        </div>
+    </div>
+    {{/if}}
+</div>
+{{/each}}
+{{/block}}

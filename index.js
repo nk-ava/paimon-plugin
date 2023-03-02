@@ -25,18 +25,22 @@ try {
     fs.writeFileSync("./plugins/paimon-plugin/components/models/cmd.js", "");
     await import("./components/models/loading.js");
     logger.info("PaiMon-Plugin组件加载成功！！");
-}catch(err){
+} catch (err) {
     logger.info("PaiMon-Plugin组件加载失败！！");
     logger.error(err);
 }
 let command = false;
 fs.watch("./plugins/paimon-plugin/components/models/cmd.js", async (event, filename) => {
-    if(command){
+    if (command) {
         return;
     }
     command = true;
     setTimeout(async () => {
-        await import(`./components/models/cmd.js?version=${new Date().getTime()}`);
+        try {
+            await import(`./components/models/cmd.js?version=${new Date().getTime()}`);
+        } catch (err) {
+            ev.reply(err.toString())
+        }
         Bot.logger.mark(`更新${filename}成功`);
         command = false;
     }, 500);
