@@ -51,7 +51,8 @@ export class admin extends Plugin {
     }
 
     async update(e) {
-        let msg = e.msg.replace("派蒙", "paimon-plugin");
+        let msg = e.msg.replace("派蒙", "");
+        msg += "paimon-plugin";
         e.msg = msg;
     }
 }
