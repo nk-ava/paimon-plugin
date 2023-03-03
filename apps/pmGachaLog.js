@@ -50,6 +50,7 @@ export class pmGachaLog extends Plugin {
                 e.reply("获取断网链接失败");
                 return true
             }
+            console.log(info)
             e.msg = info;
             let data = await new GachaLog(e).logUrl()
             if (!data) flag = false;
@@ -194,6 +195,7 @@ async function getAuthKey(qq, index) {
     let url = "https://api-takumi.mihoyo.com/binding/api/genAuthKey";
     let game_uid, region, cookie;
     let info = mysCKUser.getCkByUid(qq);
+    if (!info) return false;
     let game_info = typeof index !== "undefined" ? info['uid'][index - 1] : info['uid'].filter(a => a['is_chosen'])[0];
     try {
         game_uid = game_info['game_uid'];
