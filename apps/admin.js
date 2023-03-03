@@ -54,5 +54,6 @@ export class admin extends Plugin {
         let msg = e.msg.replace("派蒙", "");
         msg += "paimon-plugin";
         e.msg = msg;
+        return false
     }
 }
