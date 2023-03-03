@@ -45,9 +45,12 @@ export class pmGachaLog extends Plugin {
         if (e.msg.includes("更新")) {
             let index = e.msg.match(/\d+/)?.[0];
             let info = await getAuthKey(e.user_id, index);
-            info = info?.split(":")[1];
-            if (!info) e.reply("获取断网链接失败");
-            e.msg = info.split("\n")[1];
+            info = info?.split("\n")[1];
+            if (!info) {
+                e.reply("获取断网链接失败");
+                return true
+            }
+            e.msg = info;
             let data = await new GachaLog(e).logUrl()
             if (!data) flag = false;
         }
@@ -73,9 +76,9 @@ export class pmGachaLog extends Plugin {
         let count = {};
         for (let i in role) {
             arg = arg * 1 + role[i].num;
-            count[role[i]] = count[role[i]] * 1 + 1 || 1;
-            if (count[role[i]] * 1 >= max * 1) {
-                max = count[role[i]];
+            count[role[i].name] = count[role[i].name] * 1 + 1 || 1;
+            if (count[role[i].name] * 1 >= max * 1) {
+                max = count[role[i].name];
                 ans = role[i].name;
             }
         }
@@ -85,13 +88,10 @@ export class pmGachaLog extends Plugin {
         let weapon = weaponUp.fiveArr;
         for (let i in weapon) {
             arg = arg * 1 + weapon[i].num;
-            count[weapon[i]] = count[weapon[i]] * 1 + 1 || 1;
-            if (count[weapon[i]] * 1 >= max * 1) {
-                max = count[weapon[i]];
-                ans = {
-                    name: weapon[i].name,
-                    type: weapon[i].type
-                }
+            count[weapon[i].name] = count[weapon[i].name] * 1 + 1 || 1;
+            if (count[weapon[i].name] * 1 >= max * 1) {
+                max = count[weapon[i].name];
+                ans = weapon[i].name
             }
         }
         weaponUp.maxFive = ans;
@@ -100,9 +100,9 @@ export class pmGachaLog extends Plugin {
         let aw = aways.fiveArr;
         for (let i in aw) {
             arg = arg * 1 + aw[i].num;
-            count[aw[i]] = count[aw[i]] * 1 + 1 || 1;
-            if (count[aw[i]] * 1 >= max * 1) {
-                max = count[aw[i]];
+            count[aw[i].name] = count[aw[i].name] * 1 + 1 || 1;
+            if (count[aw[i].name] * 1 >= max * 1) {
+                max = count[aw[i].name];
                 ans = aw[i].name;
             }
         }
