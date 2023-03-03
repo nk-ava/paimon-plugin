@@ -2,6 +2,7 @@
 import Plugin from "../../../lib/plugins/plugin.js";
 import GmDao from "../components/models/GameDate.js";
 import {gmErrorMsg} from "../components/models/GameDate.js";
+import {Cfg} from "../components/index.js";
 
 let isCfg = {}, isStart = {};
 let groupCfg = {};
@@ -29,12 +30,13 @@ export class digitalBomb extends Plugin {
         if (e.toString().includes("结束游戏")) {
             return this.gameOver(e)
         }
-        if(!this.cfgGame(e)){
+        if (!this.cfgGame(e)) {
             return await this.getNum(e)
         }
     }
 
     gameName(e, flag = true) {
+        if (Cfg.get("banGm")?.ban?.includes(e.group_id)) return true;
         if (!e.isGroup) {
             e.reply("这个游戏只能在群里玩");
             return true;
@@ -51,7 +53,7 @@ export class digitalBomb extends Plugin {
             e.reply(msg2);
             isCfg[e.group_id] = true;
         } else {
-            e.reply(gmErrorMsg())
+            e.reply(gmErrorMsg(e))
         }
         return true;
     }

@@ -3,7 +3,7 @@ import fs from "node:fs";
 const savePre = "PmGame";
 const savePath = './data/userGmDate'
 const gmType = {
-    1: {en: 'digitalBomb', zn: '数字炸'},
+    1: {en: 'digitalBomb', zn: '数字炸弹'},
     2: {en: 'tictactoe', zn: '井字棋'},
     3: {en: 'gobang', zn: '五子棋'},
     4: {en: 'sudoku', zn: '数独'}
@@ -46,6 +46,23 @@ function writeBackJson(obj, qq) {
 
 export default GmDao;
 
-export function gmErrorMsg() {
+export function gmErrorMsg(e) {
     return `当前正在进行${gmType[isPmPlaying[e.group_id]].zn}，一个群同时只能打开一个游戏`;
+}
+
+export async function playerGameInfo(qq) {
+    let res = [], sum, rate;
+    for (let i = 1; i <= 4; i++) {
+        if (i === 2) continue
+        sum = await GmDao.getCnt(i, "sum", qq);
+        rate = await GmDao.getCnt(i, "win", qq);
+        if (i === 1) rate = (sum !== 0 ? Math.round(((sum * 1.0 - rate * 1.0) / sum) * 10000.0) / 100.0 : 0);
+        else rate = (sum !== 0 ? Math.round((rate * 1.0 / sum) * 10000.0) / 100.0 : 0);
+        res.push({
+            gameName: gmType[i].zn,
+            sumNum: sum,
+            winRate: rate + "%",
+        })
+    }
+    return res;
 }

@@ -14,6 +14,10 @@ export class help extends Plugin {
                 {
                     reg: '#?派蒙帮助',
                     fnc: 'help'
+                },
+                {
+                    reg: '#?派蒙版本',
+                    fnc: 'versionInfo'
                 }
             ]
         });
@@ -66,6 +70,18 @@ export class help extends Plugin {
                 title: "#新数独 80",
                 desc: '数独游戏'
             }, {
+                icon: "boyi",
+                title: "#五子棋",
+                desc: "群双人游戏，@另一个人加入"
+            }, {
+                icon: "jiangbei",
+                title: "#游戏胜率",
+                desc: "查看派蒙游戏的胜率"
+            }, {
+                icon: 'jinyong',
+                title: '#(启用|禁用)群游戏',
+                desc: '觉得有点刷屏可以禁用群游戏'
+            }, {
                 icon: "games",
                 title: "#结束游戏",
                 desc: "结束正在进行的群游戏"
@@ -97,6 +113,17 @@ export class help extends Plugin {
                 title: "我的ck",
                 desc: "私聊返回米游社ck"
             }]
+        }, {
+            group: "其他指令",
+            list: [{
+                icon: "caidan",
+                title: "#派蒙帮助",
+                desc: "派蒙插件提供的功能查看"
+            }, {
+                icon: "banbenxinxi",
+                title: "#派蒙版本",
+                desc: "查看版本日志"
+            }]
         }];
         let admin = {
             group: "管理员命令",
@@ -108,6 +135,10 @@ export class help extends Plugin {
                 icon: "JavaScript",
                 title: "_print(123)",
                 desc: "以_开头的会被当作js代码执行"
+            }, {
+                icon: "gengxin",
+                title: "#派蒙(强制)更新",
+                desc: "更新派蒙插件"
             }]
         }
         if (e.isMaster) helpGroup.push(admin);
@@ -117,6 +148,30 @@ export class help extends Plugin {
             defaultLayout: `${_path}/plugins/paimon-plugin/resources/html/common/helpDefault.html`,
             bgType: 0,
             helpGroup,
+            plusResPath: `${_path}/plugins/paimon-plugin/resources/html`,
+            commonPath: `${_path}/plugins/paimon-plugin/resources/html/common`,
+            copyright: Version.toText
+        })
+        if (!img) {
+            e.reply("生成图片失败");
+        } else {
+            e.reply(img);
+        }
+        return true
+    }
+
+    async versionInfo(e) {
+        let info = Version.changelogs;
+        if (!info) {
+            e.reply("暂无版本信息");
+            return true;
+        }
+        let changelogs = Version.changelogs;
+        let img = await puppeteer.screenshot("versionInfo", {
+            tplFile: "./plugins/paimon-plugin/resources/html/versionInfo/versionInfo.html",
+            saveId: "versionInfo",
+            changelogs,
+            elemLayout: `${_path}/plugins/paimon-plugin/resources/html/common/infoElem.html`,
             plusResPath: `${_path}/plugins/paimon-plugin/resources/html`,
             commonPath: `${_path}/plugins/paimon-plugin/resources/html/common`,
             copyright: Version.toText

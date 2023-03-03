@@ -1,0 +1,77 @@
+@font-face {
+    font-family: "tttgbnumber";
+    src: url("../common/font/tttgbnumber.ttf");
+    font-weight: normal;
+    font-style: normal;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+}
+
+body {
+    font-size: 18px;
+    color: #1e1f20;
+    font-family: PingFangSC-Medium, PingFang SC, sans-serif;
+}
+
+.container {
+    width: 465px;
+    transform-origin: left top;
+    transform: scale(1.7);
+    padding: 20px 15px 10px 15px;
+    background-color: #ececec;
+}
+
+.head_box {
+    box-shadow: 0 5px 10px 0 rgb(0 0 0 / 15%);
+    background-position-x: 30px;
+    background: #f5f5f5 url('./4.png') no-repeat;
+    border-radius: 15px;
+    font-family: tttgbnumber;
+    padding: 5px 20px;
+    position: relative;
+    background-size: auto 101%;
+}
+
+.avatar {
+    margin-top: 7px;
+    margin-right: 5px;
+    width: 60px;
+    height: 60px;
+}
+
+.data_box {
+    border-radius: 15px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 20px 15px 5px 15px;
+    background: #f5f5f5;
+    box-shadow: 0 5px 10px 0 rgb(0 0 0 / 15%);
+    position: relative;
+}
+
+.tab_label {
+    position: absolute;
+    top: -10px;
+    left: -8px;
+    background: #d4b98c;
+    color: #fff;
+    font-size: 14px;
+    padding: 3px 10px;
+    border-radius: 15px 0px 15px 15px;
+    z-index: 20;
+}
+
+.nickname {
+    font-size: 20px;
+}
+
+.infoBox {
+    position: absolute;
+    top: 25px;
+    left: 90px;
+}

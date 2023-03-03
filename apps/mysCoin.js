@@ -36,7 +36,9 @@ export class mysCoin extends Plugin {
         this.task = {
             cron: '0 0/5 * * * ?',
             name: '米游币每日获取',
-            fnc: this.taskSign,
+            fnc: async () => {
+                await this.taskSign.call(this)
+            },
             log: false
         }
     }
@@ -177,6 +179,7 @@ export class mysCoin extends Plugin {
         return true;
     }
 }
+
 async function getAllGameUid(ck) {
     let res = await fetch('https://webapi.account.mihoyo.com/Api/get_ticket_by_loginticket', {
         method: 'post',
@@ -193,5 +196,5 @@ async function getAllGameUid(ck) {
         method: 'get'
     });
     res = await res.json();
-    return res?.data?.list.filter(js=>js['game_biz']==="hk4e_cn");
+    return res?.data?.list.filter(js => js['game_biz'] === "hk4e_cn");
 }

@@ -6,6 +6,48 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "31310647",
+      "name": "禁用",
+      "font_class": "jinyong",
+      "unicode": "e628",
+      "unicode_decimal": 58920
+    },
+    {
+      "icon_id": "2310981",
+      "name": "奖杯",
+      "font_class": "jiangbei",
+      "unicode": "e648",
+      "unicode_decimal": 58952
+    },
+    {
+      "icon_id": "4438260",
+      "name": "菜单",
+      "font_class": "caidan",
+      "unicode": "e651",
+      "unicode_decimal": 58961
+    },
+    {
+      "icon_id": "5427432",
+      "name": "版本信息",
+      "font_class": "banbenxinxi",
+      "unicode": "e61e",
+      "unicode_decimal": 58910
+    },
+    {
+      "icon_id": "7905600",
+      "name": "博弈",
+      "font_class": "boyi",
+      "unicode": "e61d",
+      "unicode_decimal": 58909
+    },
+    {
+      "icon_id": "29156367",
+      "name": "更新",
+      "font_class": "gengxin",
+      "unicode": "e65a",
+      "unicode_decimal": 58970
+    },
+    {
       "icon_id": "25670231",
       "name": "帮助",
       "font_class": "bangzhu",

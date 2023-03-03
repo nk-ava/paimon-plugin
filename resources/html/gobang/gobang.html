@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<style>
+			* {
+				margin: 0;
+				padding: 0;
+			}
+
+			.container {
+				width: 357px;
+				background-color: antiquewhite;
+			}
+
+			.chessboard {
+				background-image: url({{plusResPath}}/gobang/backgroud.webp);
+				width: 357px;
+				overflow: hidden;
+			}
+
+			.box {
+				position: relative;
+				overflow: hidden;
+				width: 21px;
+				height: 21px;
+				float: left;
+			}
+
+			.border {
+				/* background-color: blue; */
+				float: left;
+				width: 10px;
+				height: 10px;
+			}
+
+			.text {
+				position: absolute;
+				border-radius: 10px 10px 10px 10px;
+				top: 12.5%;
+				left: 12.5%;
+				width: 15px;
+				height: 15px;
+				font-size: 10px;
+				text-align: center;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container" id="container">
+			<div class="chessboard">
+				{{each data arr idx}}
+					{{each arr v jdx}}
+					<div class="box">
+						{{if v.status}}
+						<div class="text" style="{{if v.status==1}}background-color: white;{{/if}}{{if v.status==2}}background-color: black;{{/if}}"></div>
+						{{/if}}
+						{{if idx==0}}
+						<div class="text">{{jdx}}</div>
+						<div class="border"></div>
+						<div class="border"></div>
+						<div class="border" style="border-bottom: 1px solid black;"></div>
+						<div class="border" style="border-bottom: 1px solid black;"></div>
+						{{else if idx==16}}
+						<div class="text">{{jdx}}</div>
+						<div class="border" style="border-top: 1px solid black;"></div>
+						<div class="border" style="border-top: 1px solid black;"></div>
+						<div class="border"></div>
+						<div class="border"></div>
+						{{else if jdx==0}}
+						<div class="text">{{idx}}</div>
+						<div class="border"></div>
+						<div class="border" style="border-right: 1px solid black;"></div>
+						<div class="border"></div>
+						<div class="border" style="border-right: 1px solid black;"></div>
+						{{else if jdx==16}}
+						<div class="text">{{idx}}</div>
+						<div class="border" style="border-left: 1px solid black;"></div>
+						<div class="border"></div>
+						<div class="border" style="border-left: 1px solid black;"></div>
+						<div class="border"></div>
+						{{else}}
+						<div class="border" style="border-bottom: 1px solid black; border-right: 1px solid black;"></div>
+						<div class="border" style="border-bottom: 1px solid black;"></div>
+						<div class="border" style="border-right: 1px solid black;"></div>
+						<div class="border"></div>
+						{{/if}}
+					</div>
+					{{/each}}
+				{{/each}}
+			</div>
+		</div>
+	</body>
+</html>

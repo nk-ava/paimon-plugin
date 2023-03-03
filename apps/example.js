@@ -4,6 +4,10 @@ import {segment, core} from "oicq";
 import util from "util";
 import request from "request";
 import browserPuppeteer from "../components/models/BrowserPuppeteer.js";
+import {playerGameInfo} from "../components/models/GameDate.js";
+import puppeteer from "../../../lib/puppeteer/puppeteer.js";
+
+const _path = process.cwd()
 
 export class example extends Plugin {
     constructor(e) {
@@ -40,6 +44,10 @@ export class example extends Plugin {
                 {
                     reg: '^(#用户|#mysUser)\\s(.*)',
                     fnc: "mysUserInfo"
+                },
+                {
+                    reg: '#游戏胜率',
+                    fnc: 'playerInfo'
                 }
             ]
         });
@@ -211,6 +219,36 @@ export class example extends Plugin {
             e.reply(img)
         }
         return true
+    }
+
+    async playerInfo(e) {
+        let qq = e.user_id;
+        let rs = await getQQInfo(qq);
+        rs = rs[0];
+        let avatar = rs.url;
+        let nickname = rs.nick;
+        let res = await playerGameInfo(qq);
+        let img = await puppeteer.screenshot("playerInfo", {
+            avatarUrl: avatar,
+            tplFile: "./plugins/paimon-plugin/resources/html/playerInfo/playerInfo.html",
+            saveId: qq,
+            qq: qq,
+            plusResPath: `${_path}/plugins/paimon-plugin/resources/html`,
+            commonPath: `${_path}/plugins/paimon-plugin/resources/html/common`,
+            nickname: nickname,
+            games: res,
+        })
+        if (!img) {
+            e.reply("查询失败");
+            return true
+        }
+        let msg = [];
+        if (e.isGroup) {
+            msg.push(segment.at(e.user_id));
+        }
+        msg.push(img);
+        e.reply(msg);
+        return true;
     }
 }
 
