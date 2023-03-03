@@ -45,12 +45,13 @@ export class pmGachaLog extends Plugin {
         if (e.msg.includes("更新")) {
             let index = e.msg.match(/\d+/)?.[0];
             let info = await getAuthKey(e.user_id, index);
+            info = info?.split(":")[1];
             if (!info) e.reply("获取断网链接失败");
             e.msg = info.split("\n")[1];
             let data = await new GachaLog(e).logUrl()
-            if(!data) flag = false;
+            if (!data) flag = false;
         }
-        if(!flag) return;
+        if (!flag) return;
         let uid = await new GachaLog(e).getUid();
         if (!uid) return true
         let path = `./data/gachaJson/${e.user_id}/${uid}`;
@@ -297,7 +298,7 @@ function analyse(all) {
                     }
                 }
             } else {
-                if(notUpWeapon.includes(val.name)) wai++;
+                if (notUpWeapon.includes(val.name)) wai++;
                 weaponNum++;
             }
         }
