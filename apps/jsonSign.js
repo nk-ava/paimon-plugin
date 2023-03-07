@@ -27,7 +27,7 @@ export class jsonSign extends Plugin {
         msg = msg.substr(1, msg.length);
         try {
             let body = JSON.parse(msg);
-            // if (!!body["extra"]) delete body["extra"];
+            if (body["extra"]) delete body["extra"];
             // if (!!body["config"]) delete body["config"];
             let send_id, type;
             if (e.isGroup) {
