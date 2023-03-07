@@ -140,9 +140,9 @@ export class mysCoin extends Plugin {
         if (t != "1") {
             await redis.set("Paimon:today-thumbUP", "1", {EX: Common.getDayEnd()});
             let st = Bot.fl;
-            for (let s of Object.keys(st)) {
-                if (s != Bot.uin) {
-                    await Bot.pickFriend(Number(s)).thumbUp(10);
+            for (let [uid, info] of st) {
+                if (uid != Bot.uin) {
+                    await Bot.pickFriend(Number(uid)).thumbUp(10);
                 }
             }
             let usersCk = MysCKUser.getAllMysCK();
