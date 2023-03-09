@@ -77,6 +77,10 @@ export class sandbox extends Plugin {
                         e.msg = result;
                         return true;
                     }
+                    if (typeof result === "string") {
+                        e.reply(result);
+                        return true;
+                    }
                     e.reply(toString(result));
                 } else {
                     if (flag) e.reply(toString(result));
