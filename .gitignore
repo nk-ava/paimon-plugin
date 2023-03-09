@@ -1,3 +1,4 @@
 /config/config/*
 !/config/config/README.md
 /components/models/cmd.js
+/resources/user_functions.json
