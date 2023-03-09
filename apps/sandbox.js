@@ -3,7 +3,7 @@ import Plugin from "../../../lib/plugins/plugin.js";
 import fs from "node:fs";
 import request from "request";
 import util from "util";
-import {SendPm,Version} from "../components/index.js";
+import {SendPm, Version} from "../components/index.js";
 import {createContext, Script} from "vm";
 
 
@@ -11,6 +11,7 @@ let data = {};
 let sandboxEnv = {};
 let sandboxContext = {};
 let selfUid = global.Bot.uin;
+
 export class sandbox extends Plugin {
     constructor(e) {
         super({
@@ -22,10 +23,15 @@ export class sandbox extends Plugin {
                 {
                     reg: "^#*(开启|关闭)命令模式$",
                     fnc: 'cmdSwitch'
+                },
+                {
+                    reg: '^_([\\s\\S]*)$',
+                    fnc: 'command'
                 }
             ]
         });
     }
+
     //命令模式
     async accept(e) {
         if (ISCMD) {
@@ -67,6 +73,10 @@ export class sandbox extends Plugin {
                         e.reply(mss);
                         return true;
                     }
+                    if (typeof result === "string" && /^_([\s\S]*)$/.test(result)) {
+                        e.msg = result;
+                        return true;
+                    }
                     e.reply(toString(result));
                 } else {
                     if (flag) e.reply(toString(result));
@@ -78,6 +88,7 @@ export class sandbox extends Plugin {
             }
         }
     }
+
     //命令模式开关
     cmdSwitch(e) {
         if (!e.isMaster) {
@@ -117,6 +128,31 @@ export class sandbox extends Plugin {
         }
         return true;
     }
+
+    //执行代码
+    async command(e) {
+        if (e.isMaster) {
+            global.ev = e;
+            let cmd = e.msg.substr(1, e.length);
+            let str = cmd.split("import");
+            let upload = "import fetch from 'node-fetch';\nimport request from 'request';\nimport fs from 'fs';\nimport {segment} from 'oicq';\n";
+            let len = str.length;
+            if (len != 1) {
+                let ss = str[len - 1].split('\n', 1);
+                cmd = str[len - 1].replace(ss, "");
+                str[len - 1] = ss;
+                for (let i = 1; i < len; i++) {
+                    upload += "import" + str[i];
+                }
+            }
+            let before = "\ntry{";
+            let after = "\nBot.logger.mark('命令执行成功');}catch(e){ev.reply(e.toString());}";
+            let m = upload + before + cmd + after;
+            fs.writeFileSync("./plugins/paimon-plugin/components/models/cmd.js", m);
+        } else {
+            e.reply("派蒙只听主人的( •̥́ ˍ •̀ू )")
+        }
+    }
 }
 
 function strify(key, value) {
@@ -125,6 +161,7 @@ function strify(key, value) {
     }
     return value;
 }
+
 function prs(key, value) {
     try {
         let obj = eval("(" + value + ")");

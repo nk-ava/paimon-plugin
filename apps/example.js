@@ -22,10 +22,6 @@ export class example extends Plugin {
                     fnc: 'test'
                 },
                 {
-                    reg: '^_([\\s\\S]*)$',
-                    fnc: 'command'
-                },
-                {
                     reg: '#?赞我',
                     fnc: 'userThumbUp'
                 },
@@ -55,30 +51,6 @@ export class example extends Plugin {
 
     test() {
         this.e.reply("发送消息成功！！");
-    }
-
-    async command(e) {
-        if (e.isMaster) {
-            global.ev = e;
-            let cmd = e.msg.substr(1, e.length);
-            let str = cmd.split("import");
-            let upload = "import fetch from 'node-fetch';\nimport request from 'request';\nimport fs from 'fs';\nimport {segment} from 'oicq';\n";
-            let len = str.length;
-            if (len != 1) {
-                let ss = str[len - 1].split('\n', 1);
-                cmd = str[len - 1].replace(ss, "");
-                str[len - 1] = ss;
-                for (let i = 1; i < len; i++) {
-                    upload += "import" + str[i];
-                }
-            }
-            let before = "\ntry{";
-            let after = "\nBot.logger.mark('命令执行成功');}catch(e){ev.reply(e.toString());}";
-            let m = upload + before + cmd + after;
-            fs.writeFileSync("./plugins/paimon-plugin/components/models/cmd.js", m);
-        } else {
-            e.reply("派蒙只听主人的( •̥́ ˍ •̀ू )")
-        }
     }
 
     async userThumbUp(e) {
