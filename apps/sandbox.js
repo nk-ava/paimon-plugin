@@ -60,6 +60,10 @@ export class sandbox extends Plugin {
             }
             try {
                 let reg = /^\s*request.?\w*\([\s\S]*\)/;
+                if (/```[\s\S]*```/.test(msg)) {
+                    let str = (msg.match(/```[\s\S]*```/)[0]).replace(/```/g, "");
+                    msg = msg.replace(/```[\s\S]*```/, JSON.stringify(str));
+                }
                 let script = new Script(msg);
                 let result = script.runInContext(sandboxContext);
                 if (typeof result != "undefined" && !reg.test(msg)) {
@@ -75,10 +79,6 @@ export class sandbox extends Plugin {
                     }
                     if (typeof result === "string" && /^_([\s\S]*)$/.test(result)) {
                         e.msg = result;
-                        return true;
-                    }
-                    if (typeof result === "string") {
-                        e.reply(result);
                         return true;
                     }
                     e.reply(toString(result));
