@@ -61,7 +61,7 @@ export class sandbox extends Plugin {
             try {
                 let reg = /^\s*request.?\w*\([\s\S]*\)/;
                 if (/```[\s\S]*```/.test(msg)) {
-                    let str = (msg.match(/```[\s\S]*```/)[0]).replace(/```/g, "");
+                    let str = (msg.match(/```[\s\S]*```/)[0]).replace(/```/g, "").trim();
                     msg = msg.replace(/```[\s\S]*```/, JSON.stringify(str));
                 }
                 let script = new Script(msg);
