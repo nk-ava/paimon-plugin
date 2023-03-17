@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "3744331",
+      "name": "Id",
+      "font_class": "Id",
+      "unicode": "e629",
+      "unicode_decimal": 58921
+    },
+    {
+      "icon_id": "3777790",
+      "name": "数据",
+      "font_class": "shuju",
+      "unicode": "e62c",
+      "unicode_decimal": 58924
+    },
+    {
       "icon_id": "31310647",
       "name": "禁用",
       "font_class": "jinyong",

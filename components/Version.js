@@ -5,7 +5,7 @@ import fs from "node:fs";
 const _path = process.cwd();
 const logPath = `${_path}/plugins/paimon-plugin/CHANGELOG.md`;
 
-let currentVersion = '1.2.3';
+let currentVersion = '1.2.4';
 let changeLogs = [];
 let versionCnt = 4;
 

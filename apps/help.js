@@ -93,9 +93,17 @@ export class help extends Plugin {
                 title: '#绑定米游社',
                 desc: "用户绑定米游社ck"
             }, {
+                icon: 'bangdingjilu',
+                title: "#绑定崩三",
+                desc: '与原神的ck相同，先绑原神'
+            }, {
                 icon: "meiriqiandao",
                 title: "#(开启|关闭)米游社自动签到",
                 desc: "米游社自动签到开关"
+            }, {
+                icon: 'meiriqiandao',
+                title: "#(开启|关闭)崩三自动签到",
+                desc: '崩三自动签到开关'
             }, {
                 icon: "yonghu",
                 title: "#用户 123",
@@ -105,9 +113,21 @@ export class help extends Plugin {
                 title: "#米游社签到",
                 desc: "米游社手动签到"
             }, {
+                icon: 'qiandao',
+                title: "#崩坏三签到",
+                desc: '崩三手动签到'
+            }, {
                 icon: "kuozhanshuxing",
-                title: "(更新)怪物抗性",
+                title: "#(更新)怪物抗性",
                 desc: "返回怪物抗性一览表"
+            }, {
+                icon: 'Id',
+                title: "#我的uid",
+                desc: '查看崩三当前uid'
+            }, {
+                icon: 'shuju',
+                title: '#崩三1234567#崩三角色',
+                desc: '根据uid查看信息'
             }, {
                 icon: "-cookie",
                 title: "我的ck",
