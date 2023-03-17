@@ -89,7 +89,7 @@ export class bh3Sign extends Plugin {
         }
         bh3User.Roles = roles;
         if (await bh3User.bingUser(ck)) {
-            e.reply("绑定成功\n【#(开启|关闭)崩三自动签到】默认为开启\n【#崩三签到】崩三手动签到\n【#敬请期待】");
+            e.reply("绑定成功\n【#(开启|关闭)崩三自动签到】默认为开启\n【#崩坏三签到】崩三手动签到\n【#敬请期待】");
         } else {
             e.reply("绑定失败");
         }

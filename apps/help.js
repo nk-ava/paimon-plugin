@@ -90,32 +90,20 @@ export class help extends Plugin {
             group: "米游社相关命令",
             list: [{
                 icon: "bangdingjilu",
-                title: '#绑定米游社',
-                desc: "用户绑定米游社ck"
-            }, {
-                icon: 'bangdingjilu',
-                title: "#绑定崩三",
-                desc: '与原神的ck相同，先绑原神'
+                title: '#绑定(米游社|崩三)',
+                desc: "用户绑定米游社或者崩三ck"
             }, {
                 icon: "meiriqiandao",
-                title: "#(开启|关闭)米游社自动签到",
-                desc: "米游社自动签到开关"
-            }, {
-                icon: 'meiriqiandao',
-                title: "#(开启|关闭)崩三自动签到",
-                desc: '崩三自动签到开关'
+                title: "#(开启|关闭)(米游社|崩三)自动签到",
+                desc: "米游社或崩三自动签到开关"
             }, {
                 icon: "yonghu",
                 title: "#用户 123",
                 desc: '根据关键词返回米游社用户'
             }, {
                 icon: "qiandao",
-                title: "#米游社签到",
-                desc: "米游社手动签到"
-            }, {
-                icon: 'qiandao',
-                title: "#崩坏三签到",
-                desc: '崩三手动签到'
+                title: "#(米游社|崩三)签到",
+                desc: "米游社或崩三手动签到"
             }, {
                 icon: "kuozhanshuxing",
                 title: "#(更新)怪物抗性",
