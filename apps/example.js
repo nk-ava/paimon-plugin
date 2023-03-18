@@ -2,6 +2,7 @@ import Plugin from "../../../lib/plugins/plugin.js";
 import fs from "node:fs";
 import {segment, core} from "oicq";
 import util from "util";
+import common from "../../../lib/common/common.js";
 import request from "request";
 import browserPuppeteer from "../components/models/BrowserPuppeteer.js";
 import {playerGameInfo} from "../components/models/GameDate.js";
@@ -44,6 +45,10 @@ export class example extends Plugin {
                 {
                     reg: '#游戏胜率',
                     fnc: 'playerInfo'
+                },
+                {
+                    reg: "pb解码",
+                    fnc: 'pbDecode'
                 }
             ]
         });
@@ -51,6 +56,30 @@ export class example extends Plugin {
 
     test() {
         this.e.reply("发送消息成功！！");
+    }
+
+    async pbDecode(e) {
+        let str = e.msg.replace(/pb解码\s?/, "");
+        let arr = str.split(/[\s\n]/).filter(a => a && a.trim()).map(a => {
+            return Number('0x' + a)
+        });
+        let body = Buffer.from(arr);
+        body = body.slice(4)
+        try {
+            let msg = []
+            let decodeMsg = []
+            let decoded = deepDecode(body, 1, decodeMsg);
+            msg.push(toString(decoded));
+            for (let i = decodeMsg.length - 1; i >= 0; i--) {
+                msg.push(toString(decodeMsg[i]));
+            }
+            msg.push("buffer转string后消息：")
+            msg.push(JSON.stringify(decoded, myToStr, "  "));
+            e.reply(await common.makeForwardMsg(e, msg, "点击查看解码结果"));
+        } catch (err) {
+            e.reply("出错了：" + err.toString());
+        }
+        return true;
     }
 
     async userThumbUp(e) {
@@ -270,4 +299,56 @@ async function getUserUid(key) {
     }
     response = await response.json();
     return response?.data?.users[0]?.uid
+}
+
+function deepDecode(b, deep, msg) {
+    let o;
+    try {
+        o = core.pb.decode(b);
+    } catch (e) {
+        return null;
+    }
+    if (!o) return null;
+    delete o["encoded"];
+    let flag = false;
+    for (let k of Object.keys(o)) {
+        if (deep >= 3 && typeof o[k] === "object") {
+            deep = 1;
+            flag = true;
+        }
+        if (o[k] instanceof core.pb.Proto) {
+            let obj = deepDecode(o[k]["encoded"], deep + 1, msg);
+            if (obj) o[k] = obj;
+        } else if (o[k] instanceof Array) {
+            o[k] = decodeInArray(o[k], deep + 1, msg);
+        }
+    }
+    if (flag) msg.push(o);
+    return o;
+}
+
+function myToStr(key, value) {
+    if (value instanceof core.pb.Proto) {
+        if (value.encoded) return value.encoded.toString();
+        else return value;
+    }
+    return value;
+}
+
+function decodeInArray(arr, deep, msg) {
+    let flag = false;
+    let newArr = arr.map(a => {
+        if (deep >= 3 && typeof a === "object") {
+            deep = 1;
+            flag = true;
+        }
+        if (a instanceof core.pb.Proto) {
+            return deepDecode(a.encoded, deep + 1, msg);
+        } else if (a instanceof Array) {
+            return decodeInArray(a, deep + 1, msg)
+        } else return a;
+    });
+
+    if (flag) msg.push(newArr);
+    return newArr;
 }
