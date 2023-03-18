@@ -45,7 +45,7 @@ export class bh3Sign extends Plugin {
             ]
         });
         this.task = {
-            corn: "0 2 0 * * ?",
+            cron: "0 2 0 * * ?",
             name: "崩坏三签到任务",
             fnc: async () => {
                 await this.b3SignTask.call(this);
@@ -55,6 +55,7 @@ export class bh3Sign extends Plugin {
     }
 
     async b3SignTask() {
+        logger.mark("开始崩坏三签到任务");
         let users = Bh3User.getAllUserInfo();
         for (let user of users) {
             if (!user.autoSign) continue;
@@ -71,6 +72,7 @@ export class bh3Sign extends Plugin {
             }
             await this.bh3Sign(e, ck, role);
         }
+        logger.mark("崩坏三签到任务完成");
     }
 
     async bingBh(e) {
@@ -126,7 +128,13 @@ export class bh3Sign extends Plugin {
     async bh3Sign(e, ck, role) {
         let user = new Bh3User(e);
         let url = "https://api-takumi.mihoyo.com/event/luna/sign";
+        if (!ck) ck = await user.getCk();
         if (!role) role = await user.getMainRole();
+        if (await checkSigned(ck, role)) {
+            e.reply("今日已签到");
+            return true;
+        }
+
         let body = {
             act_id: "e202207181446311",
             region: role.region,
@@ -135,18 +143,12 @@ export class bh3Sign extends Plugin {
         }
         let headers = getHeaders();
         headers["DS"] = getDsSign();
-        if (!ck) ck = await user.getCk();
         headers["Cookie"] = ck;
         let res = await fetch(url, {
             method: 'post',
             headers: headers,
             body: JSON.stringify(body)
         })
-
-        if (await checkSigned(ck, role)) {
-            e.reply("今日已签到");
-            return true;
-        }
         if (!res.ok) {
             e.reply("米游社接口出错");
         } else {
