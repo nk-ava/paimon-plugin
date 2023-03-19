@@ -67,6 +67,7 @@ export class digitalBomb extends Plugin {
             if (flag) e.reply("数字炸弹已结束");
             return true;
         }
+        return false;
     }
 
     async getNum(e) {

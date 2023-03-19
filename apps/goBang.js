@@ -141,6 +141,7 @@ export class goBang extends Plugin {
             if (flag) e.reply("五子棋已结束");
             return true;
         }
+        return false;
     }
 
     async situation(e) {
