@@ -237,6 +237,7 @@ export class sudoku extends Plugin {
             mss.push(" ");
         }
         mss.push(img);
+        mss.push("发送【#我的答案 1 4 5 9 3】用来回答")
         e.reply(mss);
 
         ans = lodash.flatten(ans);

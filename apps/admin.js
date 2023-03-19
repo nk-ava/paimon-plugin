@@ -7,7 +7,7 @@ export class admin extends Plugin {
             name: "管理",
             dsc: '仅管理员使用',
             event: 'message',
-            priority: '50',
+            priority: '49',
             rule: [
                 {
                     reg: '#(启用|禁用)群游戏',
@@ -29,6 +29,7 @@ export class admin extends Plugin {
             return true
         }
         if (e.msg.includes("禁用")) {
+            e.msg = "#结束游戏"
             let cfg = Cfg.get("banGm");
             if (!(cfg?.ban)) {
                 Cfg.set("banGm", {ban: [e.group_id]})
