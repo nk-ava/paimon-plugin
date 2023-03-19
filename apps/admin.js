@@ -49,6 +49,7 @@ export class admin extends Plugin {
             }
             e.reply("启用成功")
         }
+        return false;
     }
 
     async update(e) {
