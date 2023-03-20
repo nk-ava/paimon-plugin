@@ -331,6 +331,8 @@ function myToStr(key, value) {
     if (value instanceof core.pb.Proto) {
         if (value.encoded) return value.encoded.toString();
         else return value;
+    } else if (typeof value === "bigint") {
+        return `BigInt(${value})`
     }
     return value;
 }
