@@ -11,6 +11,9 @@ if (Bot?.logger?.info) {
 let files = fs.readdirSync("./plugins/paimon-plugin/apps").filter(file => file.endsWith(".js"));
 let ret = [];
 
+// 重写添加好友
+await import("./components/models/FriendSSO.js");
+
 files.forEach(file => {
     ret.push(import(`./apps/${file}`));
 })
