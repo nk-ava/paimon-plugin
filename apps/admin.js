@@ -1,5 +1,6 @@
 import Plugin from "../../../lib/plugins/plugin.js"
 import {Cfg} from "../components/index.js"
+import {core} from "oicq";
 
 export class admin extends Plugin {
     constructor(e) {
@@ -18,9 +19,103 @@ export class admin extends Plugin {
                     reg: '#派蒙(强制)?更新',
                     fnc: "update",
                     permission: "master"
+                },
+                {
+                    reg: '#(开启|关闭)群打卡',
+                    fnc: 'qunCard',
+                    permission: "master"
+                },
+                {
+                    reg: '#关闭全部群打卡',
+                    fnc: 'closeAll',
+                    permission: "master"
+                },
+                {
+                    reg: '#打卡',
+                    fnc: 'card',
+                    permission: "master"
                 }
             ]
         });
+
+        this.task = {
+            cron: '0 0 0 * * ?',
+            name: '群打卡',
+            fnc: async () => {
+                await this.qunSign()
+            },
+            log: false
+        }
+    }
+
+    closeAll(e) {
+        let cfg = Cfg.get("qunSign");
+        if (cfg?.qun) {
+            cfg.qun = []
+            Cfg.set("qunSign", cfg)
+        }
+    }
+
+    async card(e) {
+        if (!e.isGroup) {
+            return true;
+        }
+        await this.qunSign(e.group_id);
+    }
+
+    async qunSign(qun) {
+        let cfg = []
+        if (qun) {
+            cfg = [qun]
+        } else {
+            cfg = Cfg.get("qunSign")?.qun || [];
+        }
+        let error = [];
+        for (let gid of cfg) {
+            let body = core.pb.encode({
+                2: {
+                    1: String(Bot.uin),
+                    2: String(gid),
+                    3: Bot.apk.ver
+                }
+            })
+            let res = await Bot.sendOidb("OidbSvc.0xeb7_1", body);
+            res = core.pb.decode(res);
+            if ((res[3] & 0xffffffff) !== 0) {
+                error.push(gid)
+            }
+        }
+        if (!qun) {
+            for (let gid of error) {
+                let index = cfg.indexOf(gid);
+                cfg.splice(index, 1)
+            }
+            Cfg.set("qunSign", {qun: cfg});
+        }
+    }
+
+    qunCard(e) {
+        if (!e.isGroup) {
+            e.reply("请在群里发送");
+            return true;
+        }
+        let cfg = Cfg.get("qunSign") || {}
+        if (e.msg.includes("开启")) {
+            if (!cfg?.qun?.includes(e.group_id)) {
+                let qun = cfg?.qun || []
+                qun.push(e.group_id);
+                cfg.qun = qun;
+                Cfg.set("qunSign", cfg)
+            }
+            e.reply("success");
+        } else {
+            if (cfg?.qun?.includes(e.group_id)) {
+                let index = cfg.indexOf(e.group_id);
+                cfg.splice(index, 1);
+                Cfg.set("qunSign", cfg);
+            }
+            e.reply("success");
+        }
     }
 
     async banGm(e) {
@@ -34,7 +129,7 @@ export class admin extends Plugin {
             if (!(cfg?.ban)) {
                 Cfg.set("banGm", {ban: [e.group_id]})
             } else {
-                if (!cfg.ban.includes(e.group_id)) {
+                if (!cfg.ban?.includes(e.group_id)) {
                     cfg.ban.push(e.group_id);
                     Cfg.set("banGm", cfg);
                 }

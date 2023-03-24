@@ -47,13 +47,13 @@ export class friendAuth extends Plugin {
     async init() {
         let type = this.cfg.type || await getType();
         if (type === 3) {
-            if (Bot.listenerCount("notice.friend.increase") === 0) {
+            if ((Bot?.listenerCount || Bot?.matcherCount).call(Bot, "notice.friend.increase") === 0) {
                 Bot.on("notice.friend.increase", async () => {
                         await dealStrict.call(this)
                     }
                 )
             }
-            if (Bot.listenerCount("setAuthError") === 0) {
+            if ((Bot?.listenerCount || Bot?.matcherCount).call(Bot, "setAuthError") === 0) {
                 Bot.on("setAuthError", (msg) => {
                     Bot.pickFriend(Version.masterQQ).sendMsg(`加好友方式设置失败：${msg}`);
                 })
@@ -129,13 +129,13 @@ export class friendAuth extends Plugin {
             this.cfg.type = 3;
             this.cfg.answer = "";
             Cfg.set("friendAuth", this.cfg);
-            if (Bot.listenerCount("notice.friend.increase") === 0) {
+            if ((Bot?.listenerCount || Bot?.matcherCount).call(Bot, "notice.friend.increase") === 0) {
                 Bot.on("notice.friend.increase", async () => {
                         await dealStrict.call(this);
                     }
                 )
             }
-            if (Bot.listenerCount("setAuthError") === 0) {
+            if ((Bot?.listenerCount || Bot?.matcherCount).call(Bot, "setAuthError") === 0) {
                 Bot.on("setAuthError", (msg) => {
                     Bot.pickFriend(Version.masterQQ).sendMsg(`加好友方式设置失败：${msg}`);
                 })
@@ -245,7 +245,7 @@ async function dealStrict() {
     let q = `seq=${seq}`;
     let res = await setAuth(3, q, a);
     if (res !== true) {
-        Bot.emit("setAuthError", res);
+        Bot.em("setAuthError", res);
     }
 }
 

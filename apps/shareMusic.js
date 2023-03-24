@@ -31,7 +31,7 @@ export class shareMusic extends Plugin {
             let count = await redis.lPush(`Music:share-key:${s}`, data);
             Bot.logger.mark(`新增相关歌曲：${s}`);
             if (count === 4) {
-                Bot.emit(`musicShare.${s}`);
+                Bot.em(`musicShare.${s}`);
             }
             return true;
         }
