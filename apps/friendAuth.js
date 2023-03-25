@@ -103,7 +103,7 @@ export class friendAuth extends Plugin {
         }
         if (type === 1) {
             Bot.off("notice.friend.increase", dealStrict);
-            Bot.removeAllListeners("setAuthError");
+            (Bot.removeAllListeners || Bot.offTrap).call(Bot, "setAuthError");
             let res = await setAuth(1);
             if (res === true) {
                 e.reply("设置成功");
