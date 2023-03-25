@@ -47,13 +47,13 @@ export class friendAuth extends Plugin {
     async init() {
         let type = this.cfg.type || await getType();
         if (type === 3) {
-            if ((Bot?.listenerCount || Bot?.matcherCount).call(Bot, "notice.friend.increase") === 0) {
+            if ((Bot.listenerCount || Bot.matcherCount).call(Bot, "notice.friend.increase") === 0) {
                 Bot.on("notice.friend.increase", async () => {
                         await dealStrict.call(this)
                     }
                 )
             }
-            if ((Bot?.listenerCount || Bot?.matcherCount).call(Bot, "setAuthError") === 0) {
+            if ((Bot.listenerCount || Bot.matcherCount).call(Bot, "setAuthError") === 0) {
                 Bot.on("setAuthError", (msg) => {
                     Bot.pickFriend(Version.masterQQ).sendMsg(`加好友方式设置失败：${msg}`);
                 })
@@ -93,7 +93,7 @@ export class friendAuth extends Plugin {
         type = Number(type);
         if (type === 2) {
             Bot.off("notice.friend.increase", dealStrict);
-            Bot.removeAllListeners("setAuthError");
+            (Bot.removeAllListeners || Bot.offTrap).call(Bot, "setAuthError");
             e.reply("请回复问题和答案，用换行隔开，请在两分钟之内回答。例如：设置：我的名字是什么？\n派蒙");
             timer[e.user_id] = setTimeout(() => {
                 delete timer[e.user_id];
@@ -129,13 +129,13 @@ export class friendAuth extends Plugin {
             this.cfg.type = 3;
             this.cfg.answer = "";
             Cfg.set("friendAuth", this.cfg);
-            if ((Bot?.listenerCount || Bot?.matcherCount).call(Bot, "notice.friend.increase") === 0) {
+            if ((Bot.listenerCount || Bot.matcherCount).call(Bot, "notice.friend.increase") === 0) {
                 Bot.on("notice.friend.increase", async () => {
                         await dealStrict.call(this);
                     }
                 )
             }
-            if ((Bot?.listenerCount || Bot?.matcherCount).call(Bot, "setAuthError") === 0) {
+            if ((Bot.listenerCount || Bot.matcherCount).call(Bot, "setAuthError") === 0) {
                 Bot.on("setAuthError", (msg) => {
                     Bot.pickFriend(Version.masterQQ).sendMsg(`加好友方式设置失败：${msg}`);
                 })
