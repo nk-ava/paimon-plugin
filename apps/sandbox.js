@@ -1,4 +1,3 @@
-﻿import {segment} from "oicq";
 import Plugin from "../../../lib/plugins/plugin.js";
 import fs from "node:fs";
 import request from "request";
@@ -139,7 +138,7 @@ export class sandbox extends Plugin {
             global.ev = e;
             let cmd = e.msg.substr(1, e.length);
             let str = cmd.split("import");
-            let upload = "import md5 from 'md5';\nimport fetch from 'node-fetch';\nimport request from 'request';\nimport fs from 'fs';\nimport {segment} from 'oicq';\n";
+            let upload = "import md5 from 'md5';\nimport fetch from 'node-fetch';\nimport request from 'request';\nimport fs from 'fs';\n";
             let len = str.length;
             if (len != 1) {
                 let ss = str[len - 1].split('\n', 1);

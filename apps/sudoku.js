@@ -1,6 +1,5 @@
 ﻿import lodash from "lodash";
 import fs from "node:fs";
-import {segment} from "oicq";
 import Plugin from "../../../lib/plugins/plugin.js";
 import GmDao from "../components/models/GameDate.js";
 import puppeteer from '../../../lib/puppeteer/puppeteer.js';

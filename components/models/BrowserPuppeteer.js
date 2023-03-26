@@ -1,7 +1,6 @@
 import fs from "node:fs";
 import lodash from "lodash";
 import path from "path";
-import {segment} from "oicq";
 
 let puppeteer = {}
 

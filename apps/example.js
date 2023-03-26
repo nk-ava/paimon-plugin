@@ -1,6 +1,5 @@
 import Plugin from "../../../lib/plugins/plugin.js";
 import fs from "node:fs";
-import {segment, core} from "oicq";
 import util from "util";
 import common from "../../../lib/common/common.js";
 import request from "request";

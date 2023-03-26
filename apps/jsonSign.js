@@ -1,4 +1,3 @@
-﻿import {core} from "oicq";
 import Plugin from "../../../lib/plugins/plugin.js";
 
 export class jsonSign extends Plugin {

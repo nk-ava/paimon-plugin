@@ -1,5 +1,4 @@
 import Plugin from "../../../lib/plugins/plugin.js";
-import {segment} from "oicq";
 import GmDao from "../components/models/GameDate.js";
 import puppeteer from "../../../lib/puppeteer/puppeteer.js";
 import {gmErrorMsg} from "../components/models/GameDate.js";

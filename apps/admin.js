@@ -1,6 +1,5 @@
 import Plugin from "../../../lib/plugins/plugin.js"
 import {Cfg} from "../components/index.js"
-import {core} from "oicq";
 
 export class admin extends Plugin {
     constructor(e) {
