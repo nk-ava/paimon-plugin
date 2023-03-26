@@ -1,4 +1,3 @@
-﻿import {segment} from "oicq";
 import Plugin from "../../../lib/plugins/plugin.js";
 import GmDao from "../components/models/GameDate.js";
 import {gmErrorMsg} from "../components/models/GameDate.js";

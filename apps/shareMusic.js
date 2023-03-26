@@ -1,6 +1,5 @@
 ﻿import fetch from "node-fetch";
 import Plugin from "../../../lib/plugins/plugin.js";
-import {segment, core} from "oicq";
 import {SendPm, buildMusic} from "../components/index.js";
 
 let selfUid = Bot.uin;

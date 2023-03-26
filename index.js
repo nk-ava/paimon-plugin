@@ -1,6 +1,16 @@
 import {Version} from "./components/index.js";
 import fs from "node:fs";
 
+if (!global.segment) {
+  global.segment = (await import("oicq")).segment
+}
+
+if (!global.core) {
+  try {
+    global.core = (await import("oicq")).core
+  } catch (err) {}
+}
+
 if (Bot?.logger?.info) {
     Bot.logger.info("---------^_^---------");
     Bot.logger.info(`[PaiMon-Plugin]：v${Version.version}初始化~`)

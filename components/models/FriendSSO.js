@@ -1,4 +1,3 @@
-import {core} from "oicq";
 
 const FRD_BUF = core.pb.encode({
     1: 20,
