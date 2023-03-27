@@ -1,4 +1,5 @@
 import Plugin from "../../../lib/plugins/plugin.js";
+import md5 from "md5";
 
 export class jsonSign extends Plugin {
     constructor(e) {
@@ -27,7 +28,10 @@ export class jsonSign extends Plugin {
         try {
             let body = JSON.parse(msg);
             if (body["extra"]) delete body["extra"];
-            // if (!!body["config"]) delete body["config"];
+            if (!(body?.config?.token)) {
+                if(!body["config"]) body["config"] = {};
+                if(!body.config.token) body.config.token = md5(new Date().getTime());
+            }
             let send_id, type;
             if (e.isGroup) {
                 send_id = e.group_id;
