@@ -3,6 +3,7 @@ import schedule from "node-schedule";
 import {Cfg} from "../components/index.js";
 import BrowserPuppeteer from "../components/models/BrowserPuppeteer.js";
 import {jsonSign} from "./jsonSign.js";
+import {help} from "./help.js";
 import md5 from "md5";
 
 let userQCnt = {}
@@ -38,6 +39,10 @@ export class weather extends Plugin {
                     reg: '#派蒙设置天气卡片\\d+',
                     fnc: 'setCard',
                     permission: 'master'
+                },
+                {
+                    reg: '#我的位置',
+                    fnc: 'myPosition'
                 }
             ]
         });
@@ -129,10 +134,14 @@ export class weather extends Plugin {
                 jumpUrl: 'https://tianqi.qq.com/index.htm',
                 selector: "div",
                 saveName: `${e.user_id}`,
-                pageScript: (args) => {
+                pageScript: async (args) => {
                     let ele = document.querySelector("#ls-match");
                     ele.innerHTML = args[0];
                     ele.children[0].click();
+                    // 等待更新页面
+                    await new Promise(((resolve, reject) => {
+                        setTimeout(() => resolve(), 1000)
+                    }))
                     let ct = document.querySelector("#ct-footer");
                     ct.parentNode.removeChild(ct);
                 },
@@ -159,7 +168,7 @@ export class weather extends Plugin {
         return true;
     }
 
-    setCard(e) {
+    async setCard(e) {
         let limit = e.msg.replace(/#派蒙设置天气卡片/g, "");
         try {
             limit = Number(limit);
@@ -169,7 +178,16 @@ export class weather extends Plugin {
         }
         this.cfg.limit = limit;
         Cfg.set("weather", this.cfg);
-        e.reply("设置成功")
+        e.reply(await help.cfgInfo());
+        return true;
+    }
+
+    myPosition(e) {
+        if (this.cfg?.user?.[e.user_id]) {
+            e.reply(this.cfg?.user?.[e.user_id]);
+        } else {
+            e.reply("你没有设置位置，请发送【#天气设置】设置位置");
+        }
         return true;
     }
 }

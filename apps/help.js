@@ -1,6 +1,6 @@
 import Plugin from "../../../lib/plugins/plugin.js";
 import puppeteer from "../../../lib/puppeteer/puppeteer.js";
-import {Version} from "../components/index.js";
+import {Cfg, Version} from "../components/index.js";
 
 let _path = process.cwd();
 
@@ -18,6 +18,11 @@ export class help extends Plugin {
                 {
                     reg: '#?派蒙版本',
                     fnc: 'versionInfo'
+                },
+                {
+                    reg: '#?派蒙设置',
+                    fnc: 'pmSet',
+                    permission: 'master'
                 }
             ]
         });
@@ -131,7 +136,15 @@ export class help extends Plugin {
                 icon: "banbenxinxi",
                 title: "#派蒙版本",
                 desc: "查看版本日志"
-            }]
+            }, {
+                icon: 'tianqi',
+                title: '#(北京)天气(1~6)',
+                desc: '查看天气信息'
+            }, {
+                icon: 'weizhi',
+                title: "#天气设置北京",
+                desc: "设置默认的位置"
+            }, {}]
         }];
         let admin = {
             group: "管理员命令",
@@ -147,6 +160,22 @@ export class help extends Plugin {
                 icon: "gengxin",
                 title: "#派蒙(强制)更新",
                 desc: "更新派蒙插件"
+            }, {
+                icon: "SALT",
+                title: '#SALT',
+                desc: '查看加好友salt'
+            }, {
+                icon: 'shezhi',
+                title: '#派蒙设置',
+                desc: '相关功能的配置'
+            }, {
+                icon: 'jiahaoyou',
+                title: "#加好友",
+                desc: '查看当前加好友的状态'
+            }, {
+                icon: 'cankaodaan',
+                title: "#ANSWER",
+                desc: "私聊查看加好友设置问题的答案"
             }]
         }
         if (e.isMaster) helpGroup.push(admin);
@@ -190,5 +219,53 @@ export class help extends Plugin {
             e.reply(img);
         }
         return true
+    }
+
+    async pmSet(e) {
+        e.reply(await help.cfgInfo());
+    }
+
+    static async cfgInfo() {
+        let friendCfg = Cfg.get("friendAuth") || {}
+        let weatherCfg = Cfg.get("weather") || {}
+        let data = {
+            tplFile: './plugins/paimon-plugin/resources/html/pmSet/index.html',
+            saveId: 'paimon_set',
+            plusResPath: `${_path}/plugins/paimon-plugin/resources/html`,
+            commonPath: `${_path}/plugins/paimon-plugin/resources/html/common`,
+            defaultLayout: `${_path}/plugins/paimon-plugin/resources/html/common/helpDefault.html`,
+            schema: [{
+                title: '加好友设置',
+                cfg: [{
+                    title: '加好友方式',
+                    key: '加好友',
+                    type: 'num',
+                    def: "1/2/3",
+                    value: `${friendCfg?.type}`,
+                    showDesc: true,
+                    desc: '1：无限制，申请就会通过，2：常规，需要正确回答问题，3：严格，每通过一个好友就会生成新的问题和答案，需要联系机器人主人获得答案'
+                }, {
+                    title: 'salt值',
+                    key: 'salt=',
+                    def: `${friendCfg?.salt}`,
+                    value: `${friendCfg?.type === 3}`,
+                    desc: '严格状态下计算答案所用的salt，取16位MD5("seq=${seq}&salt=${salt})即可得出答案',
+                    showDesc: true
+                }]
+            }, {
+                title: "其他设置",
+                cfg: [{
+                    title: "天气卡片限制",
+                    key: "天气卡片",
+                    def: "0~9",
+                    type: 'num',
+                    value: `${weatherCfg?.limit}`,
+                    desc: '建议不要太多，机器人发太多卡片消息可能会有危险',
+                    showDesc: true
+                }]
+            }],
+            copyright: Version.toText
+        }
+        return await puppeteer.screenshot("pmSet", data);
     }
 }

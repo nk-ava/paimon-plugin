@@ -180,6 +180,10 @@ export class friendAuth extends Plugin {
     }
 
     showAns(e) {
+        if (!e.isPrivate) {
+            e.reply("请私聊查看");
+            return true;
+        }
         if (this.cfg.type === 1) {
             e.reply("当前加好友无限制，没有设置答案");
         } else if (this.cfg.type === 2) {
