@@ -16,6 +16,7 @@ class BrowserPuppeteer {
         this.renderNum = 0;
         this.config = {
             headless: true,
+            defaultView: null,
             args: [
                 '--disable-gpu',
                 '--disable-dev-shm-usage',
@@ -23,7 +24,8 @@ class BrowserPuppeteer {
                 '--no-first-run',
                 '--no-sandbox',
                 '--no-zygote',
-                '--single-process'
+                '--single-process',
+                '--start-maximized'
             ]
         }
         if (!fs.existsSync(`${this.path}`)) fs.mkdirSync(`${this.path}`);
@@ -73,6 +75,7 @@ class BrowserPuppeteer {
      * @param data.selector 选择截图的部分
      * @param data.saveName 保存的截图名称
      * @param data.pageScript 执行js
+     * @param data.args 执行时传入的参数
      * @returns {Promise<void>}
      */
     async screenshot(name, data = {}) {
@@ -86,7 +89,11 @@ class BrowserPuppeteer {
         try {
             const page = await this.browser.newPage();
             await page.goto(`${data.jumpUrl}`);
-            if (data.pageScript) await page.evaluate(data.pageScript);
+            await page.setViewport({
+                width: 1366,
+                height: 800
+            })
+            if (data.pageScript) await page.evaluate(data.pageScript, data.args);
             await page.waitForSelector(data.selector);
             let body = await page.$(data.selector) || await page.$("body")
             let shotOption = {
