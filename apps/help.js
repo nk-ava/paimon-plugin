@@ -177,8 +177,13 @@ export class help extends Plugin {
         if (loadSandbox) {
             admin.list.push({
                 icon: "zhilingbufa",
-                title: '#(开启|关闭)命令模式',
+                title: '#sandbox-(on|off)',
                 desc: '命令模式下可以自定义函数'
+            })
+            admin.list.push({
+                icon: "baocun",
+                title: '#sandbox-save',
+                desc: '手动保存上下文，默认每1h自动保存'
             })
         }
         if (e.isMaster) helpGroup.push(admin);

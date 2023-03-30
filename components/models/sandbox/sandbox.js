@@ -37,22 +37,22 @@ context = new Proxy(context, {
         }
         return Reflect.set(o, k, v)
     },
-    defineProperty: (o, k, d)=>{
+    defineProperty: (o, k, d) => {
         if (!init_finished || o.isMaster())
             return Reflect.defineProperty(o, k, d)
-        else 
+        else
             return false
     },
-    deleteProperty: (o, k)=>{
+    deleteProperty: (o, k) => {
         if (!init_finished || o.isMaster() || !o.isProtected(k))
             return Reflect.deleteProperty(o, k)
         else
             return false
     },
-    preventExtensions: (o)=>{
+    preventExtensions: (o) => {
         return false
     },
-    setPrototypeOf: (o, prototype)=>{
+    setPrototypeOf: (o, prototype) => {
         return false
     }
 })
@@ -69,13 +69,14 @@ vm.createContext(context, {
 //还原context中的函数
 if (fs.existsSync(fnFile)) {
     let fn = JSON.parse(zlib.brotliDecompressSync(fs.readFileSync(fnFile)))
-    const restoreFunctions = (o, name)=>{
+    const restoreFunctions = (o, name) => {
         for (let k in o) {
             let key = name + `["${k}"]`
             if (typeof o[k] === "string") {
                 try {
                     vm.runInContext(`${key}=` + o[k], context)
-                } catch(e) {}
+                } catch (e) {
+                }
             } else if (typeof o[k] === "object") {
                 restoreFunctions(o[k], key)
             }
@@ -88,34 +89,34 @@ if (fs.existsSync(fnFile)) {
 vm.runInContext(fs.readFileSync(initCodeFile), context)
 
 // SANDBOX_ROOT该环境变量为永久master
-vm.runInContext(`Object.defineProperty(this, "root", {
-    configurable: false,
-    enumerable: false,
-    writable: false,
-    value: "372914165"
-})`, context)
+// vm.runInContext(`Object.defineProperty(this, "root", {
+//     configurable: false,
+//     enumerable: false,
+//     writable: false,
+//     value: "372914165"
+// })`, context)
 
 //冻结内置对象(不包括console,globalThis)
 const internal_properties = [
-  'Object',             'Function',       'Array',
-  'Number',             'parseFloat',     'parseInt',
-  'Boolean',            'String',         'Symbol',
-  'Date',               'RegExp',         'eval',
-  'Error',              'EvalError',      'RangeError',
-  'ReferenceError',     'SyntaxError',    'TypeError',
-  'URIError',           'JSON',           'Promise',
-  'Math',               'Intl',
-  'ArrayBuffer',        'Uint8Array',     'Int8Array',
-  'Uint16Array',        'Int16Array',     'Uint32Array',
-  'Int32Array',         'Float32Array',   'Float64Array',
-  'Uint8ClampedArray',  'BigUint64Array', 'BigInt64Array',
-  'DataView',           'Map',            'BigInt',
-  'Set',                'WeakMap',        'WeakSet',
-  'Proxy',              'Reflect',        'decodeURI',
-  'decodeURIComponent', 'encodeURI',      'encodeURIComponent',
-  'escape',             'unescape',
-  'isFinite',           'isNaN',          'SharedArrayBuffer',
-  'Atomics',            'WebAssembly'
+    'Object', 'Function', 'Array',
+    'Number', 'parseFloat', 'parseInt',
+    'Boolean', 'String', 'Symbol',
+    'Date', 'RegExp', 'eval',
+    'Error', 'EvalError', 'RangeError',
+    'ReferenceError', 'SyntaxError', 'TypeError',
+    'URIError', 'JSON', 'Promise',
+    'Math', 'Intl',
+    'ArrayBuffer', 'Uint8Array', 'Int8Array',
+    'Uint16Array', 'Int16Array', 'Uint32Array',
+    'Int32Array', 'Float32Array', 'Float64Array',
+    'Uint8ClampedArray', 'BigUint64Array', 'BigInt64Array',
+    'DataView', 'Map', 'BigInt',
+    'Set', 'WeakMap', 'WeakSet',
+    'Proxy', 'Reflect', 'decodeURI',
+    'decodeURIComponent', 'encodeURI', 'encodeURIComponent',
+    'escape', 'unescape',
+    'isFinite', 'isNaN', 'SharedArrayBuffer',
+    'Atomics', 'WebAssembly'
 ]
 for (let v of internal_properties) {
     vm.runInContext(`this.Object.freeze(this.${v})
@@ -128,7 +129,7 @@ vm.runInContext(`try{this.afterInit()}catch(e){}`, context)
 
 //定时持久化context(60分钟)
 let fn
-const saveFunctions = (o, mp)=>{
+const saveFunctions = (o, mp) => {
     for (let k in o) {
         if (typeof o[k] === "function") {
             mp[k] = o[k] + ""
@@ -150,7 +151,7 @@ const saveFunctions = (o, mp)=>{
         }
     }
 }
-const beforeSaveContext = ()=>{
+const beforeSaveContext = () => {
     setEnv()
     fn = {}
     saveFunctions(context, fn)
@@ -160,21 +161,28 @@ const brotli_options = {
         [zlib.constants.BROTLI_PARAM_QUALITY]: 5
     }
 }
-process.on("exit", (code)=>{
+process.on("exit", (code) => {
     if (code !== 200)
         return
     beforeSaveContext()
     fs.writeFileSync(fnFile, zlib.brotliCompressSync(JSON.stringify(fn), brotli_options))
     fs.writeFileSync(contextFile, zlib.brotliCompressSync(JSON.stringify(context), brotli_options))
 })
-setInterval(()=>{
+
+/**
+ * 保存上下文
+ */
+setInterval(saveCtx, 3600000)
+
+function saveCtx() {
     beforeSaveContext()
     zlib.brotliCompress(
         JSON.stringify(fn),
         brotli_options,
         (err, res) => {
             if (res)
-                fs.writeFile(fnFile, res, ()=>{})
+                fs.writeFile(fnFile, res, () => {
+                })
         }
     )
     zlib.brotliCompress(
@@ -182,20 +190,23 @@ setInterval(()=>{
         brotli_options,
         (err, res) => {
             if (res)
-                fs.writeFile(contextFile, res, ()=>{})
+                fs.writeFile(contextFile, res, () => {
+                })
         }
     )
-}, 3600000)
+}
+
+module.exports.saveCtx = saveCtx;
 
 //沙盒执行超时时间
 let timeout = 500
-module.exports.getTimeout = (t)=>timeout
-module.exports.setTimeout = (t)=>timeout=t
+module.exports.getTimeout = (t) => timeout
+module.exports.setTimeout = (t) => timeout = t
 
 //执行代码
-module.exports.run = (code)=>{
+module.exports.run = (code) => {
     code = code.trim()
-    let debug = ["\\","＼"].includes(code.substr(0, 1))
+    let debug = ["\\", "＼"].includes(code.substr(0, 1))
     if (debug)
         code = code.substr(1)
     try {
@@ -210,7 +221,7 @@ module.exports.run = (code)=>{
         if (typeof res2 !== "undefined")
             res = res2
         return res
-    } catch(e) {
+    } catch (e) {
         if (debug) {
             let line = e?.stack.split("\n")[0].split(":").pop()
             return e.name + ": " + e.message + " (line: " + parseInt(line) + ")"
@@ -218,12 +229,12 @@ module.exports.run = (code)=>{
     }
 }
 //执行代码 raw
-module.exports.exec = (code)=>{
+module.exports.exec = (code) => {
     return vm.runInContext(code, context, {timeout: timeout})
 }
 
 //设置环境变量
-const setEnv = (env = {})=>{
+const setEnv = (env = {}) => {
     set_env_allowed = true
     vm.runInContext(`this.data=${JSON.stringify(env)}
 contextify(this.data)`, context)
@@ -232,11 +243,11 @@ contextify(this.data)`, context)
 module.exports.setEnv = setEnv
 
 //传递一个外部对象到context
-module.exports.include = (name, object)=>{
+module.exports.include = (name, object) => {
     context[name] = object
     vm.runInContext(`const ${name} = this.${name}
 contextify(${name})`, context)
 }
 
 //返回context
-module.exports.getContext = ()=>context
+module.exports.getContext = () => context

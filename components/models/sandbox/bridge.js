@@ -26,6 +26,10 @@ const sandbox = require("./sandbox")
 
 process.on("disconnect", process.exit)
 process.on("message", (value) => {
+    if (value?.type === "saveCtx") {
+        sandbox.saveCtx();
+        return;
+    }
     if (!value.echo) {
         onmessage(value)
     } else {
@@ -370,6 +374,25 @@ $.get = fetch
 sandbox.include("$", $)
 
 /**
+ * @param msg 待处理的cq码
+ */
+function toStr(msg) {
+    let str = "", cnt = 0 * 1;
+    for (let i in msg) {
+        if (msg[i] === "`") {
+            if (cnt === 0) {
+                str += "\"`";
+                cnt += 1;
+            } else {
+                str += "`\"";
+                cnt -= 1;
+            }
+        } else str += msg[i];
+    }
+    return str;
+}
+
+/**
  * @param {import("oicq").EventData} data
  */
 function onmessage(data) {
@@ -398,36 +421,50 @@ function onmessage(data) {
         message = message.trim()
         data.message = message
         sandbox.setEnv(data)
-        let res = sandbox.run(message)
-        let echo = true
-        if (message.match(/^'\[CQ:at,qq=\d+\]'$/))
-            echo = false
-        if (res === null && message === "null")
-            echo = false
-        if (["number", "boolean"].includes(typeof res) && res.toString() === message)
-            echo = false
-        if (message.substr(0, 1) === "\\" && typeof res === "undefined")
-            res = "<undefined>"
-        res = filter(res)
-        if (echo && res) {
-            res = segment.fromCqcode(res)
+        if (/\[CQ:[^\]]+\]/.test(message)) message = toStr(message)
+        if (/^```[\s\S]*```$/.test(message)) {
+            let str = (message.match(/```[\s\S]*```/)[0]).replace(/```/g, "").trim();
+            message = message.replace(/```[\s\S]*```/, JSON.stringify(str));
+        }
+        try {
+            let res = sandbox.run(message)
+            if (typeof res === 'string' && /\[CQ:[^\]]+\]/.test(res)) res = sandbox.run(res)
+            let echo = true
+            if (message.match(/^'\[CQ:at,qq=\d+\]'$/))
+                echo = false
+            if (res === null && message === "null")
+                echo = false
+            if (["number", "boolean"].includes(typeof res) && res.toString() === message)
+                echo = false
+            if (message.substr(0, 1) === "\\" && typeof res === "undefined")
+                res = "<undefined>"
+            res = filter(res)
+            if (echo && res) {
+                res = segment.fromCqcode(res)
+                process.send({
+                    type: "answer",
+                    id: data['message_id'],
+                    data: res
+                })
+                /*if (data.message_type === "private") {
+                    callApi("sendPrivateMsg", [data.user_id, res], false)
+                } else if (data.message_type === "group") {
+                    callApi("sendGroupMsg", [data.group_id, res], false)
+                } else if (data.message_type === "discuss") {
+                    callApi("sendDiscussMsg", [data.discuss_id, res], false)
+                }*/
+            } else {
+                process.send({
+                    type: "answer",
+                    id: data['message_id'],
+                    data: ""
+                })
+            }
+        } catch (err) {
             process.send({
                 type: "answer",
                 id: data['message_id'],
-                data: res
-            })
-            /*if (data.message_type === "private") {
-                callApi("sendPrivateMsg", [data.user_id, res], false)
-            } else if (data.message_type === "group") {
-                callApi("sendGroupMsg", [data.group_id, res], false)
-            } else if (data.message_type === "discuss") {
-                callApi("sendDiscussMsg", [data.discuss_id, res], false)
-            }*/
-        } else {
-            process.send({
-                type: "answer",
-                id: data['message_id'],
-                data: ""
+                data: `ERROR：${err}`
             })
         }
     } else {

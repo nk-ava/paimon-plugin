@@ -102,6 +102,12 @@ function dealMsg(data) {
     worker.send(data)
 }
 
+function saveCtx() {
+    worker.send({
+        type: "saveCtx"
+    })
+}
+
 module.exports = {
-    activate, deactivate, destructor, dealMsg, init
+    activate, deactivate, destructor, dealMsg, init, saveCtx
 }

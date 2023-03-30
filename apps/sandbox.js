@@ -1,8 +1,8 @@
 import Plugin from "../../../lib/plugins/plugin.js";
 import lodash from "lodash";
-// import fs from "node:fs";
-import {init, dealMsg} from "../components/models/sandbox/index.js";
+import {init, dealMsg, saveCtx} from "../components/models/sandbox/index.js";
 import fs from "node:fs";
+// import {saveCtx} from "../components/models/sandbox/bridge.js";
 // import request from "request";
 // import util from "util";
 // import {SendPm, Version} from "../components/index.js";
@@ -13,7 +13,7 @@ import fs from "node:fs";
 // let sandboxEnv = {};
 // let sandboxContext = {};
 // let selfUid = global.Bot.uin;
-let sbStata = {}
+let sbStata = {on: false}
 //初始化sandbox
 init(Bot)
 
@@ -29,12 +29,17 @@ export class sandbox extends Plugin {
             priority: 50,
             rule: [
                 {
-                    reg: "^#*(开启|关闭)命令模式$",
+                    reg: "^#*sandbox-(on|off)$",
                     fnc: 'cmdSwitch'
                 },
                 {
                     reg: '^_([\\s\\S]*)$',
                     fnc: 'command'
+                },
+                {
+                    reg: '^#*sandbox-save$',
+                    fnc: "tempSave",
+                    permission: "master"
                 }
             ]
         });
@@ -119,7 +124,10 @@ export class sandbox extends Plugin {
             })
             if (!res) return false;
             else {
-                // console.log(res)
+                if (res[0]?.type === 'text' && res[0]?.text?.startsWith("_")) {
+                    e.msg = res[0]?.text
+                    return false;
+                }
                 e.reply(res)
                 return true;
             }
@@ -156,7 +164,7 @@ export class sandbox extends Plugin {
         if (!e.isMaster) {
             return true;
         }
-        if (e.msg.includes("开启")) {
+        if (e.msg.includes("on")) {
             /**
              * 旧的开启方式弃用
              */
@@ -181,10 +189,10 @@ export class sandbox extends Plugin {
             //     });
             //     sandboxContext = createContext(sandboxEnv);
             // }
-            if (sbStata) {
+            if (!sbStata.on) {
                 sbStata.on = true;
             }
-            e.reply("命令模式已开启");
+            e.reply("Paimon-Bot online");
         } else {
             /**
              * 旧的方法弃用
@@ -195,12 +203,22 @@ export class sandbox extends Plugin {
             //     fs.writeFileSync("./plugins/paimon-plugin/resources/user_functions.json", ss);
             //     sandboxEnv = {};
             // }
-            if (sbStata) {
-                sbStata.off = false;
+            if (sbStata.on) {
+                sbStata.on = false;
             }
-            e.reply("命令模式已关闭");
+            e.reply("Paimon-bot offline");
         }
         return true;
+    }
+
+    tempSave(e) {
+        if (!e.isMaster) return true;
+        if (!sbStata.on) {
+            e.reply("未开启sandbox");
+            return true;
+        }
+        saveCtx();
+        e.reply("保存成功")
     }
 }
 

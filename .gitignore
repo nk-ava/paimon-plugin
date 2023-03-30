@@ -3,3 +3,5 @@
 !/config/config/startCfg.yaml
 /components/models/cmd.js
 /resources/user_functions.json
+/components/models/sandbox/context
+/components/models/sandbox/context.fn
