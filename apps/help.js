@@ -149,10 +149,6 @@ export class help extends Plugin {
         let admin = {
             group: "管理员命令",
             list: [{
-                icon: "zhilingbufa",
-                title: '#(开启|关闭)命令模式',
-                desc: '命令模式下可以自定义函数'
-            }, {
                 icon: "JavaScript",
                 title: "_print(123)",
                 desc: "以_开头的会被当作js代码执行"
@@ -177,6 +173,13 @@ export class help extends Plugin {
                 title: "#ANSWER",
                 desc: "私聊查看加好友设置问题的答案"
             }]
+        }
+        if (loadSandbox) {
+            admin.list.push({
+                icon: "zhilingbufa",
+                title: '#(开启|关闭)命令模式',
+                desc: '命令模式下可以自定义函数'
+            })
         }
         if (e.isMaster) helpGroup.push(admin);
         let img = await puppeteer.screenshot("help", {

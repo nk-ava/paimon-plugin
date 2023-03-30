@@ -1,14 +1,16 @@
 import {Version} from "./components/index.js";
+import YAML from "yaml";
 import fs from "node:fs";
 
 if (!global.segment) {
-  global.segment = (await import("oicq")).segment
+    global.segment = (await import("oicq")).segment
 }
 
 if (!global.core) {
-  try {
-    global.core = (await import("oicq")).core
-  } catch (err) {}
+    try {
+        global.core = (await import("oicq")).core
+    } catch (err) {
+    }
 }
 
 if (Bot?.logger?.info) {
@@ -17,8 +19,13 @@ if (Bot?.logger?.info) {
 } else {
     console.log(`[PaiMon-Plugin]：v${Version.version}初始化~`);
 }
-
-let files = fs.readdirSync("./plugins/paimon-plugin/apps").filter(file => file.endsWith(".js"));
+global.loadSandbox = YAML.parse(fs.readFileSync("./plugins/paimon-plugin/config/config/startCfg.yaml", "utf8")).sandbox;
+let files = fs.readdirSync("./plugins/paimon-plugin/apps").filter(file => {
+    if (!loadSandbox && file.includes("sandbox")) {
+        return false;
+    }
+    return file.endsWith(".js")
+});
 let ret = [];
 
 // 重写添加好友
@@ -29,11 +36,7 @@ files.forEach(file => {
 })
 ret = await Promise.allSettled(ret);
 
-global.ISCMD = false;
 global.isPmPlaying = {};
-global.process.on("uncaughtException", (error) => {
-    //*********************
-});
 try {
     fs.writeFileSync("./plugins/paimon-plugin/components/models/cmd.js", "");
     await import("./components/models/loading.js");
