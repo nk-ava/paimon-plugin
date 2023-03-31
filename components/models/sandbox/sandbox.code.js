@@ -3,8 +3,8 @@
  */
 
 //函数定义中若包含CQ码，可用此原型方法查看
-Function.prototype.view = function() {
-    return this.toString().replace(/[&\[\]]/g, (s)=>{
+Function.prototype.view = function () {
+    return this.toString().replace(/[&\[\]]/g, (s) => {
         if (s === "&") return "&amp;"
         if (s === "[") return "&#91;"
         if (s === "]") return "&#93;"
@@ -14,9 +14,9 @@ Function.prototype.view = function() {
 delete globalThis
 delete console
 
-const contextify = (o)=>{
+const contextify = (o) => {
     const contextified = []
-    const tmp = (o)=>{
+    const tmp = (o) => {
         switch (typeof o) {
             case "object":
             case "function":
@@ -50,34 +50,34 @@ const error403 = this.error403 = new Error("403 forbidden")
 //群数据库
 this.database = this.database && typeof this.database === "object" ? this.database : {}
 this.database = new Proxy(this.database, {
-    get: (o, k)=>{
+    get: (o, k) => {
         if (parseInt(k) !== this.data.group_id && !this.isMaster())
             throw error403
         if (!o.hasOwnProperty(k))
             o[k] = {}
         return o[k]
     },
-    set: (o, k, v, r)=>{
+    set: (o, k, v, r) => {
         throw error403
     },
-    has: (o, k)=>{
+    has: (o, k) => {
         throw error403
     },
-    deleteProperty: (o, k)=>{
+    deleteProperty: (o, k) => {
         throw error403
     },
-    defineProperty: (o, k, d)=>{
+    defineProperty: (o, k, d) => {
         throw error403
     },
-    ownKeys: (o)=>{
+    ownKeys: (o) => {
         if (this.isMaster())
             return Reflect.ownKeys(o)
         throw error403
     },
-    preventExtensions: (o)=>{
+    preventExtensions: (o) => {
         throw error403
     },
-    setPrototypeOf: (o, prototype)=>{
+    setPrototypeOf: (o, prototype) => {
         throw error403
     }
 })
@@ -91,29 +91,29 @@ Object.defineProperty(this, "database", {
 // set历史记录
 this.set_history = this.set_history && typeof this.set_history === "object" ? this.set_history : {}
 this.set_history = new Proxy(this.set_history, {
-    set: (o, k, v)=>{
+    set: (o, k, v) => {
         if (!this.set_history_allowed)
             throw error403
         return Reflect.set(o, k, v)
     },
-    has: (o, k)=>{
+    has: (o, k) => {
         throw error403
     },
-    deleteProperty: (o, k)=>{
+    deleteProperty: (o, k) => {
         throw error403
     },
-    defineProperty: (o, k, d)=>{
+    defineProperty: (o, k, d) => {
         throw error403
     },
-    ownKeys: (o)=>{
+    ownKeys: (o) => {
         if (this.isMaster())
             return Reflect.ownKeys(o)
         throw error403
     },
-    preventExtensions: (o)=>{
+    preventExtensions: (o) => {
         throw error403
     },
-    setPrototypeOf: (o, prototype)=>{
+    setPrototypeOf: (o, prototype) => {
         throw error403
     }
 })
@@ -127,7 +127,7 @@ Object.defineProperty(this, "recordSetHistory", {
     configurable: false,
     enumerable: false,
     writable: false,
-    value: (k)=>{
+    value: (k) => {
         if (k !== "data" && this.data.user_id) {
             try {
                 this.set_history[k] = {
@@ -138,7 +138,8 @@ Object.defineProperty(this, "recordSetHistory", {
                     card: this.data.group_id ? this.data.sender.card : undefined,
                     time: Date.now()
                 }
-            } catch (e) {}
+            } catch (e) {
+            }
         }
     }
 })
@@ -151,7 +152,7 @@ Object.defineProperty(this, "isMaster", {
     configurable: false,
     enumerable: false,
     writable: false,
-    value: ()=>{
+    value: () => {
         if (typeof this.root === "string" && this.root.includes(this.data.user_id))
             return true
         return !this.data.user_id || (/* typeof this.master === "string" && */this.master.includes(this.data.user_id))
@@ -161,36 +162,42 @@ const isMaster = this.isMaster
 
 // 钩子函数
 if (typeof this.afterInit !== "function") //sandbox加载之后被执行
-    this.afterInit = ()=>{}
+    this.afterInit = () => {
+    }
 if (typeof this.beforeExec !== "function") //用户代码执行之前被执行
-    this.beforeExec = (code)=>{}
+    this.beforeExec = (code) => {
+    }
 if (typeof this.afterExec !== "function") //用户代码执行之后被执行
-    this.afterExec = (res)=>{}
+    this.afterExec = (res) => {
+    }
 if (typeof this.onEvents !== "function") //所有QQ事件
-    this.onEvents = ()=>{}
-
+    this.onEvents = () => {
+    }
+if (typeof this.beforeApiCalled !== "function") //根据原有的代码可能会有这么一个函数，在调用CallApi之前执行
+    this.beforeApiCalled = (params) => {
+    }
 // 受保护属性只有主人可以设置和删除
 // 默认的受保护属性为 master,beforeExec,afterExec,onEvents 四个
 // 受保护属性不能是引用类型(对象&数组)，只能是基础类型或函数，否则无法被保护
-this.protected_properties = this.protected_properties && typeof this.protected_properties === "object" ? this.protected_properties : ["master","afterInit","beforeExec","afterExec","onEvents"]
+this.protected_properties = this.protected_properties && typeof this.protected_properties === "object" ? this.protected_properties : ["master", "afterInit", "beforeExec", "afterExec", "onEvents", "beforeApiCalled"]
 this.protected_properties = new Proxy(this.protected_properties, {
-    set: (o, k, v)=>{
+    set: (o, k, v) => {
         if (this.isMaster())
             return Reflect.set(o, k, v)
         throw error403
     },
-    deleteProperty: (o, k)=>{
+    deleteProperty: (o, k) => {
         if (this.isMaster())
             return Reflect.deleteProperty(o, k)
         throw error403
     },
-    defineProperty: (o, k, d)=>{
+    defineProperty: (o, k, d) => {
         throw error403
     },
-    preventExtensions: (o)=>{
+    preventExtensions: (o) => {
         throw error403
     },
-    setPrototypeOf: (o, prototype)=>{
+    setPrototypeOf: (o, prototype) => {
         throw error403
     }
 })
@@ -204,7 +211,7 @@ Object.defineProperty(this, "isProtected", {
     configurable: false,
     enumerable: false,
     writable: false,
-    value: (k)=>{
+    value: (k) => {
         return this.protected_properties.includes(k)
     }
 })

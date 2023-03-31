@@ -41,11 +41,11 @@ process.on("message", (value) => {
     }
 })
 const handler = new Map
+const codeTemp = {}
 
 function callApi(method, params = [], check = true) {
     if (check)
-        precheck(() => {
-        })
+        precheck({method, params})
     const echo = String(Math.random()) + String(Date.now())
     process.send({
         uin: getSid(),
@@ -153,20 +153,29 @@ const checkFrequency = () => {
         delete buckets[uid]
     if (!buckets.hasOwnProperty(uid))
         buckets[uid] = {time: 0, cnt: 0}
-    if (buckets[uid].cnt >= 3)
+    if (buckets[uid].cnt >= 3) {
+        let code = ""
+        for (let arg of codeTemp[uid]) {
+            code += `delete this.${arg};`
+        }
+        sandbox.exec(code)
         throw new Error("调用频率太快。")
+    }
     buckets[uid].time = Date.now()
     ++buckets[uid].cnt
 }
 
 const precheck = function (caller) {
     checkFrequency()
-    let function_name = "current_called_api_" + Date.now()
-    sandbox.getContext()[function_name] = caller
+    let args_name = "current_called_api_" + Date.now()
+    sandbox.getContext()[args_name] = caller
+    let uid = sandbox.getContext().data.user_id
+    if (!uid) return
+    codeTemp[uid].push(args_name)
     sandbox.exec(`if (typeof this.beforeApiCalled === "function") {
-    this.beforeApiCalled(this.${function_name})
-    delete this.${function_name}
-}`)
+    this.beforeApiCalled(this.${args_name})
+    };
+    delete this.${args_name}`)
 }
 
 sandbox.include("setTimeout", function (fn, timeout = 5000, argv = []) {
@@ -183,63 +192,89 @@ sandbox.include("setTimeout", function (fn, timeout = 5000, argv = []) {
 })
 sandbox.include("clearTimeout", clearTimeout)
 
-const fetch = function (url, callback = () => {
-}, headers = null) {
-    checkFrequency()
-    checkAndAddAsyncQueue(this)
-    if (typeof url !== "string")
-        throw new TypeError("url(第一个参数)必须是字符串。")
-    if (typeof callback !== "function")
-        throw new TypeError("callback(第二个参数)必须是函数。")
-    if (typeof headers !== "object")
-        throw new TypeError("headers(第三个参数)必须是对象。")
-    const env = sandbox.getContext().data
-    const cb = (data) => asyncCallback(this, env, callback, [data])
-    url = url.trim()
-    const protocol = url.substr(0, 5) === "https" ? https : http
-    let data = []
-    let size = 0
-    const options = {
-        headers: {
-            "Accept-Encoding": "gzip",
+const temp = {
+    get: function (url, callback = () => {
+    }, headers = null) {
+        let params = {
+            method: 'get',
             ...headers
         }
-    }
-    try {
-        protocol.get(url, options, (res) => {
-            if (res.statusCode !== 200) {
-                res.headers["status-code"] = res.statusCode
-                cb(res.headers)
-                return
-            }
-            res.on("data", chunk => {
-                size += chunk.length
-                if (size > 500000) {
-                    res.destroy()
+        fetch.request(url, params, callback)
+    },
+    post: function (url, body, callback = () => {
+    }, headers = null) {
+        const params = {
+            method: "post",
+            body: body,
+            ...headers
+        }
+        fetch.request(url, params, callback);
+    },
+    request: function (url, params, callback = () => {
+    }) {
+        checkFrequency()
+        checkAndAddAsyncQueue(this)
+        if (typeof url !== "string")
+            throw new TypeError("url(第一个参数)必须是字符串。")
+        if (typeof callback !== "function")
+            throw new TypeError("callback(第三个参数)必须是函数。")
+        if (typeof params !== "object")
+            throw new TypeError("params(第二个参数)必须是对象。")
+        const env = sandbox.getContext().data
+        const cb = (data) => asyncCallback(this, env, callback, [data])
+        url = url.trim()
+        const protocol = url.substr(0, 5) === "https" ? https : http
+        let data = []
+        let size = 0
+        let options = params;
+        if (!options.headers) options.headers = {}
+        options.headers["Accept-Encoding"] = "gzip";
+        let body = options?.body;
+        delete options.body
+        try {
+            let req = protocol.request(url, options, (res) => {
+                if (res.statusCode !== 200) {
+                    res.headers["status-code"] = res.statusCode
+                    cb(res.headers)
                     return
                 }
-                data.push(chunk)
-            })
-            res.on("end", () => {
-                if (res.headers["content-encoding"] && res.headers["content-encoding"].includes("gzip")) {
-                    try {
-                        zlib.gunzip(Buffer.concat(data), (err, buffer) => {
-                            if (err)
-                                buffer = JSON.stringify(err)
-                            cb(buffer.toString())
-                        })
-                    } catch {
+                res.on("data", chunk => {
+                    size += chunk.length
+                    if (size > 500000) {
+                        res.destroy()
+                        return
                     }
-                } else {
-                    const buf = Buffer.concat(data)
-                    cb(isValidUTF8(buf) ? buf.toString() : buf)
-                }
+                    data.push(chunk)
+                })
+                res.on("end", () => {
+                    if (res.headers["content-encoding"] && res.headers["content-encoding"].includes("gzip")) {
+                        try {
+                            zlib.gunzip(Buffer.concat(data), (err, buffer) => {
+                                if (err)
+                                    buffer = JSON.stringify(err)
+                                cb(buffer.toString())
+                            })
+                        } catch {
+                        }
+                    } else {
+                        const buf = Buffer.concat(data)
+                        cb(isValidUTF8(buf) ? buf.toString() : buf)
+                    }
+                })
             })
-        }).on("error", err => cb(err))
-    } catch (e) {
-        cb(e)
+            req.on("error", err => cb(err))
+            if (body) req.write(JSON.stringify(body));
+            req.end();
+        } catch (e) {
+            cb(e)
+        }
     }
 }
+let fetch = function (url, callback = () => {
+}, headers = null) {
+    return temp.get(url, callback, headers)
+}
+fetch = Object.assign(fetch, temp);
 sandbox.include("fetch", fetch)
 
 //master可以执行任意代码
@@ -375,8 +410,8 @@ $.setGroupInvitation = (flag, approve = true, reason = undefined) => {
 $.inviteFriend = (gid, uid) => {
     callApi("inviteFriend", [gid, uid])
 }
-$.ajax = fetch
-$.get = fetch
+$.ajax = fetch.get
+$.get = fetch.get
 sandbox.include("$", $)
 
 /**
@@ -433,7 +468,9 @@ function onmessage(data) {
             message = message.replace(/```[\s\S]*```/, JSON.stringify(str));
         }
         try {
+            codeTemp[data.user_id] = []
             let res = sandbox.run(message)
+            delete codeTemp[data.user_id]
             if (typeof res === 'string' && res.includes("`") && /\[CQ:[^\]]+\]/.test(res)) res = sandbox.run(res)
             let echo = true
             if (message.match(/^'\[CQ:at,qq=\d+\]'$/))
