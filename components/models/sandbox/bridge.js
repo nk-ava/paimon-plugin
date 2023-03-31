@@ -428,7 +428,7 @@ function onmessage(data) {
         data.message = message
         sandbox.setEnv(data)
         if (/\[CQ:[^\]]+\]/.test(message)) message = toStr(message)
-        if (/^```[\s\S]*```$/.test(message)) {
+        if (/```[\s\S]*```/.test(message)) {
             let str = (message.match(/```[\s\S]*```/)[0]).replace(/```/g, "").trim();
             message = message.replace(/```[\s\S]*```/, JSON.stringify(str));
         }
