@@ -178,7 +178,7 @@ export class help extends Plugin {
             admin.list.push({
                 icon: "zhilingbufa",
                 title: '#sandbox-(on|off)',
-                desc: '命令模式下可以自定义函数'
+                desc: 'sandbox下运行代码'
             })
             admin.list.push({
                 icon: "baocun",

@@ -1,11 +1,12 @@
+const Cfg = require("./config")
+let modules = Cfg.modules;
+
 const http = require("http")
 const https = require("https")
 const zlib = require("zlib")
-const {createCanvas, loadImage} = require("canvas")
 const isValidUTF8 = require('utf-8-validate')
 const stringify = require('string.ify')
 const {segment} = require('oicq')
-const {Cfg} = require("./config")
 
 const stringify_config = stringify.configure({
     pure: false,
@@ -252,23 +253,25 @@ sandbox.include("run", (code) => {
 })
 
 //导入一些工具模块
-sandbox.include("向听", require("syanten"))
-sandbox.include("MJ", require("riichi"))
+if (modules.syanten) sandbox.include("向听", require("syanten"))
+if (modules.riichi) sandbox.include("MJ", require("riichi"))
 // sandbox.include("cheerio", require("cheerio"))
-sandbox.getContext().cheerio = require("cheerio") //临时对应
-sandbox.include("moment", require("moment"))
-sandbox.include("assert", require("assert"))
-// sandbox.include("crypto", require("crypto"))
-sandbox.include("querystring", require("querystring"))
-sandbox.include("path", require("path"))
-sandbox.include("zip", require("zlib").deflateSync)
-sandbox.include("unzip", require("zlib").unzipSync)
-sandbox.include("os", require("os"))
-sandbox.include("Buffer", Buffer)
-sandbox.include("createCanvas", createCanvas)
-sandbox.include("loadCanvasImage", loadCanvasImage)
+if (modules.cheerio) sandbox.getContext().cheerio = require("cheerio") //临时对应
+if (modules.moment) sandbox.include("moment", require("moment"))
+if (modules.assert) sandbox.include("assert", require("assert"))
+if (modules.crypto) sandbox.getContext().crypto = require("crypto")
+if (modules.querystring) sandbox.include("querystring", require("querystring"))
+if (modules.path) sandbox.include("path", require("path"))
+if (modules.zip) sandbox.include("zip", require("zlib").deflateSync)
+if (modules.unzip) sandbox.include("unzip", require("zlib").unzipSync)
+if (modules.os) sandbox.include("os", require("os"))
+if (modules.buffer) sandbox.include("Buffer", Buffer)
+if (modules.canvas) {
+    sandbox.include("createCanvas", require("canvas").createCanvas)
+    sandbox.include("loadCanvasImage", require("canvas").loadCanvasImage)
+}
 //导入主人QQ
-sandbox.include("master", Cfg.masterQQ);
+sandbox.include("master", Cfg.master);
 
 function loadCanvasImage(buf, cb) {
     const env = sandbox.getContext().data
