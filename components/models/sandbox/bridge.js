@@ -462,11 +462,10 @@ function onmessage(data) {
         message = message.trim()
         data.message = message
         sandbox.setEnv(data)
-        if (/\[CQ:[^\]]+\]/.test(message)) message = toStr(message)
         if (/```[\s\S]*```/.test(message)) {
             let str = (message.match(/```[\s\S]*```/)[0]).replace(/```/g, "").trim();
             message = message.replace(/```[\s\S]*```/, JSON.stringify(str));
-        }
+        }else if (/\[CQ:[^\]]+\]/.test(message)) message = toStr(message)
         try {
             codeTemp[data.user_id] = []
             let res = sandbox.run(message)
