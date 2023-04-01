@@ -10,27 +10,27 @@ export class admin extends Plugin {
             priority: '49',
             rule: [
                 {
-                    reg: '#(启用|禁用)群游戏',
+                    reg: '(M_onlyPm_)?#(启用|禁用)群游戏',
                     fnc: "banGm",
                     permission: "master"
                 },
                 {
-                    reg: '#派蒙(强制)?更新',
+                    reg: '(M_onlyPm_)?#派蒙(强制)?更新',
                     fnc: "update",
                     permission: "master"
                 },
                 {
-                    reg: '#(开启|关闭)群打卡',
+                    reg: '(M_onlyPm_)?#(开启|关闭)群打卡\d*',
                     fnc: 'qunCard',
                     permission: "master"
                 },
                 {
-                    reg: '#关闭全部群打卡',
+                    reg: '(M_onlyPm_)?#关闭全部群打卡',
                     fnc: 'closeAll',
                     permission: "master"
                 },
                 {
-                    reg: '#打卡',
+                    reg: '(M_onlyPm_)?#打卡',
                     fnc: 'card',
                     permission: "master"
                 }
@@ -94,9 +94,14 @@ export class admin extends Plugin {
     }
 
     qunCard(e) {
-        if (!e.isGroup) {
+        let msg = e.msg.replace("M_onlyPm_", "");
+        let gid = msg.match(/\d+/)?.[0];
+        if (!gid && !e.isGroup) {
             e.reply("请在群里发送");
             return true;
+        }
+        if (gid) {
+            e.group_id = Number(gid)
         }
         let cfg = Cfg.get("qunSign") || {}
         if (e.msg.includes("开启")) {
@@ -109,12 +114,13 @@ export class admin extends Plugin {
             e.reply("success");
         } else {
             if (cfg?.qun?.includes(e.group_id)) {
-                let index = cfg.indexOf(e.group_id);
-                cfg.splice(index, 1);
+                let index = cfg.qun.indexOf(e.group_id);
+                cfg.qun.splice(index, 1);
                 Cfg.set("qunSign", cfg);
             }
             e.reply("success");
         }
+        return true;
     }
 
     async banGm(e) {
@@ -147,7 +153,8 @@ export class admin extends Plugin {
     }
 
     async update(e) {
-        let msg = e.msg.replace("派蒙", "");
+        let msg = e.msg.replace("M_onlyPm_", "");
+        msg = msg.replace("派蒙", "");
         msg += "paimon-plugin";
         e.msg = msg;
         return false

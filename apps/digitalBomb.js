@@ -16,10 +16,10 @@ export class digitalBomb extends Plugin {
             event: 'message',
             priority: 50,
             rule: [{
-                reg: "#数字炸弹",
+                reg: "(M_onlyPm_)?#数字炸弹",
                 fnc: 'gameName'
             }, {
-                reg: "#结束游戏",
+                reg: "(M_onlyPm_)?#结束游戏",
                 fnc: "gameOver"
             }]
         });
@@ -75,7 +75,8 @@ export class digitalBomb extends Plugin {
         let number;
         if (e.user_id === groupCfg[e.group_id].joinPerson[ns]) {
             try {
-                number = e.msg.replace(/[^\d]/g, "");
+                let msg = e.msg.replace("M_onlyPm_", "");
+                number = msg.replace(/[^\d]/g, "");
             } catch (err) {
                 e.reply("请输入数字");
                 return true;
@@ -116,7 +117,8 @@ export class digitalBomb extends Plugin {
         if (groupCfg[e.group_id].joinPerson[0] === e.user_id) {
             let reg = /\d,\d/;
             let s = "";
-            if (reg.test(e.msg)) {
+            let mss = e.msg.replace("M_onlyPm_", "");
+            if (reg.test(mss)) {
                 let mss = e.message;
                 for (let i in mss) {
                     if (mss[i].type === "text") s += mss[i].text;

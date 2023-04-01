@@ -13,7 +13,7 @@ export class shareMusic extends Plugin {
             priority: '100',
             rule: [
                 {
-                    reg: '^#点歌(.*)$',
+                    reg: '^(M_onlyPm_)?#点歌(.*)$',
                     fnc: 'chooseSong'
                 }
             ]
@@ -40,7 +40,8 @@ export class shareMusic extends Plugin {
     //支持点歌
     async chooseSong(e) {
         let t = e.friend || e.group;
-        let song = e.msg.replace("#点歌", "");
+        let msg = e.msg.replace("M_onlyPm_", "");
+        let song = msg.replace("#点歌", "");
         song = song.trim();
         if (!song) {
             e.reply("命令格式为；\n#点歌 <搜索关键字>");

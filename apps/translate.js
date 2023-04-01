@@ -27,19 +27,19 @@ export class translate extends Plugin {
             priority: 100,
             rule: [
                 {
-                    reg: '#*翻译(0|1|2|3|4|5|6|7|8|9|10|11)?,?(0|1|2|3|4|5|6|7|8|9|10|11)? ([\\s\\S]*)',
+                    reg: '(M_onlyPm_)?#*翻译(0|1|2|3|4|5|6|7|8|9|10|11)?,?(0|1|2|3|4|5|6|7|8|9|10|11)? ([\\s\\S]*)',
                     fnc: 'translate'
                 },
                 {
-                    reg: '#*翻译帮助',
+                    reg: '(M_onlyPm_)?#*翻译帮助',
                     fnc: 'transHelp'
                 },
                 {
-                    reg: '#*配置翻译',
+                    reg: '(M_onlyPm_)?#*配置翻译',
                     fnc: "cfgTrans"
                 },
                 {
-                    reg: '#*删除翻译配置',
+                    reg: '(M_onlyPm_)?#*删除翻译配置',
                     fnc: "delCfg"
                 }
             ]
@@ -48,8 +48,9 @@ export class translate extends Plugin {
     }
 
     accept(e) {
-        if (/appId=(.*);secret_key=(.*)/.test(e.msg)) {
-            e.cfgTrans = e.msg;
+        let msg = e.msg.replace("M_onlyPm_", "");
+        if (/appId=(.*);secret_key=(.*)/.test(msg)) {
+            e.cfgTrans = msg;
             e.msg = "#配置翻译"
         }
     }
@@ -77,10 +78,11 @@ export class translate extends Plugin {
             q = mss[0].raw_message;
         }
         let index = 0;
-        while (e.msg[index] !== " " && index < e.msg.length) index++;
+        let msg = e.msg.replace("M_onlyPm_", "");
+        while (msg[index] !== " " && index < msg.length) index++;
         let arg = new Array(2);
-        arg[0] = e.msg.substr(0, index);
-        arg[1] = e.msg.substr(index + 1, e.msg.length - 1);
+        arg[0] = msg.substr(0, index);
+        arg[1] = msg.substr(index + 1, msg.length - 1);
         if (!arg[0].includes(",")) {
             let t = arg[0][arg[0].length - 1];
             if (map[t]) to = map[t];

@@ -17,11 +17,11 @@ export class pmGachaLog extends Plugin {
             priority: 400,
             rule: [
                 {
-                    reg: '#获取断网链接\d*',
+                    reg: '(M_onlyPm_)?#获取断网链接\d*',
                     fnc: 'getLogUrl'
                 },
                 {
-                    reg: '#*(更新)?祈愿分析\d*',
+                    reg: '(M_onlyPm_)?#*(更新)?祈愿分析\d*',
                     fnc: 'gachaAnalysis'
                 }
             ]
@@ -30,7 +30,8 @@ export class pmGachaLog extends Plugin {
 
     async getLogUrl(e) {
         if (!e.isPrivate) return true;
-        let index = e.msg.match(/\d+/)?.[0];
+        let msg = e.msg.replace("M_onlyPm_", "");
+        let index = msg.match(/\d+/)?.[0];
         let info = await getAuthKey(e.user_id, index);
         if (info) {
             e.reply(info);
@@ -42,15 +43,15 @@ export class pmGachaLog extends Plugin {
     async gachaAnalysis(e) {
         if (!e.isPrivate) return true
         let flag = true;
-        if (e.msg.includes("更新")) {
-            let index = e.msg.match(/\d+/)?.[0];
+        let msg = e.msg.replace("M_onlyPm_", "");
+        if (msg.includes("更新")) {
+            let index = msg.match(/\d+/)?.[0];
             let info = await getAuthKey(e.user_id, index);
             info = info?.split("\n")[1];
             if (!info) {
                 e.reply("获取断网链接失败");
                 return true
             }
-            console.log(info)
             e.msg = info;
             let data = await new GachaLog(e).logUrl()
             if (!data) flag = false;

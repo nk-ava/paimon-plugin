@@ -18,15 +18,15 @@ export class sudoku extends Plugin {
             priority: 50,
             rule: [
                 {
-                    reg: '#新数独(.*)',
+                    reg: '(M_onlyPm_)?#新数独(.*)',
                     fnc: 'startGame'
                 },
                 {
-                    reg: "#(数独|答案)$",
+                    reg: "(M_onlyPm_)?#(数独|答案)$",
                     fnc: 'getPic'
                 },
                 {
-                    reg: '#我的答案 (.*)',
+                    reg: '(M_onlyPm_)?#我的答案 (.*)',
                     fnc: "answer"
                 }
             ]
@@ -36,7 +36,8 @@ export class sudoku extends Plugin {
     async accept(e) {
         if (isGiveUp[e.user_id] && isGiveUp[e.user_id].flag) {
             isGiveUp[e.user_id].flag = false;
-            if (e.msg === "是") {
+            let msg = e.msg.replace("M_onlyPm_", "");
+            if (msg === "是") {
                 e.msg = isGiveUp[e.user_id].msg;
                 let sum = await GmDao.getCnt(4, "sum", e.user_id)
                 await GmDao.updateCnt(4, "sum", e.user_id, sum * 1 + 1)
@@ -51,7 +52,8 @@ export class sudoku extends Plugin {
             e.reply("请先【#新数独】创建新数独");
             return true;
         }
-        let msg = e.msg.replace("#我的答案 ", "");
+        let msg = e.msg.replace("M_onlyPm_", "");
+        msg = msg.replace("#我的答案 ", "");
         msg = msg.split(" ");
         let data = [];
         for (let i in msg) {
@@ -180,7 +182,7 @@ export class sudoku extends Plugin {
     }
 
     async startGame(e) {
-        let msg = e.msg;
+        let msg = e.msg.replace("M_onlyPm_", "");
         if (!/#新数独\s(\d*)/.test(msg)) {
             e.reply("格式为【#新数独 <提示的空格数>】");
             return true;
@@ -199,7 +201,7 @@ export class sudoku extends Plugin {
             e.reply("你上个数独还未完成，是否放弃开始新数独。【#数独】可查看当前数独");
             isGiveUp[e.user_id] = {
                 flag: true,
-                msg: e.msg,
+                msg: msg,
             }
             return true;
         }

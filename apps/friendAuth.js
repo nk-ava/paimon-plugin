@@ -15,27 +15,27 @@ export class friendAuth extends Plugin {
             priority: 100,
             rule: [
                 {
-                    reg: '^#派蒙设置加好友(1|2|3)$',
+                    reg: '^(M_onlyPm_)?#派蒙设置加好友(1|2|3)$',
                     fnc: 'setMethod',
                     permission: 'master',
                 },
                 {
-                    reg: '^#加好友$',
+                    reg: '^(M_onlyPm_)?#加好友$',
                     fnc: 'getMethod',
                     permission: 'master',
                 },
                 {
-                    reg: '^#派蒙设置salt=(.)*$',
+                    reg: '^(M_onlyPm_)?#派蒙设置salt=(.)*$',
                     fnc: 'setSalt',
                     permission: 'master',
                 },
                 {
-                    reg: '#SALT',
+                    reg: '(M_onlyPm_)?#SALT',
                     fnc: 'showSalt',
                     permission: 'master',
                 },
                 {
-                    reg: "#ANSWER",
+                    reg: "(M_onlyPm_)?#ANSWER",
                     fnc: "showAns",
                     permission: 'master',
                 }
@@ -68,10 +68,11 @@ export class friendAuth extends Plugin {
     }
 
     async accept(e) {
-        if (timer[e.user_id] && /^设置：[\s\S]*/.test(e.msg)) {
+        let msg = e.msg.replace("M_onlyPm_", "");
+        if (timer[e.user_id] && /^设置：[\s\S]*/.test(msg)) {
             clearTimeout(timer[e.user_id]);
             delete timer[e.user_id];
-            let msg = e.msg.replace(/^设置：/, "");
+            let msg = msg.replace(/^设置：/, "");
             msg = msg.split(/[\r\n]/);
             let q = msg[0];
             let a = msg[1];
@@ -89,7 +90,8 @@ export class friendAuth extends Plugin {
     }
 
     async setMethod(e) {
-        let type = e.msg.replace("#派蒙设置加好友", "");
+        let msg = e.msg.replace("M_onlyPm_", "");
+        let type = msg.replace("#派蒙设置加好友", "");
         type = Number(type);
         if (type === 2) {
             Bot.off("notice.friend.increase", dealStrict);
@@ -157,7 +159,8 @@ export class friendAuth extends Plugin {
     }
 
     async setSalt(e) {
-        let msg = e.msg.replace("#派蒙设置salt=", "");
+        let msg = e.msg.replace("M_onlyPm_", "");
+        msg = msg.replace("#派蒙设置salt=", "");
         if (this.cfg.type === 3) {
             this.cfg.salt = msg;
             this.cfg.answer = "";

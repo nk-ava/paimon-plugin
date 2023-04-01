@@ -17,29 +17,29 @@ export class bh3Sign extends Plugin {
             priority: 200,
             rule: [
                 {
-                    reg: '#绑定崩三',
+                    reg: '(M_onlyPm_)?#绑定崩三',
                     fnc: 'bingBh',
                     event: "message.private"
                 },
                 {
-                    reg: '^#?我的(ck|cookie)$',
+                    reg: '^(M_onlyPm_)?#?我的(ck|cookie)$',
                     fnc: 'myCk',
                     event: 'message.private'
                 },
                 {
-                    reg: '#(开启|关闭)崩三自动签到',
+                    reg: '(M_onlyPm_)?#(开启|关闭)崩三自动签到',
                     fnc: 'b3SignSwitch'
                 },
                 {
-                    reg: '#崩坏三签到',
+                    reg: '(M_onlyPm_)?#崩坏三签到',
                     fnc: 'bh3Sign'
                 },
                 {
-                    reg: '^#?崩三\\d+$',
+                    reg: '^(M_onlyPm_)?#?崩三\\d+$',
                     fnc: 'bh3Info'
                 },
                 {
-                    reg: '^#?我的(uid|UID)$',
+                    reg: '^(M_onlyPm_)?#?我的(uid|UID)$',
                     fnc: "showUid"
                 }
             ]
@@ -167,9 +167,9 @@ export class bh3Sign extends Plugin {
     }
 
     async bh3Info(e) {
-        let uid = e.msg.match(/\d+/)[0];
+        let msg = e.msg.replace("M_onlyPm_", "");
+        let uid = msg.match(/\d+/)[0];
         console.log(uid);
-
     }
 
     async showUid(e) {

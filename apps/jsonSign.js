@@ -10,7 +10,7 @@ export class jsonSign extends Plugin {
             priority: 50,
             rule: [
                 {
-                    reg: '^#\\{([\\s\\S]*)\\}$',
+                    reg: '^(M_onlyPm_)?#\\{([\\s\\S]*)\\}$',
                     fnc: 'send'
                 }
             ]

@@ -16,19 +16,19 @@ export class mysCoin extends Plugin {
             priority: 200,
             rule: [
                 {
-                    reg: '#绑定米游社',
+                    reg: '(M_onlyPm_)?#绑定米游社',
                     fnc: 'bingMys'
                 },
                 {
-                    reg: '^#?我的(ck|cookie)$',
+                    reg: '^(M_onlyPm_)?#?我的(ck|cookie)$',
                     fnc: 'myCk'
                 },
                 {
-                    reg: '#米游社签到',
+                    reg: '(M_onlyPm_)?#米游社签到',
                     fnc: 'sign'
                 },
                 {
-                    reg: '^#*(开启|关闭)米游社自动签到$',
+                    reg: '^(M_onlyPm_)?#*(开启|关闭)米游社自动签到$',
                     fnc: 'mysAuto'
                 }
             ]
@@ -44,13 +44,14 @@ export class mysCoin extends Plugin {
     }
 
     accept(e) {
-        if (!e.msg) return
-        if (/login_ticket/.test(e.msg) && /login_uid/.test(e.msg)) {
+        let msg = e.msg.replace("M_onlyPm_", "");
+        if (!msg) return
+        if (/login_ticket/.test(msg) && /login_uid/.test(msg)) {
             if (e.isGroup) {
                 e.reply('请私聊发送');
                 return true;
             }
-            e.mysCk = e.msg;
+            e.mysCk = msg;
             e.msg = '#绑定米游社';
             return true;
         }

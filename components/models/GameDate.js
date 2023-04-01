@@ -8,7 +8,9 @@ const gmType = {
     3: {en: 'gobang', zn: '五子棋'},
     4: {en: 'sudoku', zn: '数独'}
 }
-
+if(!fs.existsSync(savePath)){
+    fs.mkdirSync(savePath)
+}
 const GmDao = {
     async getCnt(type, res, qq) {
         let key = `${savePre}:${gmType[type].en}-${res}:${qq}`;

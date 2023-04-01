@@ -28,20 +28,20 @@ export class weather extends Plugin {
             priority: 101,
             rule: [
                 {
-                    reg: '^#?(.*)天气\\d?$',
+                    reg: '^(M_onlyPm_)?#?(.*)天气\\d?$',
                     fnc: 'tWeather'
                 },
                 {
-                    reg: '#?天气设置(.*)',
+                    reg: '(M_onlyPm_)?#?天气设置(.*)',
                     fnc: 'setPos'
                 },
                 {
-                    reg: '#派蒙设置天气卡片\\d+',
+                    reg: '(M_onlyPm_)?#派蒙设置天气卡片\\d+',
                     fnc: 'setCard',
                     permission: 'master'
                 },
                 {
-                    reg: '#我的位置',
+                    reg: '(M_onlyPm_)?#我的位置',
                     fnc: 'myPosition'
                 }
             ]
@@ -60,7 +60,8 @@ export class weather extends Plugin {
     }
 
     async tWeather(e) {
-        let msg = e.msg.replace("#", "");
+        let msg = e.msg.replace("M_onlyPm_", "");
+        msg = msg.replace("#", "");
         msg = msg.split("天气");
         let position = msg[0];
         let d = msg[1] || 0;
@@ -152,7 +153,8 @@ export class weather extends Plugin {
 
     async setPos(e) {
         if (!this.cfg.user) this.cfg.user = {};
-        let position = e.msg.replace(/#?天气设置/g, "");
+        let msg = e.msg.replace("M_onlyPm_", "");
+        let position = msg.replace(/#?天气设置/g, "");
         if (!!!position) {
             e.reply('请正确输入位置');
             return true;
@@ -169,7 +171,8 @@ export class weather extends Plugin {
     }
 
     async setCard(e) {
-        let limit = e.msg.replace(/#派蒙设置天气卡片/g, "");
+        let msg = e.msg.replace("M_onlyPm_", "");
+        let limit = msg.replace(/#派蒙设置天气卡片/g, "");
         try {
             limit = Number(limit);
         } catch (err) {

@@ -29,15 +29,15 @@ export class sandbox extends Plugin {
             priority: 50,
             rule: [
                 {
-                    reg: "^#*sandbox-(on|off)$",
+                    reg: "^(M_onlyPm_)?#?sandbox[-_:](on|off)$",
                     fnc: 'cmdSwitch'
                 },
                 {
-                    reg: '^_([\\s\\S]*)$',
+                    reg: '^(M_onlyPm_)?_([\\s\\S]*)$',
                     fnc: 'command'
                 },
                 {
-                    reg: '^#*sandbox-save$',
+                    reg: '^(M_onlyPm_)?#?sandbox[-_:]save$',
                     fnc: "tempSave",
                     permission: "master"
                 }
@@ -138,7 +138,8 @@ export class sandbox extends Plugin {
     async command(e) {
         if (e.isMaster) {
             global.ev = e;
-            let cmd = e.msg.substr(1, e.length);
+            let msg = e.msg.replace("M_onlyPm_", "");
+            let cmd = msg.substr(1, e.length);
             let str = cmd.split("import");
             let upload = "import md5 from 'md5';\nimport fetch from 'node-fetch';\nimport request from 'request';\nimport fs from 'fs';\n";
             let len = str.length;
@@ -164,7 +165,8 @@ export class sandbox extends Plugin {
         if (!e.isMaster) {
             return true;
         }
-        if (e.msg.includes("on")) {
+        let msg = e.msg.replace("M_onlyPm_", "");
+        if (msg.includes("on")) {
             /**
              * 旧的开启方式弃用
              */

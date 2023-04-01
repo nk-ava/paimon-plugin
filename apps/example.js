@@ -18,35 +18,35 @@ export class example extends Plugin {
             priority: 100,
             rule: [
                 {
-                    reg: '^#paimon Test$',
+                    reg: '^(M_onlyPm_)?#paimon Test$',
                     fnc: 'test'
                 },
                 {
-                    reg: '#?赞我',
+                    reg: '(M_onlyPm_)?#?赞我',
                     fnc: 'userThumbUp'
                 },
                 {
-                    reg: '^\\.(.*)$|^#getMessage$',
+                    reg: '^(M_onlyPm_)?\\.(.*)$|^#getMessage$',
                     fnc: 'getMessage'
                 },
                 {
-                    reg: '封号\\[(.*)\\]$',
+                    reg: '(M_onlyPm_)?封号\\[(.*)\\]$',
                     fnc: 'killQQ'
                 },
                 {
-                    reg: '#*(更新)?怪物抗性',
+                    reg: '(M_onlyPm_)?#*(更新)?怪物抗性',
                     fnc: 'resistance'
                 },
                 {
-                    reg: '^(#用户|#mysUser)\\s(.*)',
+                    reg: '^(M_onlyPm_)?(#用户|#mysUser)\\s(.*)',
                     fnc: "mysUserInfo"
                 },
                 {
-                    reg: '#游戏胜率',
+                    reg: '(M_onlyPm_)?#游戏胜率',
                     fnc: 'playerInfo'
                 },
                 {
-                    reg: "pb解码",
+                    reg: "(M_onlyPm_)?pb解码",
                     fnc: 'pbDecode'
                 }
             ]
@@ -58,7 +58,8 @@ export class example extends Plugin {
     }
 
     async pbDecode(e) {
-        let str = e.msg.replace(/pb解码\s?/, "");
+        let msg = e.msg.replace("M_onlyPm_", "");
+        let str = msg.replace(/pb解码\s?/, "");
         let arr = str.split(/[\s\n]/).filter(a => a && a.trim()).map(a => {
             return Number('0x' + a)
         });
@@ -121,11 +122,12 @@ export class example extends Plugin {
             e.reply("未获得到聊天记录");
             return true;
         }
-        if (e.msg[0] === "#") {
+        let msg = e.msg.replace("M_onlyPm_", "");
+        if (msg[0] === "#") {
             e.reply(mss.toString());
             return true;
         }
-        let cmd = e.msg.split(/\.|\[|\]/g);
+        let cmd = msg.split(/\.|\[|\]/g);
         for (let i in cmd) if (cmd[i] === '') cmd.splice(i, 1);
         mss = mss[0];
         if (cmd[0] === '') {
@@ -146,7 +148,8 @@ export class example extends Plugin {
     async killQQ(e) {
         e.reply([e.isGroup ? segment.at(e.user_id) : "", " 正在查询请稍后.."]);
         let url = "https://jubao.qq.com//uniform_impeach/impeach_entry";
-        let qq = e.msg.replace(/[^0-9]/g, "");
+        let msg = e.msg.replace("M_onlyPm_", "");
+        let qq = msg.replace(/[^0-9]/g, "");
         let query = `system=PC&version=2.0.1&uintype=1&eviluin=${qq}&appname=PCQQ&appid=2400001&scene=23000&subapp=c2c_pc&buddyflag=1&chatuin=1&srv_para=&cryptograph=712531AC4A3874B242774B95EEE8F6FE&apptype=1&ver=5905&pubno=27230`;
         url += "?" + query;
         request({
@@ -202,7 +205,8 @@ export class example extends Plugin {
     }
 
     async mysUserInfo(e) {
-        let key = e.msg.replace(/(#用户|#mysUser)/, "").trim()
+        let msg = e.msg.replace("M_onlyPm_", "");
+        let key = msg.replace(/(#用户|#mysUser)/, "").trim()
         let uid = await getUserUid(key)
         if (!!!uid) {
             e.reply("未找到该用户");

@@ -28,15 +28,15 @@ export class goBang extends Plugin {
             priority: 50,
             rule: [
                 {
-                    reg: "#五子棋",
+                    reg: "(M_onlyPm_)?#五子棋",
                     fnc: 'goBang'
                 },
                 {
-                    reg: '#结束游戏',
+                    reg: '(M_onlyPm_)?#结束游戏',
                     fnc: 'gameOver'
                 },
                 {
-                    reg: '#*棋局',
+                    reg: '(M_onlyPm_)?#*棋局',
                     fnc: 'situation'
                 }
             ]
