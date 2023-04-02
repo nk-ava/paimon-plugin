@@ -437,6 +437,7 @@ function toStr(msg) {
  * @param {import("oicq").EventData} data
  */
 function onmessage(data) {
+    codeTemp[data.user_id] = []
     if (data.post_type === "message") {
         if (data.message_type === "group" && bots.has(data.user_id) && data.user_id !== data.self_id && data.user_id < data.self_id) {
             return callApi("setGroupLeave", [data.group_id], false)
@@ -465,11 +466,9 @@ function onmessage(data) {
         if (/```[\s\S]*```/.test(message)) {
             let str = (message.match(/```[\s\S]*```/)[0]).replace(/```/g, "").trim();
             message = message.replace(/```[\s\S]*```/, JSON.stringify(str));
-        }else if (/\[CQ:[^\]]+\]/.test(message)) message = toStr(message)
+        } else if (message.includes("`") && /\[CQ:[^\]]+\]/.test(message)) message = toStr(message)
         try {
-            codeTemp[data.user_id] = []
             let res = sandbox.run(message)
-            delete codeTemp[data.user_id]
             if (typeof res === 'string' && res.includes("`") && /\[CQ:[^\]]+\]/.test(res)) res = sandbox.run(res)
             let echo = true
             if (message.match(/^'\[CQ:at,qq=\d+\]'$/))
@@ -517,9 +516,10 @@ function onmessage(data) {
     else if (data.post_type === "notice" && data.notice_type === "group")
         init(data, data.group_id)
     try {
-        sandbox.exec(`try{this.onEvents()}catch(e){}`)
+        sandbox.exec(`try{this.onEvents()}catch(e){alert(e)}`)
     } catch {
     }
+    delete codeTemp[data.user_id]
 }
 
 //防止沙盒逃逸

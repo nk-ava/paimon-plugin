@@ -28,7 +28,7 @@ export class other extends Plugin {
     }
 
     switchOnly(e) {
-        let msg = e.msg.replace("M_onlyPm_", "");
+        let msg = e.msg?.replace("M_onlyPm_", "");
         if (!(this.cfg.qun)) {
             this.cfg.qun = []
         }
@@ -39,7 +39,7 @@ export class other extends Plugin {
                 qun.push(e.group_id)
                 Cfg.set("other", this.cfg)
             }
-            e.reply("ret：1");
+            e.reply("ret：0");
         } else {
             let qun = this.cfg.qun;
             let index = qun.indexOf(e.group_id);
@@ -47,7 +47,7 @@ export class other extends Plugin {
                 qun.splice(index, 1);
                 Cfg.set("other", this.cfg)
             }
-            e.reply("ret：1");
+            e.reply("ret：0");
         }
     }
 }

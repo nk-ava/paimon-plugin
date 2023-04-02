@@ -40,7 +40,7 @@ export class shareMusic extends Plugin {
     //支持点歌
     async chooseSong(e) {
         let t = e.friend || e.group;
-        let msg = e.msg.replace("M_onlyPm_", "");
+        let msg = e.msg?.replace("M_onlyPm_", "");
         let song = msg.replace("#点歌", "");
         song = song.trim();
         if (!song) {

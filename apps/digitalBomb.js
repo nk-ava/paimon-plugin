@@ -75,7 +75,7 @@ export class digitalBomb extends Plugin {
         let number;
         if (e.user_id === groupCfg[e.group_id].joinPerson[ns]) {
             try {
-                let msg = e.msg.replace("M_onlyPm_", "");
+                let msg = e.msg?.replace("M_onlyPm_", "");
                 number = msg.replace(/[^\d]/g, "");
             } catch (err) {
                 e.reply("请输入数字");
@@ -117,7 +117,7 @@ export class digitalBomb extends Plugin {
         if (groupCfg[e.group_id].joinPerson[0] === e.user_id) {
             let reg = /\d,\d/;
             let s = "";
-            let mss = e.msg.replace("M_onlyPm_", "");
+            let mss = e.msg?.replace("M_onlyPm_", "");
             if (reg.test(mss)) {
                 let mss = e.message;
                 for (let i in mss) {

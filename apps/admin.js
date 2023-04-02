@@ -94,7 +94,7 @@ export class admin extends Plugin {
     }
 
     qunCard(e) {
-        let msg = e.msg.replace("M_onlyPm_", "");
+        let msg = e.msg?.replace("M_onlyPm_", "");
         let gid = msg.match(/\d+/)?.[0];
         if (!gid && !e.isGroup) {
             e.reply("请在群里发送");
@@ -104,7 +104,7 @@ export class admin extends Plugin {
             e.group_id = Number(gid)
         }
         let cfg = Cfg.get("qunSign") || {}
-        if (e.msg.includes("开启")) {
+        if (msg.includes("开启")) {
             if (!cfg?.qun?.includes(e.group_id)) {
                 let qun = cfg?.qun || []
                 qun.push(e.group_id);
@@ -128,7 +128,7 @@ export class admin extends Plugin {
             e.reply("请在群里发此命令，即可确定禁用的群")
             return true
         }
-        if (e.msg.includes("禁用")) {
+        if (e.msg?.includes("禁用")) {
             e.msg = "#结束游戏"
             let cfg = Cfg.get("banGm");
             if (!(cfg?.ban)) {
@@ -153,7 +153,7 @@ export class admin extends Plugin {
     }
 
     async update(e) {
-        let msg = e.msg.replace("M_onlyPm_", "");
+        let msg = e.msg?.replace("M_onlyPm_", "");
         msg = msg.replace("派蒙", "");
         msg += "paimon-plugin";
         e.msg = msg;

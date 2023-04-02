@@ -1,6 +1,7 @@
 const fs = require("fs")
 const path = require("path")
 const cp = require("child_process")
+const {EventEmitter} = require("events")
 
 const bots = new Map
 
@@ -8,11 +9,10 @@ const bots = new Map
  * @type {cp.ChildProcess}
  */
 let worker
-let flag = true
+let flag = true;
 
-;(function startWorker() {
-    if (!flag)
-        return
+function startWorker() {
+    if (!flag) return;
     console.log(Date(), "sandbox启动")
     worker = cp.fork(path.join(__dirname, "bridge.js"))
     worker.on("error", (err) => {
@@ -53,7 +53,9 @@ let flag = true
             echo: value?.echo
         })
     })
-})()
+}
+
+startWorker();
 
 function listener(data) {
     data.self_id = this.uin
@@ -85,8 +87,15 @@ function deactivate(bot) {
 }
 
 function destructor() {
+    bots.clear()
     flag = false
     worker?.kill()
+}
+
+function restart() {
+    destructor()
+    flag = true
+    startWorker()
 }
 
 /**
@@ -95,11 +104,56 @@ function destructor() {
  */
 function init(bot) {
     bots.set(bot.uin, bot)
+    // 只支持oicq和icqq，不是oicq就用icqq的事件触发
+    // oicq和icqq的监听时一样的所以不需要区分
+    try {
+        bot.on("notice", preDeal)
+        bot.on("request", preDeal)
+    } catch (e) {
+        bot.logger.error(e)
+    }
+}
+
+/**
+ * 初始化sandbox
+ * @param {import("oicq").Client} bot
+ */
+function close(bot) {
+    // oicq和icqq的关闭单个监听器不一样需要区分
+    if (bot instanceof EventEmitter) {
+        bot.off("notice", preDeal)
+        bot.off("request", preDeal)
+    } else {
+        try {
+            icqqOff.call(bot, "notice", "preDeal")
+            icqqOff.call(bot, "request", "preDeal")
+        } catch (e) {
+            bot.logger.error(e)
+        }
+    }
+    bots.delete(bot.uin)
+}
+
+function icqqOff(event, fnName) {
+    if (!this.matchers) return;
+    const matchers = this.getMatchers(event);
+    for (let i in matchers) {
+        if (this.matchers.get(matchers[i]).name === fnName) {
+            this.matchers.delete(matchers[i]);
+            return;
+        }
+    }
 }
 
 function dealMsg(data) {
     data.self_id = this.uin;
     worker.send(data)
+}
+
+function preDeal(data) {
+    delete data.runtime;
+    delete data.reply;
+    dealMsg(data)
 }
 
 function saveCtx() {
@@ -109,5 +163,5 @@ function saveCtx() {
 }
 
 module.exports = {
-    activate, deactivate, destructor, dealMsg, init, saveCtx
+    activate, deactivate, destructor, dealMsg, init, close, saveCtx, restart
 }

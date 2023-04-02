@@ -107,7 +107,7 @@ export class help extends Plugin {
                 desc: '根据关键词返回米游社用户'
             }, {
                 icon: "qiandao",
-                title: "#(米游社|崩三)签到",
+                title: "#(米游社|崩坏三)签到",
                 desc: "米游社或崩三手动签到"
             }, {
                 icon: "kuozhanshuxing",

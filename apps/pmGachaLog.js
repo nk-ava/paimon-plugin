@@ -43,7 +43,7 @@ export class pmGachaLog extends Plugin {
     async gachaAnalysis(e) {
         if (!e.isPrivate) return true
         let flag = true;
-        let msg = e.msg.replace("M_onlyPm_", "");
+        let msg = e.msg?.replace("M_onlyPm_", "");
         if (msg.includes("更新")) {
             let index = msg.match(/\d+/)?.[0];
             let info = await getAuthKey(e.user_id, index);

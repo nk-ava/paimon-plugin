@@ -48,7 +48,7 @@ export class translate extends Plugin {
     }
 
     accept(e) {
-        let msg = e.msg.replace("M_onlyPm_", "");
+        let msg = e.msg?.replace("M_onlyPm_", "");
         if (/appId=(.*);secret_key=(.*)/.test(msg)) {
             e.cfgTrans = msg;
             e.msg = "#配置翻译"
@@ -78,7 +78,7 @@ export class translate extends Plugin {
             q = mss[0].raw_message;
         }
         let index = 0;
-        let msg = e.msg.replace("M_onlyPm_", "");
+        let msg = e.msg?.replace("M_onlyPm_", "");
         while (msg[index] !== " " && index < msg.length) index++;
         let arg = new Array(2);
         arg[0] = msg.substr(0, index);

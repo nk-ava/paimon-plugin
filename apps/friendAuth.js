@@ -68,7 +68,7 @@ export class friendAuth extends Plugin {
     }
 
     async accept(e) {
-        let msg = e.msg.replace("M_onlyPm_", "");
+        let msg = e.msg?.replace("M_onlyPm_", "");
         if (timer[e.user_id] && /^设置：[\s\S]*/.test(msg)) {
             clearTimeout(timer[e.user_id]);
             delete timer[e.user_id];
@@ -90,7 +90,7 @@ export class friendAuth extends Plugin {
     }
 
     async setMethod(e) {
-        let msg = e.msg.replace("M_onlyPm_", "");
+        let msg = e.msg?.replace("M_onlyPm_", "");
         let type = msg.replace("#派蒙设置加好友", "");
         type = Number(type);
         if (type === 2) {
@@ -159,7 +159,7 @@ export class friendAuth extends Plugin {
     }
 
     async setSalt(e) {
-        let msg = e.msg.replace("M_onlyPm_", "");
+        let msg = e.msg?.replace("M_onlyPm_", "");
         msg = msg.replace("#派蒙设置salt=", "");
         if (this.cfg.type === 3) {
             this.cfg.salt = msg;

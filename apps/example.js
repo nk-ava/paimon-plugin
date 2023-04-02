@@ -58,7 +58,7 @@ export class example extends Plugin {
     }
 
     async pbDecode(e) {
-        let msg = e.msg.replace("M_onlyPm_", "");
+        let msg = e.msg?.replace("M_onlyPm_", "");
         let str = msg.replace(/pb解码\s?/, "");
         let arr = str.split(/[\s\n]/).filter(a => a && a.trim()).map(a => {
             return Number('0x' + a)
@@ -122,7 +122,7 @@ export class example extends Plugin {
             e.reply("未获得到聊天记录");
             return true;
         }
-        let msg = e.msg.replace("M_onlyPm_", "");
+        let msg = e.msg?.replace("M_onlyPm_", "");
         if (msg[0] === "#") {
             e.reply(mss.toString());
             return true;
@@ -148,7 +148,7 @@ export class example extends Plugin {
     async killQQ(e) {
         e.reply([e.isGroup ? segment.at(e.user_id) : "", " 正在查询请稍后.."]);
         let url = "https://jubao.qq.com//uniform_impeach/impeach_entry";
-        let msg = e.msg.replace("M_onlyPm_", "");
+        let msg = e.msg?.replace("M_onlyPm_", "");
         let qq = msg.replace(/[^0-9]/g, "");
         let query = `system=PC&version=2.0.1&uintype=1&eviluin=${qq}&appname=PCQQ&appid=2400001&scene=23000&subapp=c2c_pc&buddyflag=1&chatuin=1&srv_para=&cryptograph=712531AC4A3874B242774B95EEE8F6FE&apptype=1&ver=5905&pubno=27230`;
         url += "?" + query;
@@ -183,7 +183,7 @@ export class example extends Plugin {
     }
 
     async resistance(e) {
-        if (!fs.existsSync("./data/browserScreenShot/resistance/resistance.png") || e.msg.includes("更新")) {
+        if (!fs.existsSync("./data/browserScreenShot/resistance/resistance.png") || e.msg?.includes("更新")) {
             let img = await browserPuppeteer.screenshot("resistance", {
                 jumpUrl: 'https://wiki.biligame.com/ys/%E6%80%AA%E7%89%A9%E6%8A%97%E6%80%A7%E4%B8%80%E8%A7%88',
                 saveName: 'resistance',
@@ -205,7 +205,7 @@ export class example extends Plugin {
     }
 
     async mysUserInfo(e) {
-        let msg = e.msg.replace("M_onlyPm_", "");
+        let msg = e.msg?.replace("M_onlyPm_", "");
         let key = msg.replace(/(#用户|#mysUser)/, "").trim()
         let uid = await getUserUid(key)
         if (!!!uid) {

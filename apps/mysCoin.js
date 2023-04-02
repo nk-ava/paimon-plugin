@@ -44,7 +44,7 @@ export class mysCoin extends Plugin {
     }
 
     accept(e) {
-        let msg = e.msg.replace("M_onlyPm_", "");
+        let msg = e.msg?.replace("M_onlyPm_", "");
         if (!msg) return
         if (/login_ticket/.test(msg) && /login_uid/.test(msg)) {
             if (e.isGroup) {
@@ -160,7 +160,7 @@ export class mysCoin extends Plugin {
 
     //#米游社自动签到
     mysAuto(e) {
-        if (e.msg.includes("开启")) {
+        if (e.msg?.includes("开启")) {
             let ck = MysCKUser.getCkByUid(e.user_id);
             if (ck.autoSign === false) {
                 ck.autoSign = true;

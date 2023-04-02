@@ -48,7 +48,11 @@ export class bh3Sign extends Plugin {
             cron: "0 2 0 * * ?",
             name: "崩坏三签到任务",
             fnc: async () => {
-                await this.b3SignTask.call(this);
+                let num = Math.ceil(Math.random() * 30)
+                Bot.logger.info(`崩坏三签到任务将在${num}分钟后执行`)
+                setTimeout(async () => {
+                    await this.b3SignTask.call(this);
+                }, num * 60000)
             },
             log: false
         }
@@ -103,7 +107,7 @@ export class bh3Sign extends Plugin {
             e.reply("请私聊绑定cookie");
             return true;
         }
-        if (e.msg.includes("开启")) {
+        if (e.msg?.includes("开启")) {
             let info = YAML.parse(fs.readFileSync(`./data/bh3Ck/${e.user_id}.yaml`, "utf8"));
             if (!info.autoSign) {
                 info.autoSign = true;
@@ -167,7 +171,7 @@ export class bh3Sign extends Plugin {
     }
 
     async bh3Info(e) {
-        let msg = e.msg.replace("M_onlyPm_", "");
+        let msg = e.msg?.replace("M_onlyPm_", "");
         let uid = msg.match(/\d+/)[0];
         console.log(uid);
     }

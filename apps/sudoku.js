@@ -36,7 +36,7 @@ export class sudoku extends Plugin {
     async accept(e) {
         if (isGiveUp[e.user_id] && isGiveUp[e.user_id].flag) {
             isGiveUp[e.user_id].flag = false;
-            let msg = e.msg.replace("M_onlyPm_", "");
+            let msg = e.msg?.replace("M_onlyPm_", "");
             if (msg === "是") {
                 e.msg = isGiveUp[e.user_id].msg;
                 let sum = await GmDao.getCnt(4, "sum", e.user_id)
@@ -52,7 +52,7 @@ export class sudoku extends Plugin {
             e.reply("请先【#新数独】创建新数独");
             return true;
         }
-        let msg = e.msg.replace("M_onlyPm_", "");
+        let msg = e.msg?.replace("M_onlyPm_", "");
         msg = msg.replace("#我的答案 ", "");
         msg = msg.split(" ");
         let data = [];
@@ -151,7 +151,7 @@ export class sudoku extends Plugin {
             t = JSON.parse(fs.readFileSync(`./data/sudoku/${e.user_id}.json`));
             user_config[e.user_id] = JSON.parse(JSON.stringify(t));
         }
-        if (e.msg.includes("数独")) {
+        if (e.msg?.includes("数独")) {
             num = t.cnt;
             t = t.problem;
         } else {
@@ -182,7 +182,7 @@ export class sudoku extends Plugin {
     }
 
     async startGame(e) {
-        let msg = e.msg.replace("M_onlyPm_", "");
+        let msg = e.msg?.replace("M_onlyPm_", "");
         if (!/#新数独\s(\d*)/.test(msg)) {
             e.reply("格式为【#新数独 <提示的空格数>】");
             return true;

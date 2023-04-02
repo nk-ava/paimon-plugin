@@ -60,7 +60,7 @@ export class weather extends Plugin {
     }
 
     async tWeather(e) {
-        let msg = e.msg.replace("M_onlyPm_", "");
+        let msg = e.msg?.replace("M_onlyPm_", "");
         msg = msg.replace("#", "");
         msg = msg.split("天气");
         let position = msg[0];
@@ -153,7 +153,7 @@ export class weather extends Plugin {
 
     async setPos(e) {
         if (!this.cfg.user) this.cfg.user = {};
-        let msg = e.msg.replace("M_onlyPm_", "");
+        let msg = e.msg?.replace("M_onlyPm_", "");
         let position = msg.replace(/#?天气设置/g, "");
         if (!!!position) {
             e.reply('请正确输入位置');
@@ -171,7 +171,7 @@ export class weather extends Plugin {
     }
 
     async setCard(e) {
-        let msg = e.msg.replace("M_onlyPm_", "");
+        let msg = e.msg?.replace("M_onlyPm_", "");
         let limit = msg.replace(/#派蒙设置天气卡片/g, "");
         try {
             limit = Number(limit);

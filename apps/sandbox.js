@@ -1,6 +1,6 @@
 import Plugin from "../../../lib/plugins/plugin.js";
 import lodash from "lodash";
-import {init, dealMsg, saveCtx} from "../components/models/sandbox/index.js";
+import {init, restart, close, dealMsg, saveCtx} from "../components/models/sandbox/index.js";
 import fs from "node:fs";
 // import {saveCtx} from "../components/models/sandbox/bridge.js";
 // import request from "request";
@@ -14,8 +14,6 @@ import fs from "node:fs";
 // let sandboxContext = {};
 // let selfUid = global.Bot.uin;
 let sbStata = {on: false}
-//初始化sandbox
-init(Bot)
 
 //记录回复
 global.resMap = new Map
@@ -39,6 +37,11 @@ export class sandbox extends Plugin {
                 {
                     reg: '^(M_onlyPm_)?#?sandbox[-_:]save$',
                     fnc: "tempSave",
+                    permission: "master"
+                },
+                {
+                    reg: "^(M_onlyPm_)?#?sandbox[-_:]restart$",
+                    fnc: 'sbRestart',
                     permission: "master"
                 }
             ]
@@ -193,6 +196,7 @@ export class sandbox extends Plugin {
             // }
             if (!sbStata.on) {
                 sbStata.on = true;
+                init(Bot)
             }
             e.reply("Paimon-Bot online");
         } else {
@@ -207,6 +211,7 @@ export class sandbox extends Plugin {
             // }
             if (sbStata.on) {
                 sbStata.on = false;
+                close(Bot)
             }
             e.reply("Paimon-bot offline");
         }
@@ -221,6 +226,13 @@ export class sandbox extends Plugin {
         }
         saveCtx();
         e.reply("保存成功")
+    }
+
+    sbRestart(e) {
+        if (!e.isMaster) return true
+        sbStata.on = false
+        restart();
+        e.reply("Paimon_Bot restarted")
     }
 }
 
