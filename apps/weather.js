@@ -141,7 +141,7 @@ export class weather extends Plugin {
                     ele.children[0].click();
                     // 等待更新页面
                     await new Promise(((resolve, reject) => {
-                        setTimeout(() => resolve(), 1000)
+                        setTimeout(() => resolve(), 500)
                     }))
                     let ct = document.querySelector("#ct-footer");
                     ct.parentNode.removeChild(ct);
