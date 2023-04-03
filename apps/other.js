@@ -23,6 +23,10 @@ export class other extends Plugin {
         if (!e.isGroup) return;
         if (this.cfg?.qun?.includes(e.group_id)) {
             if (e.atme) return;
+            if (e?.msg?.startsWith("派蒙")) {
+                e.msg = e.msg.replace("派蒙", "");
+                return;
+            }
             e.msg = "M_onlyPm_" + e.msg;
         }
     }
