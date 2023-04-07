@@ -171,6 +171,8 @@ const precheck = function (caller) {
     sandbox.getContext()[args_name] = caller
     let uid = sandbox.getContext().data.user_id
     if (!uid) return
+    // 出现回调函数时可能为null
+    if (!codeTemp[uid]) codeTemp[uid] = [];
     codeTemp[uid].push(args_name)
     sandbox.exec(`if (typeof this.beforeApiCalled === "function") {
     this.beforeApiCalled(this.${args_name})
