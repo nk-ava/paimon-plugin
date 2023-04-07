@@ -34,7 +34,7 @@ process.on("message", (value) => {
         return;
     }
     if (value?.type === "include") {
-        sandbox.addContext(value?.key,value?.value);
+        sandbox.addContext(value?.key, value?.value);
         return;
     }
     if (!value.echo) {
@@ -472,7 +472,7 @@ function onmessage(data) {
         if (/```[\s\S]*```/.test(message)) {
             let str = (message.match(/```[\s\S]*```/)[0]).replace(/```/g, "").trim();
             message = message.replace(/```[\s\S]*```/, JSON.stringify(str));
-        } else if (message.includes("`") && /\[CQ:[^\]]+\]/.test(message)) message = toStr(message)
+        } else if (!message.includes("return") && message.includes("`") && /\[CQ:[^\]]+\]/.test(message)) message = toStr(message)
         try {
             let res = sandbox.run(message)
             if (typeof res === 'string' && res.includes("`") && /\[CQ:[^\]]+\]/.test(res)) res = sandbox.run(res)
