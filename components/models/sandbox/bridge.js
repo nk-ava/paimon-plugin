@@ -33,6 +33,10 @@ process.on("message", (value) => {
         sandbox.saveCtx();
         return;
     }
+    if (value?.type === "include") {
+        sandbox.addContext(value?.key,value?.value);
+        return;
+    }
     if (!value.echo) {
         onmessage(value)
     } else {

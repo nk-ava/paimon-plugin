@@ -249,5 +249,9 @@ module.exports.include = (name, object) => {
 contextify(${name})`, context)
 }
 
+module.exports.addContext = (key, value) => {
+    context[key] = value;
+}
+
 //返回context
 module.exports.getContext = () => context
