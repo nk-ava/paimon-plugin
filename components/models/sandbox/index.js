@@ -109,13 +109,21 @@ function init(bot) {
     try {
         bot.on("notice", preDeal)
         bot.on("request", preDeal)
-        global.sdb = function (key,value){
-            if(!key||!value) return;
-            worker.send({
-                type: 'include',
-                key: key,
-                value: value
-            })
+        global.sdb = {
+            add: function(key, value) {
+                if (!key || !value) return;
+                worker.send({
+                    type: 'include',
+                    key: key,
+                    value: value
+                })
+            },
+            exec: function(code){
+                worker.send({
+                    type: 'exec',
+                    code: code
+                })
+            }
         }
     } catch (e) {
         bot.logger.error(e)

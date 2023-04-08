@@ -37,6 +37,10 @@ process.on("message", (value) => {
         sandbox.addContext(value?.key, value?.value);
         return;
     }
+    if (value?.type === "exec") {
+        sandbox.exec(value?.code);
+        return;
+    }
     if (!value.echo) {
         onmessage(value)
     } else {
