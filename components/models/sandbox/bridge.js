@@ -38,7 +38,17 @@ process.on("message", (value) => {
         return;
     }
     if (value?.type === "exec") {
-        sandbox.exec(value?.code);
+        let res;
+        try {
+            res = sandbox.exec(value?.code);
+        }catch (e){}
+        if (value?.ret) {
+            process.send({
+                type: 'execRet',
+                id: value.id,
+                ret: res
+            })
+        }
         return;
     }
     if (!value.echo) {

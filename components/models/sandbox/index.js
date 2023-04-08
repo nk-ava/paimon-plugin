@@ -4,6 +4,7 @@ const cp = require("child_process")
 const {EventEmitter} = require("events")
 
 const bots = new Map
+const execRet = new Map
 
 /**
  * @type {cp.ChildProcess}
@@ -27,6 +28,11 @@ function startWorker() {
         if (value.type === "answer") {
             global.resMap.get(value.id)?.(value.data)
             global.resMap.delete(value.id)
+            return;
+        }
+        if (value.type === "execRet") {
+            execRet.get(value.id)?.(value.ret);
+            execRet.delete(value.id);
             return;
         }
         let bot = bots.get(value?.uin)
@@ -110,7 +116,8 @@ function init(bot) {
         bot.on("notice", preDeal)
         bot.on("request", preDeal)
         global.sdb = {
-            add: function(key, value) {
+            // 添加上下文
+            add: function (key, value) {
                 if (!key || !value) return;
                 worker.send({
                     type: 'include',
@@ -118,11 +125,20 @@ function init(bot) {
                     value: value
                 })
             },
-            exec: function(code){
+            // 执行代码
+            exec: async function (code, ret = false) {
+                let id = `${Math.random()}${new Date().getTime()}`
                 worker.send({
                     type: 'exec',
-                    code: code
+                    code: code,
+                    ret: ret,
+                    id: id
                 })
+                if (ret) {
+                    return await new Promise((resolve) => {
+                        execRet.set(id, resolve);
+                    })
+                }
             }
         }
     } catch (e) {
