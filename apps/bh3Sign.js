@@ -3,10 +3,14 @@ import User from "../../genshin/model/mys/NoteUser.js";
 import Bh3User from "../components/models/Bh3User.js";
 import YAML from "yaml"
 import fs from "node:fs"
-import fetch from "node-fetch";
-import lodash from "lodash";
-import md5 from "md5";
 import {Common} from "../components/index.js";
+import bh3Api from "../components/models/Bh3Api.js";
+import puppeteer from "../../../lib/puppeteer/puppeteer.js";
+import MysInfo from "../../genshin/model/mys/mysInfo.js";
+import {query} from "express";
+
+const dMap = [null, "禁忌", "原罪I", "原罪II", "原罪III", "苦痛I", "苦痛II", "苦痛III", "红莲", "寂灭"]
+const regions = ['hun01', 'hun02', 'android01', 'pc01', 'yyb01', 'bb01']
 
 export class bh3Sign extends Plugin {
     constructor() {
@@ -35,7 +39,7 @@ export class bh3Sign extends Plugin {
                     fnc: 'bh3Sign'
                 },
                 {
-                    reg: '^(M_onlyPm_)?#?崩三\\d+$',
+                    reg: '^(M_onlyPm_)?#?崩三(角色|\\d+)$',
                     fnc: 'bh3Info'
                 },
                 {
@@ -88,7 +92,7 @@ export class bh3Sign extends Plugin {
         }
         let ck = user.mainCk.ck;
         if (ck) bh3User.ck = ck;
-        let roles = await getAllRoles(ck);
+        let roles = await bh3Api.getAllRoles(ck);
         if (!roles) {
             e.reply("绑定失败！为获取到任何角色信息");
             return true;
@@ -131,49 +135,126 @@ export class bh3Sign extends Plugin {
 
     async bh3Sign(e, ck, role) {
         let user = new Bh3User(e);
-        let url = "https://api-takumi.mihoyo.com/event/luna/sign";
         if (!ck) ck = await user.getCk();
         if (!role) role = await user.getMainRole();
-        if (await checkSigned(ck, role)) {
+        if (!ck) {
+            e.reply("未绑定ck");
+            return true;
+        }
+        if (!role) {
+            e.reply("米游社未绑定游戏角色");
+            return true;
+        }
+        if (await bh3Api.checkSigned(ck, role)) {
             e.reply("今日已签到");
             return true;
         }
-
-        let body = {
-            act_id: "e202207181446311",
-            region: role.region,
-            uid: role.uid,
-            lang: "zh-cn"
-        }
-        let headers = getHeaders();
-        headers["DS"] = getDsSign();
-        headers["Cookie"] = ck;
-        let res = await fetch(url, {
-            method: 'post',
-            headers: headers,
-            body: JSON.stringify(body)
-        })
-        if (!res.ok) {
-            e.reply("米游社接口出错");
-        } else {
-            res = await res.json();
-            if (res.retcode !== 0) {
-                e.reply(res.message);
-            } else {
-                if (!(await checkSigned(ck, role))) {
-                    e.reply("崩三今日签到失败，请手动过验证");
-                } else {
-                    e.reply("崩三今日签到成功");
-                }
-            }
-        }
+        let msg = await bh3Api.bh3DaySign(ck, role);
+        e.reply(msg);
         return true;
     }
 
     async bh3Info(e) {
         let msg = e.msg?.replace("M_onlyPm_", "");
-        let uid = msg.match(/\d+/)[0];
-        console.log(uid);
+        let uid = msg.match(/\d+/)?.[0];
+        let index, role;
+        if (uid) {
+            await MysInfo.initCache();
+            let mysInfo = new MysInfo(e);
+            let queryUid;
+            if (/^[6-9]/.test(uid)) {
+                queryUid = (Number(uid[0])-5)+uid.substr(1);
+            }else queryUid = uid;
+            mysInfo.uid = queryUid;
+            let ck = await mysInfo.getCookie();
+            for (let region of regions) {
+                role = {uid: uid, region: region};
+                index = await bh3Api.getIndex(ck, role);
+                if (typeof index !== "string") break;
+            }
+            if (typeof index === "string") {
+                e.reply("没有找到对应的角色信息");
+                return;
+            }
+        } else {
+            let user = new Bh3User(e);
+            let ck = await user.getCk();
+            role = await user.getMainRole();
+            if (!ck) {
+                e.reply("未绑定ck");
+                return true;
+            }
+            if (!role) {
+                e.reply("米游社未绑定游戏角色");
+                return true;
+            }
+            index = await bh3Api.getIndex(ck, role);
+            if (typeof index === "string") {
+                e.reply(index);
+                return true;
+            }
+        }
+        if (!index) {
+            e.reply("出错了");
+            return true;
+        }
+        let data = {
+            nickname: index?.role?.nickname,
+            level: index?.role?.level,
+            uid: role.uid,
+            index: [{
+                key: "累计登舰",
+                value: index?.stats?.['active_day_number'],
+            }, {
+                key: '收藏武器数',
+                value: index?.stats?.['weapon_number'],
+            }, {
+                key: '装甲数',
+                value: index?.stats?.['armor_number']
+            }, {
+                key: '记忆战场',
+                value: (index?.stats?.['battle_field_ranking_percentage'] || "-") + "%"
+            }, {
+                key: '超弦空间',
+                value: dMap?.[index?.stats?.['new_abyss']?.['level']]
+            }, {
+                key: '杯数',
+                value: index?.stats?.['new_abyss']?.['cup_number']
+            }, {
+                key: '服装数',
+                value: index?.stats?.['suit_number']
+            }, {
+                key: 'sss装甲数',
+                value: index?.stats?.['sss_armor_number']
+            }, {
+                key: '收藏圣痕数',
+                value: index?.stats?.['stigmata_number']
+            }, {
+                key: '往事乐土成绩',
+                value: index?.stats?.['god_war_max_challenge_score']
+            }, {
+                key: '追忆之证数',
+                value: index?.stats?.['god_war_extra_item_number']
+            }, {
+                key: '命定的歧路等级',
+                value: index?.stats?.['god_war_max_support_point']
+            }, {
+                key: '五星武器数',
+                value: index?.stats?.['five_star_weapon_number']
+            }, {
+                key: '五星圣痕数',
+                value: index?.stats?.['five_star_stigmata_number']
+            }]
+        }
+        let img = await puppeteer.screenshot("bh3Index", {
+            tplFile: "./plugins/paimon-plugin/resources/html/bh3Index/index.html",
+            saveId: e.user_id,
+            plusResPath: `${process.cwd()}/plugins/paimon-plugin/resources/html`,
+            data: data
+        })
+        if (img) e.reply(img);
+        else e.reply("生成图片失败");
+        return true;
     }
 
     async showUid(e) {
@@ -184,67 +265,5 @@ export class bh3Sign extends Plugin {
             e.reply("请绑定cookie后查看");
         }
         return false;
-    }
-}
-
-async function getAllRoles(ck) {
-    if (!ck) return false;
-    let url = "https://api-takumi.mihoyo.com/binding/api/getUserGameRolesByCookie?game_biz=bh3_cn"
-    let headers = getHeaders();
-    headers["Cookie"] = ck;
-    let res = await fetch(url, {
-        method: 'get',
-        headers: headers,
-    });
-    if (!res.ok) {
-        return false;
-    } else {
-        res = await res.json();
-        return res?.data?.list;
-    }
-}
-
-function getHeaders() {
-    return {
-        "Host": "api-takumi.mihoyo.com",
-        "Connection": "keep-alive",
-        "Accept": "application/json, text/plain, */*",
-        'x-rpc-app_version': '2.37.1',
-        'Content-Type': 'application/json;charset=UTF-8',
-        'User-Agent': 'Mozilla/5.0 (Linux; Android 7.1.2; HLK-AL10 Build/N2G47H; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/81.0.4044.117 Mobile Safari/537.36 miHoYoBBS/2.46.1',
-        'x-rpc-client_type': 5,
-        'x-rpc-device_id': '8642b132-87b3-30b3-a4e7-361e487e568b',
-        'Origin': 'https://webstatic.mihoyo.com',
-        'X-Requested-With': 'com.mihoyo.hyperion',
-        'Sec-Fetch-Site': 'same-site',
-        'Sec-Fetch-Mode': 'cors',
-        'Sec-Fetch-Dest': 'empty',
-        'Referer': 'https://webstatic.mihoyo.com/bbs/event/signin/bh3/index.html?bbs_auth_required=true&act_id=e202207181446311&bbs_presentation_style=fullscreen&utm_source=bbs&utm_medium=mys&utm_campaign=icon',
-        'Accept-Encoding': 'gzip, deflate',
-        'Accept-Language': 'zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7',
-    }
-}
-
-function getDsSign() {
-    const n = 'Qqx8cyv7kuyD8fTw11SmvXSFHp7iZD29'
-    const t = Math.round(new Date().getTime() / 1000)
-    const r = lodash.sampleSize('abcdefghijklmnopqrstuvwxyz0123456789', 6).join('')
-    const DS = md5(`salt=${n}&t=${t}&r=${r}`)
-    return `${t},${r},${DS}`
-}
-
-async function checkSigned(ck, role) {
-    let url = `https://api-takumi.mihoyo.com/event/luna/info?act_id=e202207181446311&region=${role.region}&uid=${role.uid}&lang=zh-cn`;
-    let headers = getHeaders();
-    headers["Cookie"] = ck;
-    let res = await fetch(url, {
-        method: 'get',
-        headers: headers
-    });
-    if (!res.ok) {
-        return false;
-    } else {
-        res = await res.json();
-        return res?.data?.["is_sign"];
     }
 }

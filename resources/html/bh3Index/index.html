@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" type="text/css" href="{{plusResPath}}/bh3Index/index.css" />
+		<link rel="preload" href="{{plusResPath}}/common/font/HYWH-65W.ttf" />
+		<link rel="preload" href="{{plusResPath}}/common/font/tttgbnumber.ttf" />
+		<title>崩坏三角色信息</title>
+	</head>
+	<body>
+		<div id="container">
+			<div class="head_box">
+				<div>
+					<div class="nickname">{{data.nickname}} <span class="level">Lv.{{data.level}}</span></div>
+					<div class="level">#{{data.uid}}</div>
+				</div>
+				<img style="height: 80px;" src="{{plusResPath}}/bh3Index/img/bh3T.png" />
+			</div>
+			<div class="index_box">
+				<div class="title">数据总览</div>
+				<div class="content">
+					{{each data.index ele}}
+					<div class="info">
+						<div class="value">{{ele.value}}</div>
+						<div class="key">{{ele.key}}</div>
+					</div>
+					{{/each}}
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
