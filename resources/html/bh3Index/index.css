@@ -43,7 +43,7 @@
 	font-size: 15px;
 }
 
-.index_box {
+.box {
 	margin-top: 10px;
 	border-radius: 15px;
 	box-shadow: 5px 5px 5px 0px #707070;
@@ -86,4 +86,40 @@
 	font-family: 'Text';
 	color: #cccc36;
 	font-size: 10px;
+}
+
+.avatar {
+	width: 100%;
+	border-radius: 10px 10px 0px 0px;
+}
+
+.chara_box {
+	box-sizing: border-box;
+	padding: 5px 8px;
+	float: left;
+	width: 25%;
+}
+
+.tip {
+	border-radius: 0 0 10px 10px;
+	padding-right: 10px;
+	position: relative;
+	height: 20px;
+	top: -4px;
+	align-items: center;
+	justify-content: right;
+	display: flex;
+	background-color: #ffffff;
+}
+
+.starImg {
+	position: absolute;
+	left: 5px;
+	width: 35px;
+	bottom: -1px;
+}
+
+.cha_lv {
+	font-family: 'Number';
+	font-weight: bold;
 }

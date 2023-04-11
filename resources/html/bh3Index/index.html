@@ -16,13 +16,27 @@
 				</div>
 				<img style="height: 80px;" src="{{plusResPath}}/bh3Index/img/bh3T.png" />
 			</div>
-			<div class="index_box">
+			<div class="box">
 				<div class="title">数据总览</div>
 				<div class="content">
 					{{each data.index ele}}
 					<div class="info">
 						<div class="value">{{ele.value}}</div>
 						<div class="key">{{ele.key}}</div>
+					</div>
+					{{/each}}
+				</div>
+			</div>
+			<div class="box">
+				<div class="title">我的角色</div>
+				<div class="content">
+					{{each data.characters character}}
+					<div class="chara_box">
+						<img class="avatar" src="{{imgPath}}/role/avatar/{{character.name}}.png"/>
+						<div class="tip">
+							<img class="starImg" src="{{imgPath}}/star/{{character.star}}.png"/>
+							<div class="cha_lv">Lv.{{character.level}}</div>
+						</div>
 					</div>
 					{{/each}}
 				</div>

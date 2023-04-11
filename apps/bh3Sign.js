@@ -7,7 +7,6 @@ import {Common} from "../components/index.js";
 import bh3Api from "../components/models/Bh3Api.js";
 import puppeteer from "../../../lib/puppeteer/puppeteer.js";
 import MysInfo from "../../genshin/model/mys/mysInfo.js";
-import {query} from "express";
 
 const dMap = [null, "禁忌", "原罪I", "原罪II", "原罪III", "苦痛I", "苦痛II", "苦痛III", "红莲", "寂灭"]
 const regions = ['hun01', 'hun02', 'android01', 'pc01', 'yyb01', 'bb01']
@@ -157,14 +156,14 @@ export class bh3Sign extends Plugin {
     async bh3Info(e) {
         let msg = e.msg?.replace("M_onlyPm_", "");
         let uid = msg.match(/\d+/)?.[0];
-        let index, role;
+        let index, role, characters = [];
         if (uid) {
             await MysInfo.initCache();
             let mysInfo = new MysInfo(e);
             let queryUid;
             if (/^[6-9]/.test(uid)) {
-                queryUid = (Number(uid[0])-5)+uid.substr(1);
-            }else queryUid = uid;
+                queryUid = (Number(uid[0]) - 5) + uid.substr(1);
+            } else queryUid = uid;
             mysInfo.uid = queryUid;
             let ck = await mysInfo.getCookie();
             for (let region of regions) {
@@ -176,6 +175,7 @@ export class bh3Sign extends Plugin {
                 e.reply("没有找到对应的角色信息");
                 return;
             }
+            characters = await bh3Api.getCharacters(ck, role) || [];
         } else {
             let user = new Bh3User(e);
             let ck = await user.getCk();
@@ -193,6 +193,7 @@ export class bh3Sign extends Plugin {
                 e.reply(index);
                 return true;
             }
+            characters = await bh3Api.getCharacters(ck, role) || [];
         }
         if (!index) {
             e.reply("出错了");
@@ -244,12 +245,14 @@ export class bh3Sign extends Plugin {
             }, {
                 key: '五星圣痕数',
                 value: index?.stats?.['five_star_stigmata_number']
-            }]
+            }],
+            characters: characters
         }
         let img = await puppeteer.screenshot("bh3Index", {
             tplFile: "./plugins/paimon-plugin/resources/html/bh3Index/index.html",
             saveId: e.user_id,
             plusResPath: `${process.cwd()}/plugins/paimon-plugin/resources/html`,
+            imgPath: `${process.cwd()}/plugins/paimon-plugin/resources/bh3`,
             data: data
         })
         if (img) e.reply(img);

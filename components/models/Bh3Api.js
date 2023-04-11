@@ -163,8 +163,40 @@ async function getIndex(ck, role) {
     }
     res = await res.json();
     let ans = res?.data;
-    if(!ans) return res.message;
-    return  ans;
+    if (!ans) return res.message;
+    return ans;
 }
 
-export default {bh3DaySign, checkSigned, getAllRoles, getIndex}
+/**
+ * 获取米游社崩坏三角色接口
+ * @param ck
+ * @param role
+ * @returns {Promise<{star: *, level: *, name: *}[]|boolean>}
+ */
+async function getCharacters(ck, role) {
+    let url = "https://api-takumi-record.mihoyo.com/game_record/app/honkai3rd/api/characters"
+    let query = `role_id=${role.uid}&server=${role.region}`
+    url += "?" + query
+    let headers = getHeaders("characters", query)
+    headers["Cookie"] = ck
+    let res = await fetch(url, {
+        method: 'get',
+        headers: headers
+    })
+    if (!res.ok) {
+        return false
+    }
+    res = await res.json()
+    let ans = res?.data?.characters
+    if (!ans) return false;
+    ans = ans.map(c => {
+        return {
+            name: c?.character?.avatar?.name,
+            level: c?.character?.avatar?.level,
+            star: c?.character?.avatar?.star
+        }
+    })
+    return ans;
+}
+
+export default {bh3DaySign, checkSigned, getAllRoles, getIndex, getCharacters}
