@@ -27,19 +27,19 @@ export class translate extends Plugin {
             priority: 100,
             rule: [
                 {
-                    reg: '(M_onlyPm_)?#*翻译(0|1|2|3|4|5|6|7|8|9|10|11)?,?(0|1|2|3|4|5|6|7|8|9|10|11)? ([\\s\\S]*)',
+                    reg: '^(M_onlyPm_)?#*翻译(0|1|2|3|4|5|6|7|8|9|10|11)?,?(0|1|2|3|4|5|6|7|8|9|10|11)? ([\\s\\S]*)',
                     fnc: 'translate'
                 },
                 {
-                    reg: '(M_onlyPm_)?#*翻译帮助',
+                    reg: '^(M_onlyPm_)?#*翻译帮助',
                     fnc: 'transHelp'
                 },
                 {
-                    reg: '(M_onlyPm_)?#*配置翻译',
+                    reg: '^(M_onlyPm_)?#*配置翻译',
                     fnc: "cfgTrans"
                 },
                 {
-                    reg: '(M_onlyPm_)?#*删除翻译配置',
+                    reg: '^(M_onlyPm_)?#*删除翻译配置',
                     fnc: "delCfg"
                 }
             ]

@@ -18,15 +18,15 @@ export class sudoku extends Plugin {
             priority: 50,
             rule: [
                 {
-                    reg: '(M_onlyPm_)?#新数独(.*)',
+                    reg: '^(M_onlyPm_)?#新数独(.*)',
                     fnc: 'startGame'
                 },
                 {
-                    reg: "(M_onlyPm_)?#(数独|答案)$",
+                    reg: "^(M_onlyPm_)?#(数独|答案)$",
                     fnc: 'getPic'
                 },
                 {
-                    reg: '(M_onlyPm_)?#我的答案 (.*)',
+                    reg: '^(M_onlyPm_)?#我的答案 (.*)',
                     fnc: "answer"
                 }
             ]

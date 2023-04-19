@@ -12,15 +12,15 @@ export class help extends Plugin {
             event: 'message',
             rule: [
                 {
-                    reg: '(M_onlyPm_)?#?派蒙帮助',
+                    reg: '^(M_onlyPm_)?#?派蒙帮助',
                     fnc: 'help'
                 },
                 {
-                    reg: '(M_onlyPm_)?#?派蒙版本',
+                    reg: '^(M_onlyPm_)?#?派蒙版本',
                     fnc: 'versionInfo'
                 },
                 {
-                    reg: '(M_onlyPm_)?#?派蒙设置',
+                    reg: '^(M_onlyPm_)?#?派蒙设置',
                     fnc: 'pmSet',
                     permission: 'master'
                 }

@@ -10,7 +10,7 @@ export class other extends Plugin {
             priority: 10,
             rule: [
                 {
-                    reg: '(M_onlyPm_)?#?only[-_:]Paimon[-_:](on|off)',
+                    reg: '^(M_onlyPm_)?#?only[-_:]Paimon[-_:](on|off)',
                     fnc: 'switchOnly',
                     permission: 'master'
                 }

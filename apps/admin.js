@@ -10,27 +10,27 @@ export class admin extends Plugin {
             priority: '49',
             rule: [
                 {
-                    reg: '(M_onlyPm_)?#(启用|禁用)群游戏',
+                    reg: '^(M_onlyPm_)?#(启用|禁用)群游戏',
                     fnc: "banGm",
                     permission: "master"
                 },
                 {
-                    reg: '(M_onlyPm_)?#派蒙(强制)?更新',
+                    reg: '^(M_onlyPm_)?#派蒙(强制)?更新',
                     fnc: "update",
                     permission: "master"
                 },
                 {
-                    reg: '(M_onlyPm_)?#(开启|关闭)群打卡\d*',
+                    reg: '^(M_onlyPm_)?#(开启|关闭)群打卡\d*',
                     fnc: 'qunCard',
                     permission: "master"
                 },
                 {
-                    reg: '(M_onlyPm_)?#关闭全部群打卡',
+                    reg: '^(M_onlyPm_)?#关闭全部群打卡',
                     fnc: 'closeAll',
                     permission: "master"
                 },
                 {
-                    reg: '(M_onlyPm_)?#打卡',
+                    reg: '^(M_onlyPm_)?#打卡',
                     fnc: 'card',
                     permission: "master"
                 }

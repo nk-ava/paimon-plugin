@@ -16,7 +16,7 @@ export class mysCoin extends Plugin {
             priority: 200,
             rule: [
                 {
-                    reg: '(M_onlyPm_)?#绑定米游社',
+                    reg: '^(M_onlyPm_)?#绑定米游社',
                     fnc: 'bingMys'
                 },
                 {
@@ -24,7 +24,7 @@ export class mysCoin extends Plugin {
                     fnc: 'myCk'
                 },
                 {
-                    reg: '(M_onlyPm_)?#米游社签到',
+                    reg: '^(M_onlyPm_)?#米游社签到',
                     fnc: 'sign'
                 },
                 {

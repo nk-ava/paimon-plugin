@@ -30,12 +30,12 @@ export class friendAuth extends Plugin {
                     permission: 'master',
                 },
                 {
-                    reg: '(M_onlyPm_)?#SALT',
+                    reg: '^(M_onlyPm_)?#SALT',
                     fnc: 'showSalt',
                     permission: 'master',
                 },
                 {
-                    reg: "(M_onlyPm_)?#ANSWER",
+                    reg: "^(M_onlyPm_)?#ANSWER",
                     fnc: "showAns",
                     permission: 'master',
                 }

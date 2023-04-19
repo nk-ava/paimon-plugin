@@ -20,7 +20,7 @@ export class bh3Sign extends Plugin {
             priority: 200,
             rule: [
                 {
-                    reg: '(M_onlyPm_)?#绑定崩三',
+                    reg: '^(M_onlyPm_)?#绑定崩三',
                     fnc: 'bingBh',
                     event: "message.private"
                 },
@@ -30,11 +30,11 @@ export class bh3Sign extends Plugin {
                     event: 'message.private'
                 },
                 {
-                    reg: '(M_onlyPm_)?#(开启|关闭)崩三自动签到',
+                    reg: '^(M_onlyPm_)?#(开启|关闭)崩三自动签到',
                     fnc: 'b3SignSwitch'
                 },
                 {
-                    reg: '(M_onlyPm_)?#崩坏三签到',
+                    reg: '^(M_onlyPm_)?#崩坏三签到',
                     fnc: 'bh3Sign'
                 },
                 {

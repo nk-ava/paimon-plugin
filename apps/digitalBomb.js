@@ -16,10 +16,10 @@ export class digitalBomb extends Plugin {
             event: 'message',
             priority: 50,
             rule: [{
-                reg: "(M_onlyPm_)?#数字炸弹",
+                reg: "^(M_onlyPm_)?#数字炸弹",
                 fnc: 'gameName'
             }, {
-                reg: "(M_onlyPm_)?#结束游戏",
+                reg: "^(M_onlyPm_)?#结束游戏",
                 fnc: "gameOver"
             }]
         });

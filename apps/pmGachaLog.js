@@ -17,11 +17,11 @@ export class pmGachaLog extends Plugin {
             priority: 400,
             rule: [
                 {
-                    reg: '(M_onlyPm_)?#获取断网链接\d*',
+                    reg: '^(M_onlyPm_)?#获取断网链接\d*',
                     fnc: 'getLogUrl'
                 },
                 {
-                    reg: '(M_onlyPm_)?#*(更新)?祈愿分析\d*',
+                    reg: '^(M_onlyPm_)?#*(更新)?祈愿分析\d*',
                     fnc: 'gachaAnalysis'
                 }
             ]

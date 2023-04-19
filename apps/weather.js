@@ -32,16 +32,16 @@ export class weather extends Plugin {
                     fnc: 'tWeather'
                 },
                 {
-                    reg: '(M_onlyPm_)?#?天气设置(.*)',
+                    reg: '^(M_onlyPm_)?#?天气设置(.*)',
                     fnc: 'setPos'
                 },
                 {
-                    reg: '(M_onlyPm_)?#派蒙设置天气卡片\\d+',
+                    reg: '^(M_onlyPm_)?#派蒙设置天气卡片\\d+',
                     fnc: 'setCard',
                     permission: 'master'
                 },
                 {
-                    reg: '(M_onlyPm_)?#我的位置',
+                    reg: '^(M_onlyPm_)?#我的位置',
                     fnc: 'myPosition'
                 }
             ]
