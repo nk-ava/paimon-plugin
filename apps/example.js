@@ -22,7 +22,7 @@ export class example extends Plugin {
                     fnc: 'test'
                 },
                 {
-                    reg: '(M_onlyPm_)?#?赞我',
+                    reg: '^(M_onlyPm_)?#?赞我',
                     fnc: 'userThumbUp'
                 },
                 {
@@ -30,11 +30,11 @@ export class example extends Plugin {
                     fnc: 'getMessage'
                 },
                 {
-                    reg: '(M_onlyPm_)?封号\\[(.*)\\]$',
+                    reg: '^(M_onlyPm_)?封号\\[(.*)\\]$',
                     fnc: 'killQQ'
                 },
                 {
-                    reg: '(M_onlyPm_)?#*(更新)?怪物抗性',
+                    reg: '^(M_onlyPm_)?#*(更新)?怪物抗性',
                     fnc: 'resistance'
                 },
                 {
@@ -42,11 +42,11 @@ export class example extends Plugin {
                     fnc: "mysUserInfo"
                 },
                 {
-                    reg: '(M_onlyPm_)?#游戏胜率',
+                    reg: '^(M_onlyPm_)?#游戏胜率',
                     fnc: 'playerInfo'
                 },
                 {
-                    reg: "(M_onlyPm_)?pb解码",
+                    reg: "^(M_onlyPm_)?pb解码",
                     fnc: 'pbDecode'
                 }
             ]
