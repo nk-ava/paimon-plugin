@@ -111,7 +111,7 @@ export class example extends Plugin {
 
     async getMessage(e) {
         if (!e.source) {
-            e.reply("请引用消息后再使用此命令");
+            //直接返回，不提示
             return true;
         }
         let t = e.friend || e.group;

@@ -1,14 +1,12 @@
 import fs from "node:fs";
 
+const faceDir = "./plugins/paimon-plugin/resources/paimon/";
+const info = JSON.parse(fs.readFileSync(faceDir + "info.json", "utf-8"));
+
 function sendPm(content) {
-    let faceDir = "./plugins/paimon-plugin/resources/paimon/";
-    if (typeof inFo == "undefined") {
-        let inFo = fs.readFileSync(faceDir + "info.json");
-        global.inFo = JSON.parse(inFo);
+    if (info[content]) {
+        return faceDir + content + Math.floor(Math.random() * info[content]) + ".jpg";
     }
-    if (inFo[content]) {
-        return faceDir + content + Math.floor(Math.random() * inFo[content]) + ".jpg";
-    }
-    return '';
+    return 'error';
 }
 export default sendPm;
