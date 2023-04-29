@@ -1,22 +1,25 @@
 import Plugin from "../../../lib/plugins/plugin.js";
 import md5 from "md5";
+import fetch from "node-fetch";
 import querystring from "querystring";
 import {Cfg} from "../components/index.js";
 
 let map = {
-    "0": "zh",
-    "1": "en",
-    "2": "yue",
-    "3": "wyw",
-    "4": "jp",
-    "5": "kor",
-    "6": "fra",
-    "7": "spa",
-    "8": "th",
-    "9": "ara",
-    "10": "ru",
-    "11": "pt",
+    "0": "zh",         // 中文
+    "1": "en",         // 英语
+    "2": "yue",        // 粤语
+    "3": "wyw",        // 文言文
+    "4": "jp",         // 日语
+    "5": "kor",        // 韩语
+    "6": "fra",        // 法语
+    "7": "spa",        // 西班牙语
+    "8": "th",         // 泰语
+    "9": "ara",        // 阿拉伯语
+    "10": "ru",        // 俄语
+    "11": "pt",        // 葡萄牙语
 }
+
+let ttsUrl = ""
 
 export class translate extends Plugin {
     constructor(e) {
@@ -27,7 +30,7 @@ export class translate extends Plugin {
             priority: 100,
             rule: [
                 {
-                    reg: '^(M_onlyPm_)?#*翻译(0|1|2|3|4|5|6|7|8|9|10|11)?,?(0|1|2|3|4|5|6|7|8|9|10|11)? ([\\s\\S]*)',
+                    reg: '^(M_onlyPm_)?#*(tts)?翻译(0|1|2|3|4|5|6|7|8|9|10|11)?,?(0|1|2|3|4|5|6|7|8|9|10|11)? ([\\s\\S]*)',
                     fnc: 'translate'
                 },
                 {
@@ -41,6 +44,10 @@ export class translate extends Plugin {
                 {
                     reg: '^(M_onlyPm_)?#*删除翻译配置',
                     fnc: "delCfg"
+                },
+                {
+                    reg: '^(M_onlyPm_)?#?tts',
+                    fnc: 'toTTS'
                 }
             ]
         });
@@ -53,6 +60,23 @@ export class translate extends Plugin {
             e.cfgTrans = msg;
             e.msg = "#配置翻译"
         }
+    }
+
+    // node版本太高可能会发不出去，建议v16.16
+    toTTS(e) {
+        if (!ttsUrl) {
+            e.reply("请先使用翻译")
+            return
+        }
+        let params = querystring.parse(ttsUrl.substr(31))
+        if (params['lan'] === "auto") {
+            e.reply('tts不支持自动识别的语言，请使用参数指定翻译的语言类型')
+            return
+        }
+        e.reply({
+            type: 'record',
+            file: ttsUrl
+        })
     }
 
     reloadCfg() {
@@ -79,6 +103,7 @@ export class translate extends Plugin {
         }
         let index = 0;
         let msg = e.msg?.replace("M_onlyPm_", "");
+        let flag = /^#?tts翻译/.test(msg)
         while (msg[index] !== " " && index < msg.length) index++;
         let arg = new Array(2);
         arg[0] = msg.substr(0, index);
@@ -106,7 +131,11 @@ export class translate extends Plugin {
         } else {
             response = await response.json();
             if (!response['error_code']) {
-                e.reply(response['trans_result'][0].dst);
+                let rsq = response['trans_result'][0].dst
+                e.reply(rsq);
+                if (to === "wyw") to = 'zh'
+                ttsUrl = `https://fanyi.baidu.com/gettts?lan=${to}&text=${rsq}&spd=3&source=web`
+                if (flag) this.toTTS(e)
             } else {
                 e.reply("出错了,请切换其他语言");
             }

@@ -257,7 +257,7 @@ export class help extends Plugin {
                     key: 'salt=',
                     def: `${friendCfg?.salt}`,
                     value: friendCfg?.type === 3,
-                    desc: '严格状态下计算答案所用的salt，取16位MD5("seq=${seq}&salt=${salt})即可得出答案',
+                    desc: '严格状态下计算答案所用的salt，取16位MD5("salt=${salt}&seq=${seq}")即可得出答案',
                     showDesc: true
                 }]
             }, {

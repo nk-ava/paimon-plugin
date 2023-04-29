@@ -1,6 +1,6 @@
 # paimon-plugin
 
-yunzai-bot插件，仅支持v3
+Yunzai-V3自用插件
 
 ### 使用帮助
 

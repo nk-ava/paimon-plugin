@@ -196,7 +196,7 @@ export class friendAuth extends Plugin {
                 e.reply("出错了，没有查到答案，请发送【#派蒙设置加好友2】重新设置")
             }
         } else if (this.cfg.type === 3) {
-            e.reply("请获取问题的seq，取\"seq=${seq},salt=${salt}\"的16位MD5")
+            e.reply("请获取问题的seq，取\"salt=${salt}&seq=${seq}\"的16位MD5")
         } else {
             e.reply("未处理的加好友类型")
         }
