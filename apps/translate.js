@@ -134,7 +134,7 @@ export class translate extends Plugin {
                 let rsq = response['trans_result'][0].dst
                 e.reply(rsq);
                 if (to === "wyw") to = 'zh'
-                ttsUrl = `https://fanyi.baidu.com/gettts?lan=${to}&text=${rsq}&spd=3&source=web`
+                ttsUrl = encodeURI(`https://fanyi.baidu.com/gettts?lan=${to}&text=${rsq}&spd=3&source=web`)
                 if (flag) this.toTTS(e)
             } else {
                 e.reply("出错了,请切换其他语言");
