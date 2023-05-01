@@ -2,6 +2,7 @@ import Plugin from "../../../lib/plugins/plugin.js";
 import fs from "node:fs";
 import util from "util";
 import common from "../../../lib/common/common.js";
+import fetch from "node-fetch";
 import request from "request";
 import browserPuppeteer from "../components/models/BrowserPuppeteer.js";
 import {playerGameInfo} from "../components/models/GameDate.js";

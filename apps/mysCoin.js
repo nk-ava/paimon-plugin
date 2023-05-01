@@ -4,6 +4,7 @@ import mysCKUser from "../components/models/mysCKUser.js";
 import fs from "node:fs";
 import YAML from "yaml";
 import MysCKUser from "../components/models/mysCKUser.js";
+import fetch from "node-fetch";
 import {createSign} from "../components/models/MysSign.js";
 import {Common} from "../components/index.js";
 

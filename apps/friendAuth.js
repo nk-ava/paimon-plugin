@@ -2,6 +2,7 @@ import Plugin from "../../../lib/plugins/plugin.js";
 import md5 from "md5";
 import {Cfg, Version, Common} from "../components/index.js";
 import lodash from "lodash";
+import fetch from "node-fetch";
 
 const collection = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 let timer = {};

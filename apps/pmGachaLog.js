@@ -2,6 +2,7 @@ import Plugin from "../../../lib/plugins/plugin.js";
 import {Sign} from "../components/models/MysSign.js";
 import mysCKUser from "../components/models/mysCKUser.js";
 import GachaLog from "../../genshin/model/gachaLog.js";
+import fetch from "node-fetch";
 import puppeteer from "../../../lib/puppeteer/puppeteer.js";
 import fs from "node:fs";
 

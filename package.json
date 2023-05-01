@@ -1,0 +1,31 @@
+{
+  "name": "paimon-plugin",
+  "version": "1.2.8",
+  "description": "Yunzai-V3自用插件",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zlh-debug/paimon-plugin.git"
+  },
+  "keywords": [
+    "yunzai",
+    "plugin",
+    "robot"
+  ],
+  "dependencies": {
+    "node-uuid": "^1.4.8",
+    "request": "^2.88.2",
+    "utf-8-validate": "^6.0.3",
+    "string.ify": "^1.0.64",
+    "node-fetch": "^3.2.6"
+  },
+  "author": "zlh-debug",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zlh-debug/paimon-plugin/issues"
+  },
+  "homepage": "https://github.com/zlh-debug/paimon-plugin#readme"
+}

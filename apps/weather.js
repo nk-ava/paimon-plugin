@@ -3,6 +3,7 @@ import schedule from "node-schedule";
 import {Cfg} from "../components/index.js";
 import BrowserPuppeteer from "../components/models/BrowserPuppeteer.js";
 import {jsonSign} from "./jsonSign.js";
+import fetch from "node-fetch";
 import {help} from "./help.js";
 import md5 from "md5";
 
