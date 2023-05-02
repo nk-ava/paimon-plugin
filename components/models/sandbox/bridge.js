@@ -378,7 +378,7 @@ $.deleteMsg = (message_id) => {
     callApi("deleteMsg", [message_id])
 }
 $.sendGroupForwardMsg = (gid, msgs) => {
-    callApi("makeForwardMsg", [msgs])
+    callApi("makeForwardMsg", [msgs, gid])
         .then(xml => {
             callApi("sendGroupMsg", [gid, xml?.data])
         })
