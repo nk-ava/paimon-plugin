@@ -2,6 +2,7 @@ const fs = require("fs")
 const path = require("path")
 const cp = require("child_process")
 const {EventEmitter} = require("events")
+const lodash = require("lodash")
 
 const bots = new Map
 const execRet = new Map
@@ -113,8 +114,14 @@ function init(bot) {
     // 只支持oicq和icqq，不是oicq就用icqq的事件触发
     // oicq和icqq的监听时一样的所以不需要区分
     try {
-        bot.on("notice", preDeal)
-        bot.on("request", preDeal)
+        bot.on("notice", (e) => {
+            let event = lodash.cloneDeep(e)
+            preDeal(event)
+        })
+        bot.on("request", (e) => {
+            let event = lodash.cloneDeep(e)
+            preDeal(event)
+        })
         global.sdb = {
             // 添加上下文
             add: function (key, value) {
