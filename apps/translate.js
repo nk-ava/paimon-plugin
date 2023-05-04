@@ -46,7 +46,7 @@ export class translate extends Plugin {
                     fnc: "delCfg"
                 },
                 {
-                    reg: '^(M_onlyPm_)?#?tts',
+                    reg: '^(M_onlyPm_)?#?PMTTS',
                     fnc: 'toTTS'
                 }
             ]
