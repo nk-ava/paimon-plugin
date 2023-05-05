@@ -114,14 +114,8 @@ function init(bot) {
     // 只支持oicq和icqq，不是oicq就用icqq的事件触发
     // oicq和icqq的监听时一样的所以不需要区分
     try {
-        bot.on("notice", (e) => {
-            let event = lodash.cloneDeep(e)
-            preDeal(event)
-        })
-        bot.on("request", (e) => {
-            let event = lodash.cloneDeep(e)
-            preDeal(event)
-        })
+        bot.on("notice", preDeal)
+        bot.on("request", preDeal)
         global.sdb = {
             // 添加上下文
             add: function (key, value) {
@@ -191,9 +185,10 @@ function dealMsg(data) {
 }
 
 function preDeal(data) {
-    delete data.runtime;
-    delete data.reply;
-    dealMsg(data)
+    const d = lodash.cloneDeep(data)
+    delete d.runtime;
+    delete d.reply;
+    dealMsg(d)
 }
 
 function saveCtx() {
