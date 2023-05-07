@@ -188,7 +188,9 @@ function preDeal(data) {
     const d = lodash.cloneDeep(data)
     delete d.runtime;
     delete d.reply;
-    dealMsg(d)
+    if (d.friend) d.isPrivate = true
+    if (d.group) d.isGroup = true
+    dealMsg.call(this, d)
 }
 
 function saveCtx() {

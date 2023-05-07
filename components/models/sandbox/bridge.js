@@ -28,7 +28,7 @@ const stringify_config = stringify.configure({
 const sandbox = require("./sandbox")
 
 process.on("disconnect", process.exit)
-process.on("message", (value) => {
+process.on("message", async (value) => {
     if (value?.type === "saveCtx") {
         sandbox.saveCtx();
         return;
@@ -52,7 +52,7 @@ process.on("message", (value) => {
         return;
     }
     if (!value.echo) {
-        onmessage(value)
+        await onmessage(value)
     } else {
         handler.get(value.echo)?.(value)
         handler.delete(value.echo)
@@ -456,7 +456,7 @@ function toStr(msg) {
 /**
  * @param {import("oicq").EventData} data
  */
-function onmessage(data) {
+async function onmessage(data) {
     codeTemp[data.user_id] = []
     if (data.post_type === "message") {
         if (data.message_type === "group" && bots.has(data.user_id) && data.user_id !== data.self_id && data.user_id < data.self_id) {
@@ -532,9 +532,9 @@ function onmessage(data) {
         sandbox.setEnv(data)
     }
     if (!bots.has(data.self_id))
-        init(data)
+        await init(data)
     else if (data.post_type === "notice" && data.notice_type === "group")
-        init(data, data.group_id)
+        await init(data, data.group_id)
     try {
         sandbox.exec(`try{this.onEvents()}catch(e){alert(e)}`)
     } catch {
