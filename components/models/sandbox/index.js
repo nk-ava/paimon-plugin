@@ -8,7 +8,7 @@ const bots = new Map
 const execRet = new Map
 
 /**
- * @type {cp.ChildProcess}
+ * @type {ChildProcess}
  */
 let worker
 let flag = true;
@@ -100,9 +100,8 @@ function destructor() {
 }
 
 function restart() {
-    destructor()
-    flag = true
-    startWorker()
+    bots.clear()
+    worker.kill()
 }
 
 /**
