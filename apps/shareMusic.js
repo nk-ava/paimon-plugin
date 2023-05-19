@@ -82,7 +82,7 @@ export class shareMusic extends Plugin {
     async chooseSong(e) {
         let t = e.friend || e.group
         let msg = e.msg?.replace("M_onlyPm_", "");
-        let args = msg.replace(/^#/, "").split("点歌")
+        let args = msg.split(/\s/)[0].replace(/^#/, "").split("点歌")
         let song = msg.replace(/#?(酷狗|酷我|QQ|网易云)?点歌[^\s]*/, "").trim();
         if (!song) {
             e.reply("命令格式为；\n#点歌 <搜索关键字>");
