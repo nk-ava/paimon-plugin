@@ -4,7 +4,7 @@ import {SendPm, buildMusic, fetchQrCode, getSongs} from "../components/index.js"
 import {Cfg} from "../components/index.js"
 
 const selfUid = Bot.uin;
-const availablePf = ["163", "qq", "kugou", "kuwo"]
+const availablePf = {"网易云": "163", "QQ": "qq", "酷狗": "kugou", "酷我": "kuwo"}
 const retMap = new Map
 let ckLock = false
 
@@ -17,7 +17,7 @@ export class shareMusic extends Plugin {
             priority: '100',
             rule: [
                 {
-                    reg: '^(M_onlyPm_)?#点歌(.*)\\s(.*)$',
+                    reg: '^(M_onlyPm_)?#?(酷狗|酷我|QQ|网易云)?点歌\\d*\\s(.*)$',
                     fnc: 'chooseSong'
                 },
                 {
@@ -38,6 +38,16 @@ export class shareMusic extends Plugin {
         });
 
         this.cfg = Cfg.get("music")
+        if (!this.cfg) {
+            Cfg.set("music", {
+                "platform": "163",
+                "limit": 4,
+                "cookie": {
+                    "qq": {}
+                }
+            })
+            this.cfg = Cfg.get("music")
+        }
     }
 
     //接收json消息
@@ -72,31 +82,30 @@ export class shareMusic extends Plugin {
     async chooseSong(e) {
         let t = e.friend || e.group
         let msg = e.msg?.replace("M_onlyPm_", "");
-        let args = msg.match(/#点歌[^\s]*/)[0].replace("#点歌", "")
-        let song = msg.replace(/#点歌[^\s]*/, "").trim();
+        let args = msg.replace(/^#/, "").split("点歌")
+        let song = msg.replace(/#?(酷狗|酷我|QQ|网易云)?点歌[^\s]*/, "").trim();
         if (!song) {
             e.reply("命令格式为；\n#点歌 <搜索关键字>");
             return true;
         }
-        args = args.split(",")
         let limit, platform
         try {
-            limit = Number(args[0])
-            if (limit > 10 || limit < 1) {
+            limit = Number(args[1])
+            if (limit < 1 || isNaN(limit)) limit = this.cfg.limit
+            if (limit > 10) {
                 e.reply("太多了，派蒙处理不过来啦")
                 return true
             }
         } catch {
             limit = this.cfg.limit
         }
-        if (args[1] && availablePf.includes(args[1])) platform = args[1]
-        else if (args[1]) {
+        if (args[0] && Object.keys(availablePf).includes(args[0])) platform = availablePf[args[0]]
+        else if (args[0]) {
             e.reply("不支持的平台类型")
             return true
         } else {
             platform = this.cfg.platform
         }
-
         let songInfo = await redis.lRange(`Music:share-key:${platform}-${song}`, -1 * limit, -1) || [];
         if (songInfo.length < limit) {
             if (platform === "163") {
@@ -142,27 +151,31 @@ export class shareMusic extends Plugin {
             e.reply("点歌失败，请稍后再试！！");
             return true;
         }
-        let fake = [];
-        for (let i = 0; i < limit; i++) {
-            fake[i] = {
-                nickname: Bot.nickname,
-                user_id: selfUid,
-                message: {
-                    type: "json",
-                    data: songInfo[limit - 1 - i],
+        if (songInfo.length !== 1) {
+            let fake = [];
+            for (let i = 0; i < limit; i++) {
+                fake[i] = {
+                    nickname: Bot.nickname,
+                    user_id: selfUid,
+                    message: {
+                        type: "json",
+                        data: songInfo[limit - 1 - i],
+                    }
                 }
             }
+            fake.push({
+                nickname: Bot.nickname,
+                user_id: selfUid,
+                message: [{
+                    type: "text",
+                    text: "派蒙只推荐这四首",
+                }, segment.image(SendPm("哼"))]
+            })
+            let xl = await t.makeForwardMsg(fake);
+            e.reply(xl);
+        } else {
+            e.reply(segment.json(songInfo[0]))
         }
-        fake.push({
-            nickname: Bot.nickname,
-            user_id: selfUid,
-            message: [{
-                type: "text",
-                text: "派蒙只推荐这四首",
-            }, segment.image(SendPm("哼"))]
-        })
-        let xl = await t.makeForwardMsg(fake);
-        e.reply(xl);
         return true;
     }
 
@@ -172,18 +185,22 @@ export class shareMusic extends Plugin {
             e.reply("只能是1到10的数字")
             return true
         }
-        this.cfg.limit = limit
+        this.cfg.limit = Number(limit)
         Cfg.set("music", this.cfg)
+        e.reply(`当前点歌数量：${this.cfg.limit}`)
+        return true
     }
 
     setPlatform(e) {
         let platform = e.msg.replace(/^(M_onlyPm_)?#派蒙设置点歌平台/, "").trim()
-        if (!availablePf.includes(platform)) {
+        if (!Object.values(availablePf).includes(platform)) {
             e.reply(`不支持的点歌平台：${platform}`)
             return true
         }
         this.cfg.platform = platform
         Cfg.set("music", this.cfg)
+        e.reply(`当前点歌平台：${this.cfg.platform}`)
+        return true
     }
 
     async loginQQMusic(e) {

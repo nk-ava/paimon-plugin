@@ -33,8 +33,8 @@ export class help extends Plugin {
             group: "基本功能",
             list: [{
                 icon: 'gequ',
-                title: '#点歌 天下',
-                desc: '返回4首相关歌曲'
+                title: '#(酷狗|酷我|QQ|网易云)点歌4 天下',
+                desc: '返回4首相关平台歌曲'
             }, {
                 icon: "dianzan",
                 title: "#赞我",
@@ -236,6 +236,7 @@ export class help extends Plugin {
     static async cfgInfo() {
         let friendCfg = Cfg.get("friendAuth") || {}
         let weatherCfg = Cfg.get("weather") || {}
+        let musicCfg = Cfg.get("music") || {}
         let data = {
             tplFile: './plugins/paimon-plugin/resources/html/pmSet/index.html',
             saveId: 'paimon_set',
@@ -258,6 +259,33 @@ export class help extends Plugin {
                     def: `${friendCfg?.salt}`,
                     value: friendCfg?.type === 3,
                     desc: '严格状态下计算答案所用的salt，取16位MD5("salt=${salt}&seq=${seq}")即可得出答案',
+                    showDesc: true
+                }]
+            }, {
+                title: "点歌设置",
+                cfg: [{
+                    title: "默认点歌平台",
+                    key: "点歌平台",
+                    def: "163/kugou/kuwo/qq",
+                    type: "num",
+                    value: `${musicCfg.platform}`,
+                    desc: "点歌时没有指定平台则会使用默认平台",
+                    showDesc: true
+                }, {
+                    title: "默认点歌数量",
+                    key: '点歌数量',
+                    def: "1~10",
+                    type: "num",
+                    value: `${musicCfg.limit}`,
+                    desc: "没有指定数量则会返回默认数量，为1是不会生成转发消息",
+                    showDesc: true
+                }, {
+                    title: 'QQ点歌平台cookie',
+                    key: ' ',
+                    def: ' ',
+                    type: "num",
+                    value: `${musicCfg.cookie.qq.uin || "未绑定"}`,
+                    desc: "QQ音乐点歌需要登入，发送【#登入QQ音乐】完成绑定",
                     showDesc: true
                 }]
             }, {
