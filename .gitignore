@@ -1,6 +1,7 @@
 /config/config/*
 !/config/config/README.md
 !/config/config/startCfg.yaml
+!/config/config/musicCfg.json
 /components/models/cmd.js
 /resources/user_functions.json
 /components/models/sandbox/context
