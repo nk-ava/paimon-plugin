@@ -127,6 +127,17 @@ export class help extends Plugin {
                 desc: "私聊返回米游社ck"
             }]
         }, {
+            group: "b站相关指令",
+            list: [{
+                icon: "bilibili",
+                title: "BV*******",
+                desc: '输入视频的bvid返回视频，大小不能超过200mb'
+            }, {
+                icon: 'fenxianglianjie',
+                title: "生成的分享链接",
+                desc: '包含https://b23/tv/的会被解析成分享链接'
+            }]
+        }, {
             group: "其他指令",
             list: [{
                 icon: "caidan",

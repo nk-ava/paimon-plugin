@@ -168,7 +168,7 @@ export class shareMusic extends Plugin {
                 user_id: selfUid,
                 message: [{
                     type: "text",
-                    text: "派蒙只推荐这四首",
+                    text: "派蒙只推荐这几首",
                 }, segment.image(SendPm("哼"))]
             })
             let xl = await t.makeForwardMsg(fake);
