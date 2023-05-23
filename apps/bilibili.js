@@ -36,7 +36,7 @@ export class bilibili extends Plugin {
         let msg = e.msg.replace("M_onlyPm_", "")
         let bvId = msg.match(/BV(.*)/)[0]
         let args = msg.match(/\[[\s\S]*\]/)?.[0].slice(1, -1)
-        let pI = 1
+        let pI = 1, R = false
         if (args) {
             args = args?.split("-")
             args.forEach(a => {
@@ -44,6 +44,9 @@ export class bilibili extends Plugin {
                 if (!m) return
                 if (/^P\d+$/.test(m)) {
                     pI = a.trim().match(/\d+/)[0]
+                }
+                if (m === "R") {
+                    R = true
                 }
             })
         }
@@ -65,6 +68,30 @@ export class bilibili extends Plugin {
         let tmp_audio = path.join(TMP_DIR, `pmplugin-bili-audio-${md5(Date.now())}`)
         let tmp_video = path.join(TMP_DIR, `pmplugin-bili-video-${md5(Date.now())}`)
         try {
+            if (R) {
+                let res = await fetch(`https://api.bilibili.com/x/player/playurl?cid=${cid}&otype=json&bvid=${bvId}`)
+                res = await res.json()
+                let durl = res?.data?.durl[0]
+                if (!durl) throw new Error("出错了：未找到视频资源")
+                if (durl.size > 157286400) {
+                    throw new Error("出错啦：视频太大啦")
+                }
+                let tmp_output = path.join(TMP_DIR, `pmplugin-bili-output-${md5(Date.now())}.mp4`)
+                let video = await fetch(durl.url, {
+                    method: 'get',
+                    timeout: 360000,
+                    headers: {
+                        "Origin": "https://www.bilibili.com",
+                        "Referer": `https://www.bilibili.com/video/${bvId}/`
+                    }
+                })
+                await PipeLine(video.body, fs.createWriteStream(tmp_output))
+                await e.reply(segment.video(tmp_output))
+                e.reply(`共${pages.length}P，当前第${pI}P`, true)
+                fs.unlink(tmp_output, () => {
+                })
+                return true
+            }
             let res = await fetch(`https://api.bilibili.com/x/player/playurl?cid=${cid}&otype=json&bvid=${bvId}&fnval=80`)
             res = await res.json()
             let videos = res?.data?.dash?.video
@@ -77,6 +104,7 @@ export class bilibili extends Plugin {
             }
             let video = await fetch(videoUrl.baseUrl, {
                 method: 'get',
+                timeout: 240000,
                 headers: {
                     "Origin": "https://www.bilibili.com",
                     "Referer": `https://www.bilibili.com/video/${bvId}/`
@@ -85,14 +113,16 @@ export class bilibili extends Plugin {
             await PipeLine(video.body.pipe(new VideoDownloadTransform), fs.createWriteStream(tmp_video))
             let audio = await fetch(audioUrl.baseUrl, {
                 method: 'get',
+                timeout: 180000,
                 headers: {
                     "Origin": "https://www.bilibili.com",
                     "Referer": `https://www.bilibili.com/video/${bvId}/`
                 }
             })
             await PipeLine(audio.body, fs.createWriteStream(tmp_audio))
-        } catch {
-            e.reply(segment.image(rsp.pic))
+        } catch (err) {
+            logger.error(err)
+            e.reply(segment.image(rsp.pic), true)
             fs.unlink(tmp_video, () => {
             })
             fs.unlink(tmp_audio, () => {
@@ -104,7 +134,7 @@ export class bilibili extends Plugin {
             if (!fs.existsSync(tmp_output)) {
                 logger.error(stderr)
             } else {
-                await (e.friend || e.group).sendFile(`${tmp_output}`)
+                await e.reply(segment.video(tmp_output))
                 e.reply(`共${pages.length}P，当前第${pI}P`, true)
                 fs.unlink(tmp_output, () => {
                 })
