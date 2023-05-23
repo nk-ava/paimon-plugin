@@ -209,6 +209,7 @@ export class shareMusic extends Plugin {
             let ck = await fetchQrCode(e)
             if (ck.includes("出错了")) {
                 e.reply(ck, true)
+                ckLock = false
                 return
             }
             let ckObj = {}
