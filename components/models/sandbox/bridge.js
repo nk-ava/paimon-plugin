@@ -41,7 +41,8 @@ process.on("message", async (value) => {
         let res;
         try {
             res = sandbox.exec(value?.code);
-        }catch (e){}
+        } catch (e) {
+        }
         if (value?.ret) {
             process.send({
                 type: 'execRet',
@@ -119,16 +120,25 @@ const getGid = () => sandbox.getContext().data.group_id
 const getSid = () => sandbox.getContext().data.self_id
 
 const async_queue = {}
-const checkAndAddAsyncQueue = (o) => {
+const checkAndAddAsyncQueue = (o, fn = "") => {
     const key = getSid() + getGid() + sandbox.getContext().data.user_id
     if (!async_queue.hasOwnProperty([key])) {
         async_queue[key] = new Map()
         async_queue[key].set("start_moment", 0)
     }
+    if (fn === "setTimeout") {
+        const cnt = async_queue[key].get("called_cnt") || 1
+        if (cnt >= 3) {
+            async_queue[key].set("start_moment", 0)
+            async_queue[key].delete("called_cnt")
+            throw new Error("setTimeout调用次数达到上限")
+        }
+        async_queue[key].set("called_cnt", cnt + 1)
+    }
     let endless_flag = false
     let start_moment = async_queue[key].get("start_moment")
     async_queue[key].forEach((v, k, map) => {
-        if (k === "start_moment")
+        if (k === "start_moment" || k === "called_cnt")
             return
         if (v.end_time && Date.now() - v.end_time > 500)
             map.delete(k)
@@ -200,7 +210,7 @@ const precheck = function (caller) {
 
 sandbox.include("setTimeout", function (fn, timeout = 5000, argv = []) {
     checkFrequency()
-    checkAndAddAsyncQueue(this)
+    checkAndAddAsyncQueue(this, "setTimeout")
     if (typeof fn !== "function")
         throw new TypeError("fn(第一个参数)必须是函数。")
     timeout = parseInt(timeout)
