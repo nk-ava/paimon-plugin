@@ -129,7 +129,6 @@ const checkAndAddAsyncQueue = (o, fn = "") => {
     if (fn === "setTimeout") {
         const msgId = sandbox.getContext().data.message_id
         const time = sandbox.getContext().data.time
-        console.log(msgId, time)
         let cnt = async_queue[key].get("called_info")?.cnt || 0
         let msg_id = async_queue[key].get("called_info")?.["msg_id"] || msgId
         let t = async_queue[key].get("called_info")?.t || time
