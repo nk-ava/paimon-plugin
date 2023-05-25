@@ -127,32 +127,46 @@ const checkAndAddAsyncQueue = (o, fn = "") => {
         async_queue[key].set("start_moment", 0)
     }
     if (fn === "setTimeout") {
-        const cnt = async_queue[key].get("called_cnt") || 1
+        const msgId = sandbox.getContext().data.message_id
+        const time = sandbox.getContext().data.time
+        console.log(msgId, time)
+        let cnt = async_queue[key].get("called_info")?.cnt || 0
+        let msg_id = async_queue[key].get("called_info")?.["msg_id"] || msgId
+        let t = async_queue[key].get("called_info")?.t || time
+        if (msgId !== msg_id) {
+            if (time < t) {
+                throw new Error("新的setTimeout启动被迫停止")
+            } else {
+                cnt = 0
+                msg_id = msgId
+                t = time
+            }
+        }
         if (cnt >= 3) {
-            async_queue[key].set("start_moment", 0)
-            async_queue[key].delete("called_cnt")
+            async_queue[key].delete("called_info")
             throw new Error("setTimeout调用次数达到上限")
         }
-        async_queue[key].set("called_cnt", cnt + 1)
-    }
-    let endless_flag = false
-    let start_moment = async_queue[key].get("start_moment")
-    async_queue[key].forEach((v, k, map) => {
-        if (k === "start_moment" || k === "called_cnt")
-            return
-        if (v.end_time && Date.now() - v.end_time > 500)
-            map.delete(k)
-        else {
-            endless_flag = true
-            if (start_moment === 0)
-                async_queue[key].set("start_moment", Date.now())
+        async_queue[key].set("called_info", {cnt: cnt + 1, msg_id: msg_id, t: t})
+    } else {
+        let endless_flag = false
+        let start_moment = async_queue[key].get("start_moment")
+        async_queue[key].forEach((v, k, map) => {
+            if (k === "start_moment" || k === "called_cnt")
+                return
+            if (v.end_time && Date.now() - v.end_time > 500)
+                map.delete(k)
+            else {
+                endless_flag = true
+                if (start_moment === 0)
+                    async_queue[key].set("start_moment", Date.now())
+            }
+        })
+        if (!endless_flag)
+            async_queue[key].set("start_moment", 0)
+        if (async_queue[key].get("start_moment") > 0 && Date.now() - async_queue[key].get("start_moment") > 60000) {
+            async_queue[key].set("start_moment", 0)
+            throw new Error("判定为递归调用，中断。")
         }
-    })
-    if (!endless_flag)
-        async_queue[key].set("start_moment", 0)
-    if (async_queue[key].get("start_moment") > 0 && Date.now() - async_queue[key].get("start_moment") > 60000) {
-        async_queue[key].set("start_moment", 0)
-        throw new Error("判定为递归调用，中断。")
     }
     async_queue[key].set(o, {start_time: Date.now(), end_time: undefined})
 }
