@@ -1,4 +1,5 @@
-import fetch from "node-fetch";
+import fetch from "node-fetch"
+import querystring from "querystring"
 import md5 from "md5"
 
 async function getQQSong(s) {
@@ -260,6 +261,75 @@ function sign(params) {
     return res
 }
 
+/** 刷新QQ音乐ck，参考https://github.com/xfdown/xiaofei-plugin/blob/a932d2001d61d085927d662ac7551f8a09d3fee7/apps/%E7%82%B9%E6%AD%8C.js#L24 **/
+async function refresh_ck(ck) {
+    let cookie = querystring.parse(ck.ck, "; ", "=")
+    let create_time = (cookie["psrf_musickey_createtime"] || 0) * 1000
+    if (Date.now() - create_time > 1000 * 60 * 60 * 12) {
+        let res = await fetch("https://u.y.qq.com/cgi-bin/musicu.fcg", {
+            method: 'post',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: JSON.stringify({
+                "comm": {
+                    "_channelid": "19",
+                    "_os_version": "6.2.9200-2",
+                    "authst": "",
+                    "ct": "19",
+                    "cv": "1891",
+                    "patch": "118",
+                    "psrf_access_token_expiresAt": 0,
+                    "psrf_qqaccess_token": "",
+                    "psrf_qqopenid": "",
+                    "psrf_qqunionid": "",
+                    "tmeAppID": "qqmusic",
+                    "tmeLoginType": 2,
+                    "uin": "0",
+                    "wid": "0"
+                },
+                "req_0": {
+                    "method": "Login",
+                    "module": "music.login.LoginServer",
+                    "param": {
+                        "appid": 100497308,
+                        "access_token": cookie['psrf_qqaccess_token'],
+                        "expired_in": 0,
+                        "forceRefreshToken": 0,
+                        "musicid": ck.uin,
+                        "musickey": cookie['qqmusic_key'] || cookie['qm_keyst'],
+                        "onlyNeedAccessToken": 0,
+                        "openid": cookie['psrf_qqopenid'],
+                        "refresh_token": cookie['psrf_qqrefresh_token'],
+                        "unionid": cookie['psrf_qqunionid']
+                    }
+                }
+            })
+        })
+        if (!res.ok) {
+            return false
+        }
+        res = await res.json()
+        if (res.req_0?.code !== 0) {
+            return false
+        }
+        let data = res.req_0?.data
+        cookie["psrf_qqopenid"] = data.openid
+        cookie["psrf_qqrefresh_token"] = data.refresh_token
+        cookie["psrf_qqaccess_token"] = data.access_token
+        cookie["psrf_access_token_expiresAt"] = data.expired_at
+        cookie["uin"] = String(data.str_musicid || data.musicid)
+        cookie["qqmusic_key"] = data.musickey
+        cookie["qm_keyst"] = data.musickey
+        cookie["psrf_musickey_createtime"] = data.musickeyCreateTime
+        cookie["psrf_qqunionid"] = data.unionid
+        cookie["euin"] = data.encryptUin
+        cookie["login_type"] = 1
+        cookie["tmeLoginType"] = 2
+        return querystring.stringify(cookie, "; ", "=")
+    } else {
+        return false
+    }
+}
+
 /** qq音乐搜歌 **/
 async function getSongs(key, p, n, uin, ck) {
     let body = {
@@ -384,7 +454,6 @@ async function fetchQrCode(e) {
                         clearInterval(timer)
                         resolve(ck)
                     } catch (err) {
-                        console.error(err)
                         clearInterval(timer)
                         resolve("出错了：请求cookie出现错误")
                     }
@@ -399,4 +468,4 @@ async function fetchQrCode(e) {
     })
 }
 
-export {buildMusic, getSongs, fetchQrCode}
+export {buildMusic, getSongs, fetchQrCode, refresh_ck}

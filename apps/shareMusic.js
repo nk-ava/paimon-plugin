@@ -1,6 +1,6 @@
 ﻿import fetch from "node-fetch";
 import Plugin from "../../../lib/plugins/plugin.js";
-import {SendPm, buildMusic, fetchQrCode, getSongs} from "../components/index.js";
+import {SendPm, buildMusic, fetchQrCode, getSongs, refresh_ck} from "../components/index.js";
 import {Cfg} from "../components/index.js"
 
 const selfUid = Bot.uin;
@@ -135,8 +135,19 @@ export class shareMusic extends Plugin {
                 let cur_cnt = songInfo.length
                 let ck = this.cfg.cookie.qq
                 if (!ck?.ck || !ck?.uin) {
-                    e.reply("qq音乐点歌需要登入，请发送【#登入QQ音乐】完成登入")
-                    return
+                    // e.reply("qq音乐点歌需要登入，请发送【#登入QQ音乐】完成登入")
+                    // return
+                    ck = {
+                        uin: Bot.uin,
+                        ck: Bot.cookie['y.qq.com']
+                    }
+                } else {
+                    let new_ck = await refresh_ck(ck)
+                    if (new_ck) {
+                        console.log(new_ck)
+                        this.cfg.cookie.qq.ck = new_ck
+                        Cfg.set('music', this.cfg)
+                    }
                 }
                 let rs = await getSongs(song, 1, limit, ck.uin, ck.ck)
                 if (rs.includes("出错了")) {
