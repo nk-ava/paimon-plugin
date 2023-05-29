@@ -213,7 +213,7 @@ module.exports.run = (code) => {
         let code2 = vm.runInContext(`this.beforeExec(${JSON.stringify(code)})`, context, {timeout: timeout})
         if (typeof code2 === "string")
             code = code2
-        let res = vm.runInContext(code, context, {timeout: timeout}).catch(e => {
+        let res = vm.runInContext(code, context, {timeout: timeout})?.catch(e => {
         })
         if (res instanceof vm.runInContext("Promise", context))
             res = undefined
