@@ -183,6 +183,10 @@ export class help extends Plugin {
                 icon: 'cankaodaan',
                 title: "#ANSWER",
                 desc: "私聊查看加好友设置问题的答案"
+            }, {
+                icon: 'anonymous',
+                title: '#watch:anonymous:(on|off)',
+                desc: '开启或关闭匿名监听，默认开启'
             }]
         }
         if (loadSandbox) {

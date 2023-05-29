@@ -9,6 +9,8 @@ import {playerGameInfo} from "../components/models/GameDate.js";
 import puppeteer from "../../../lib/puppeteer/puppeteer.js";
 
 const _path = process.cwd()
+let watch = {state: true}
+let subIdMap = new Map
 
 export class example extends Plugin {
     constructor(e) {
@@ -21,6 +23,11 @@ export class example extends Plugin {
                 {
                     reg: '^(M_onlyPm_)?#paimon Test$',
                     fnc: 'test'
+                },
+                {
+                    reg: '^(M_onlyPm_)?#?watch[-_:]anonymous[-_:](on|off)$',
+                    fnc: "watchAnon",
+                    permission: 'master'
                 },
                 {
                     reg: '^(M_onlyPm_)?#?赞我',
@@ -54,8 +61,27 @@ export class example extends Plugin {
         });
     }
 
+    accept(e) {
+        if (watch.state) {
+            if (e.anonymous) {
+                let qq = subIdMap.get(e.sender.sub_id)
+                if (qq) e.reply([{type: 'at', qq: qq}, {type: 'text', text: ' 匿名好玩吗'}], true)
+                return
+            }
+            subIdMap.set(e.sender.sub_id, e.user_id)
+        }
+    }
+
     test() {
         this.e.reply("发送消息成功！！");
+    }
+
+    watchAnon(e) {
+        let msg = e.msg.replace("M_onlyPm_", "")
+        watch.state = (msg.split(/[-_:]/)[2] === "on")
+        e.reply("当前状态: " + watch.state)
+        if (!watch.state) subIdMap.clear()
+        return true
     }
 
     async pbDecode(e) {

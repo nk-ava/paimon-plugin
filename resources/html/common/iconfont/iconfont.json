@@ -6,6 +6,13 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "18167025",
+      "name": "匿名用户,嫌疑人,陌生人,黑客",
+      "font_class": "anonymous",
+      "unicode": "e8ee",
+      "unicode_decimal": 59630
+    },
+    {
       "icon_id": "20266186",
       "name": "分享链接",
       "font_class": "fenxianglianjie",
