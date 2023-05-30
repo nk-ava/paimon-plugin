@@ -146,7 +146,7 @@ export class sandbox extends Plugin {
             let str = cmd.split("import");
             let upload = "import md5 from 'md5';\nimport fetch from 'node-fetch';\nimport request from 'request';\nimport fs from 'fs';\n";
             let len = str.length;
-            if (len != 1) {
+            if (len !== 1) {
                 let ss = str[len - 1].split('\n', 1);
                 cmd = str[len - 1].replace(ss, "");
                 str[len - 1] = ss;

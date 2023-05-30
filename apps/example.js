@@ -6,11 +6,27 @@ import fetch from "node-fetch";
 import request from "request";
 import browserPuppeteer from "../components/models/BrowserPuppeteer.js";
 import {playerGameInfo} from "../components/models/GameDate.js";
+import {Version, Cfg} from "../components/index.js"
 import puppeteer from "../../../lib/puppeteer/puppeteer.js";
 
 const _path = process.cwd()
-let watch = {state: true}
+let watch = {state: false}
 let subIdMap = new Map
+
+class subIdNode {
+    constructor(qq, nickname, state) {
+        this.qqInfo = {}
+        this.qqInfo[qq] = nickname
+        this.state = state
+    }
+
+    recall(t) {
+        this.state = false
+        setTimeout(() => {
+            this.state = true
+        }, t)
+    }
+}
 
 export class example extends Plugin {
     constructor(e) {
@@ -30,6 +46,16 @@ export class example extends Plugin {
                     permission: 'master'
                 },
                 {
+                    reg: '^(M_onlyPm_)?#?派蒙设置匿名推送(开启|关闭)',
+                    fnc: "AnonMsg",
+                    permission: "master"
+                },
+                {
+                    reg: '^(M_onlyPm_)?#?派蒙设置匿名冷却\\d+s',
+                    fnc: 'setCD',
+                    permission: "master"
+                },
+                {
                     reg: '^(M_onlyPm_)?#?赞我',
                     fnc: 'userThumbUp'
                 },
@@ -38,7 +64,7 @@ export class example extends Plugin {
                     fnc: 'getMessage'
                 },
                 {
-                    reg: '^(M_onlyPm_)?封号\\[(.*)\\]$',
+                    reg: '^(M_onlyPm_)?状态 (.*)$',
                     fnc: 'killQQ'
                 },
                 {
@@ -59,21 +85,71 @@ export class example extends Plugin {
                 }
             ]
         });
+        this.cfg = Cfg.get("example")
+        if (!this.cfg) {
+            this.cfg = {mute: true, cd: 600000}
+            Cfg.set("example", this.cfg)
+        }
     }
 
     accept(e) {
+        if (e.isPrivate) return
         if (watch.state) {
             if (e.anonymous) {
-                let qq = subIdMap.get(e.sender.sub_id)
-                if (qq) e.reply([{type: 'at', qq: qq}, {type: 'text', text: ' 匿名好玩吗'}], true)
+                let qqInfo = subIdMap.get(`${e.group_id}-${e.sender.sub_id}`)
+                if (qqInfo && qqInfo.state) {
+                    let anonymous = ""
+                    Object.keys(qqInfo.qqInfo).forEach(k => {
+                        anonymous += `\n${k} (${qqInfo.qqInfo[k]})`
+                    })
+                    qqInfo.recall(this.cfg.cd)
+                    if (this.cfg.mute)
+                        Bot.pickFriend(Version.masterQQ).sendMsg(`匿名推送【群${e.group_id}(${e.group_name})】：\n消息内容：${e.msg}\n可疑对象：${anonymous}\n时间：${(new Date(e.time * 1000)).toLocaleString()}`)
+                    else
+                        e.reply(`可疑对象：${anonymous}`, true)
+                }
                 return
             }
-            subIdMap.set(e.sender.sub_id, e.user_id)
+            let sub_id = e.sender.sub_id
+            if (sub_id && sub_id !== 1 && sub_id !== "undefined") {
+                let info = subIdMap.get(`${e.group_id}-${sub_id}`)
+                if (!info) {
+                    subIdMap.set(`${e.group_id}-${sub_id}`, new subIdNode(e.sender.user_id, e.sender.nickname, true))
+                    return
+                }
+                info.qqInfo[e.sender.user_id] = e.sender.nickname
+            }
         }
     }
 
     test() {
         this.e.reply("发送消息成功！！");
+    }
+
+    setCD(e) {
+        let t = e.msg.match(/\d+/)[0]
+        if (t) {
+            this.cfg.cd = Number(t) * 1000
+            Cfg.set("example", this.cfg)
+        }
+        e.reply("设置成功：" + this.cfg.cd / 1000 + "s")
+    }
+
+    AnonMsg(e) {
+        if (e.msg.includes("开启")) {
+            if (!this.cfg.mute) {
+                this.cfg.mute = true
+                Cfg.set("example", this.cfg)
+            }
+            e.reply("开启成功")
+        } else {
+            if (this.cfg.mute) {
+                this.cfg.mute = false
+                Cfg.set("example", this.cfg)
+            }
+            e.reply("关闭成功")
+        }
+        return true
     }
 
     watchAnon(e) {

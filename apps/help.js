@@ -186,7 +186,7 @@ export class help extends Plugin {
             }, {
                 icon: 'anonymous',
                 title: '#watch:anonymous:(on|off)',
-                desc: '开启或关闭匿名监听，默认开启'
+                desc: '开启或关闭匿名监听，默认关闭'
             }]
         }
         if (loadSandbox) {
@@ -252,6 +252,7 @@ export class help extends Plugin {
         let friendCfg = Cfg.get("friendAuth") || {}
         let weatherCfg = Cfg.get("weather") || {}
         let musicCfg = Cfg.get("music") || {}
+        let exampleCfg = Cfg.get("example") || {}
         let data = {
             tplFile: './plugins/paimon-plugin/resources/html/pmSet/index.html',
             saveId: 'paimon_set',
@@ -313,6 +314,21 @@ export class help extends Plugin {
                     value: `${weatherCfg?.limit}`,
                     desc: '建议不要太多，机器人发太多卡片消息可能会有危险',
                     showDesc: true
+                }, {
+                    title: "匿名推送模式",
+                    key: "匿名推送",
+                    def: "开启/关闭",
+                    value: exampleCfg.mute,
+                    desc: '',
+                    showDesc: false
+                }, {
+                    title: '匿名推送冷却',
+                    key: "匿名冷却",
+                    def: `${exampleCfg.cd / 1000}s`,
+                    type: 'num',
+                    value: `${exampleCfg.cd / 1000}`,
+                    desc: '',
+                    showDesc: false
                 }]
             }],
             copyright: Version.toText
