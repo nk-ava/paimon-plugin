@@ -10,7 +10,7 @@ import {Version, Cfg} from "../components/index.js"
 import puppeteer from "../../../lib/puppeteer/puppeteer.js";
 
 const _path = process.cwd()
-let watch = {state: false}
+let watch = {state: true}
 let subIdMap = new Map
 
 class subIdNode {

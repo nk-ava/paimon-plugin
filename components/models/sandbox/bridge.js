@@ -514,7 +514,7 @@ async function onmessage(data) {
             let res = sandbox.run(message)
             if (typeof res === 'string' && res.includes("`") && /\[CQ:[^\]]+\]/.test(res)) res = sandbox.run(res)
             let echo = true
-            if (message.match(/^'\[CQ:at,qq=\d+\]'$/))
+            if (message.match(/^['"`]\[CQ:at,qq=\d+\]['"`]$/))
                 echo = false
             if (res === null && message === "null")
                 echo = false

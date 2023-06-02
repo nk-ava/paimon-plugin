@@ -186,7 +186,7 @@ export class help extends Plugin {
             }, {
                 icon: 'anonymous',
                 title: '#watch:anonymous:(on|off)',
-                desc: '开启或关闭匿名监听，默认关闭'
+                desc: '开启或关闭匿名监听，默认打开'
             }]
         }
         if (loadSandbox) {
