@@ -89,7 +89,7 @@ export class bh3Sign extends Plugin {
             e.reply("请私聊发送cookie,与原神cookie相同")
             return true;
         }
-        let ck = user.mainCk.ck;
+        let ck = user.getMysUser()?.db?.dataValues?.ck;
         if (ck) bh3User.ck = ck;
         let roles = await bh3Api.getAllRoles(ck);
         if (!roles) {
