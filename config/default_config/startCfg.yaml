@@ -4,7 +4,7 @@ sandbox: true
 #sandbox模块选择，若设置为true就要安装依赖
 modules:
   #导入需要额外安装依赖的模块
-  canvas: true
+  canvas: false
   cheerio: true
   riichi: true
   syanten: true

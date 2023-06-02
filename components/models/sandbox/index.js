@@ -2,7 +2,6 @@ const fs = require("fs")
 const path = require("path")
 const cp = require("child_process")
 const {EventEmitter} = require("events")
-const lodash = require("lodash")
 
 const bots = new Map
 const execRet = new Map
@@ -184,9 +183,12 @@ function dealMsg(data) {
 }
 
 function preDeal(data) {
-    const d = lodash.cloneDeep(data)
-    delete d.runtime;
-    delete d.reply;
+    const d = JSON.parse(JSON.stringify(data, (k, v) => {
+        if (['runtime', 'user', 'original_msg', 'msg', 'logText', 'replyNew', 'reply', 'game'].includes(k)) {
+            return
+        }
+        return v
+    }))
     if (d.friend) d.isPrivate = true
     if (d.group) d.isGroup = true
     dealMsg.call(this, d)

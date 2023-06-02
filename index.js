@@ -19,6 +19,10 @@ if (Bot?.logger?.info) {
 } else {
     console.log(`[PaiMon-Plugin]：v${Version.version}初始化~`);
 }
+if (!fs.existsSync("./plugins/paimon-plugin/config/config/startCfg.yaml")) {
+    fs.writeFileSync("./plugins/paimon-plugin/config/config/startCfg.yaml", fs.readFileSync("./plugins/paimon-plugin/config/default_config/startCfg.yaml", "utf-8"), "utf-8")
+    Bot.logger.info("创建startCfg.yaml，可重启修改配置")
+}
 global.loadSandbox = YAML.parse(fs.readFileSync("./plugins/paimon-plugin/config/config/startCfg.yaml", "utf8")).sandbox;
 let files = fs.readdirSync("./plugins/paimon-plugin/apps").filter(file => {
     if (!loadSandbox && file.includes("sandbox")) {

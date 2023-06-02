@@ -1,5 +1,4 @@
 import Plugin from "../../../lib/plugins/plugin.js";
-import lodash from "lodash";
 import {init, restart, close, dealMsg, saveCtx} from "../components/models/sandbox/index.js";
 import fs from "node:fs";
 // import {saveCtx} from "../components/models/sandbox/bridge.js";
@@ -114,13 +113,12 @@ export class sandbox extends Plugin {
 
     async accept(e) {
         if (sbStata.on) {
-            let data = lodash.cloneDeep(e);
-            delete data['runtime'];
-            delete data['user'];
-            delete data['original_msg'];
-            delete data['msg']
-            delete data['logText']
-            delete data['replyNew']
+            let data = JSON.parse(JSON.stringify(e, (k, v) => {
+                if (['runtime', 'user', 'original_msg', 'msg', 'logText', 'replyNew', 'reply', 'game'].includes(k)) {
+                    return
+                }
+                return v
+            }))
             dealMsg.call(Bot, data)
             let res = await new Promise((resolve) => {
                 resMap.set(data['message_id'], resolve)
