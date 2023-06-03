@@ -45,8 +45,8 @@ export class friendAuth extends Plugin {
         this.cfg = Cfg.get("friendAuth") || {};
     }
 
-    async init() {
-        let type = this.cfg.type || await getType();
+    init() {
+        let type = this.cfg.type
         if (type === 3) {
             if ((Bot?.listenerCount?.("notice.friend.increase") || Bot?.listeners?.("notice.friend.increase")?.length) === 0) {
                 Bot.on("notice.friend.increase", async () => {
@@ -62,7 +62,7 @@ export class friendAuth extends Plugin {
         }
         if (!this.cfg.type) {
             this.cfg.salt = "";
-            this.cfg.type = type;
+            this.cfg.type = 0;
             this.cfg.answer = "";
             Cfg.set("friendAuth", this.cfg);
         }
@@ -70,6 +70,17 @@ export class friendAuth extends Plugin {
 
     async accept(e) {
         let msg = e.msg?.replace("M_onlyPm_", "");
+        if (this.cfg.type === 0) {
+            Bot.off("notice.friend.increase", dealStrict);
+            (Bot?.removeAllListeners || Bot?.offTrap).call(Bot, "setAuthError");
+            let res = await setAuth(1);
+            if (res === true) {
+                this.cfg.salt = "";
+                this.cfg.type = 1;
+                this.cfg.answer = "";
+                Cfg.set("friendAuth", this.cfg)
+            }
+        }
         if (timer[e.user_id] && /^设置：[\s\S]*/.test(msg)) {
             clearTimeout(timer[e.user_id]);
             delete timer[e.user_id];
@@ -120,7 +131,7 @@ export class friendAuth extends Plugin {
         } else {
             let seq = lodash.sampleSize(collection, 12).join("");
             let salt = this.cfg.salt || lodash.sampleSize(collection, 32).join("");
-            let a = md5(`salt=${salt}&seq=${seq}`, 16).substr(8, 16);
+            let a = md5(`salt=${salt}&seq=${seq}`).substr(8, 16);
             let q = `seq=${seq}`;
             let res = await setAuth(3, q, a);
             if (res !== true) {
@@ -130,7 +141,7 @@ export class friendAuth extends Plugin {
             e.reply(`设置成功，salt=${salt},可通过【#SALT】查看当前salt`);
             this.cfg.salt = salt;
             this.cfg.type = 3;
-            this.cfg.answer = "";
+            this.cfg.answer = a;
             Cfg.set("friendAuth", this.cfg);
             if ((Bot?.listenerCount?.("notice.friend.increase") || Bot?.listeners?.("notice.friend.increase")?.length) === 0) {
                 Bot.on("notice.friend.increase", async () => {
@@ -164,10 +175,8 @@ export class friendAuth extends Plugin {
         msg = msg.replace("#派蒙设置salt=", "");
         if (this.cfg.type === 3) {
             this.cfg.salt = msg;
-            this.cfg.answer = "";
-            Cfg.set("friendAuth", this.cfg);
-            await dealStrict.call(this)
-            e.reply("设置成功");
+            if (await dealStrict.call(this)) e.reply("设置成功");
+            else e.reply("设置失败，请稍后再试")
         } else {
             e.reply("加好友类型不为3");
         }
@@ -197,7 +206,8 @@ export class friendAuth extends Plugin {
                 e.reply("出错了，没有查到答案，请发送【#派蒙设置加好友2】重新设置")
             }
         } else if (this.cfg.type === 3) {
-            e.reply("请获取问题的seq，取\"salt=${salt}&seq=${seq}\"的16位MD5")
+            if (this.cfg.answer) e.reply(this.cfg.answer)
+            else e.reply("请获取问题的seq，取\"salt=${salt}&seq=${seq}\"的16位MD5")
         } else {
             e.reply("未处理的加好友类型")
         }
@@ -254,7 +264,11 @@ async function dealStrict() {
     let res = await setAuth(3, q, a);
     if (res !== true) {
         Bot.em("setAuthError", res);
+    } else {
+        this.cfg.answer = a
+        Cfg.set("friendAuth", this.cfg)
     }
+    return res === true
 }
 
 async function getType() {

@@ -30,7 +30,7 @@ export class jsonSign extends Plugin {
             if (body["extra"]) delete body["extra"];
             if (!(body?.config?.token)) {
                 if (!body["config"]) body["config"] = {};
-                if (!body.config.token) body.config.token = "" //md5(new Date().getTime());
+                if (!body.config.token) body.config.token = md5(new Date().getTime());
             }
             let send_id, type;
             if (e.isGroup) {
