@@ -184,7 +184,7 @@ function dealMsg(data) {
 
 function preDeal(data) {
     const d = JSON.parse(JSON.stringify(data, (k, v) => {
-        if (['runtime', 'user', 'original_msg', 'msg', 'logText', 'replyNew', 'reply', 'game'].includes(k)) {
+        if (['runtime', 'user', 'original_msg', 'msg', 'logText', 'replyNew', 'reply', 'game', 'isSr'].includes(k)) {
             return
         }
         return v

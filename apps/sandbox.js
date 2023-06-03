@@ -114,7 +114,7 @@ export class sandbox extends Plugin {
     async accept(e) {
         if (sbStata.on) {
             let data = JSON.parse(JSON.stringify(e, (k, v) => {
-                if (['runtime', 'user', 'original_msg', 'msg', 'logText', 'replyNew', 'reply', 'game'].includes(k)) {
+                if (['runtime', 'user', 'original_msg', 'msg', 'logText', 'replyNew', 'reply', 'game', 'isSr'].includes(k)) {
                     return
                 }
                 return v
