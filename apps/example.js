@@ -18,11 +18,15 @@ class subIdNode {
         this.qqInfo = {}
         this.qqInfo[qq] = nickname
         this.state = state
+        this.identity = []
+        this.timer = null
+        this.date = (new Date()).toLocaleDateString()
     }
 
     recall(t) {
+        if (this.timer) clearTimeout(this.timer)
         this.state = false
-        setTimeout(() => {
+        this.timer = setTimeout(() => {
             this.state = true
         }, t)
     }
@@ -97,7 +101,14 @@ export class example extends Plugin {
         if (watch.state) {
             if (e.anonymous) {
                 let qqInfo = subIdMap.get(`${e.group_id}-${e.sender.sub_id}`)
-                if (qqInfo && qqInfo.state) {
+                if ((new Date()).toLocaleDateString() !== qqInfo.date) {
+                    qqInfo.data = (new Date()).toLocaleDateString()
+                    qqInfo.identity = []
+                }
+                if (qqInfo && (qqInfo.state || !qqInfo.identity.includes(e.anonymous.name))) {
+                    if (!qqInfo.identity.includes(e.anonymous.name)) {
+                        qqInfo.identity.push(e.anonymous.name)
+                    }
                     let anonymous = ""
                     Object.keys(qqInfo.qqInfo).forEach(k => {
                         anonymous += `\n${k} (${qqInfo.qqInfo[k]})`
