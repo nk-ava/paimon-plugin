@@ -3,7 +3,7 @@ import fs from "node:fs";
 import util from "util";
 import common from "../../../lib/common/common.js";
 import fetch from "node-fetch";
-import request from "request";
+import iconv from "iconv-lite";
 import browserPuppeteer from "../components/models/BrowserPuppeteer.js";
 import {playerGameInfo} from "../components/models/GameDate.js";
 import {Version, Cfg} from "../components/index.js"
@@ -266,33 +266,31 @@ export class example extends Plugin {
         let qq = msg.replace(/[^0-9]/g, "");
         let query = `system=PC&version=2.0.1&uintype=1&eviluin=${qq}&appname=PCQQ&appid=2400001&scene=23000&subapp=c2c_pc&buddyflag=1&chatuin=1&srv_para=&cryptograph=712531AC4A3874B242774B95EEE8F6FE&apptype=1&ver=5905&pubno=27230`;
         url += "?" + query;
-        request({
-            url: url,
+        let res = await fetch(url, {
             method: "get",
             headers: {
-                Cookie: 'RK=65ZAGnnu0Z; ptcz=a62fba438c651996785c8fb18056297847e29dfc3fdc15956107de475725786b; pgv_pvid=2019795700; tvfe_boss_uuid=9469d5de17df26f1; o_cookie=3530766280; pac_uid=1_3530766280; iip=0; tgw_l7_route=7b7b98fff9859a4373d0e94a692332e0; luin=o3530766280; lskey=000100001e19a0e12d9cbffb15c87d925e7023c77bb98d270e395e7dfc9cd08fe56e862c8a49fc737c88041e; p_luin=o3530766280; p_lskey=000400003c712529f22969da120084def6f3d3afad52650db828601bba7a1206dca3f0beb4b49f791fbc4b2b',
+                Cookie: Bot.cookies['jubao.qq.com'],
             }
-        }, async (err, rep, body) => {
-            if (err) {
-                e.reply("出错啦..");
-                Bot.logger.error(err);
+        })
+        if (!res.ok) {
+            e.reply("出错啦..");
+            return true
+        }
+        res = await res.text()
+        let info = await getQQInfo(qq);
+        if (typeof info !== "undefined") {
+            let msg = [];
+            msg.push(`@${info.nickname}\nQQ：${qq}`);
+            msg.push(segment.image(`${info.url}`));
+            if (res.includes("帐号已封停")) {
+                msg.push("该账号已封停");
             } else {
-                let info = await getQQInfo(qq);
-                if (typeof info != "undefined") {
-                    let msg = [];
-                    msg.push(`@${info[0].nick}\nQQ：${qq}`);
-                    msg.push(segment.image(`${info[0].url}`));
-                    if (body.includes("帐号已封停")) {
-                        msg.push("该账号已封停");
-                    } else {
-                        msg.push("该账号正常");
-                    }
-                    e.reply(msg);
-                } else {
-                    e.reply("请检查接口");
-                }
+                msg.push("该账号正常");
             }
-        });
+            e.reply(msg);
+        } else {
+            e.reply("请检查接口");
+        }
         return true;
     }
 
@@ -388,24 +386,18 @@ function dfs(data, pos, num, cmd) {
 }
 
 async function getQQInfo(id) {
-    let domain = "";
-    let cookie = Bot.cookies[domain];
-    let bkn = Bot.bkn;
-    let url = `https://find.qq.com/proxy/domain/cgi.find.qq.com/qqfind/find_v11?backver=2&keyword=${id}&nf=0&of=0&ldw=${bkn}`;
-    let data = `bnum=15&pagesize=15&id=0&sid=0&page=0&pageindex=0&ext=&guagua=1&gnum=12&guaguan=2&type=2&ver=4903&longitude=116.405285&latitude=39.904989&lbs_addr_country=%E4%B8%AD%E5%9B%BD&lbs_addr_province=%E5%8C%97%E4%BA%AC&lbs_addr_city=%E5%8C%97%E4%BA%AC%E5%B8%82`;
-    //data = querystring.parse(data);
-    let param = {
-        headers: {
-            Cookie: cookie,
-        },
-        method: "post",
-        body: data,
+    try {
+        let url = `https://r.qzone.qq.com/fcg-bin/cgi_get_portrait.fcg?uins=${id}`;
+        let res = await fetch(url, {
+            method: 'get'
+        });
+        if (!res.ok) return
+        res = iconv.decode(Buffer.from(await res.arrayBuffer()), "GBK")
+        let info = eval(res.match(/\[.*\]/)[0])
+        return {nickname: info[6], url: info[0]}
+    } catch (e) {
+        Bot.logger.error(e)
     }
-    let res = await (await fetch(url, param)).json();
-    if (res.retcode === 0) {
-        return res.result.buddy.info_list;
-    }
-    return undefined;
 }
 
 async function getUserUid(key) {

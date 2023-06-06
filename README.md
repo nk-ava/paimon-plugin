@@ -15,7 +15,7 @@ git clone https://github.com/zlh-debug/paimon-plugin.git
 > 在YunZai根目录下，注：不是在plugins目录下
 
 ```
-pnpm add request -w
+pnpm add iconv-lite -w
 pnpm add node-uuid -w
 ----canvas的安装过程可能有些缓慢，需要耐心等待，没有需求可以设置snadbox: false
 ----若在config/config/startCfg.yaml将sandbox修改为false则不需要安装以下依赖
@@ -48,3 +48,4 @@ pnpm add syanten -w                     //可选
 ### 其他
 
 * 帮助界面参考了[喵喵插件 Miao-Plugin](https://github.com/yoimiya-kokomi/miao-plugin)
+* 使用协议-[我的oicq分支](https://github.com/zlh-debug/oicq) ，部分功能直接依赖于协议。

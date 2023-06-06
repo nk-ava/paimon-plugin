@@ -139,7 +139,7 @@ export class shareMusic extends Plugin {
                     // return
                     ck = {
                         uin: Bot.uin,
-                        ck: Bot.cookie['y.qq.com']
+                        ck: Bot.cookies['y.qq.com']
                     }
                 } else {
                     let new_ck = await refresh_ck(ck)
