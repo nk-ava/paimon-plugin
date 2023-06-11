@@ -12,7 +12,7 @@ class MysSign {
     }
 
     //构建请求头
-    getHeaders() {
+    static getHeaders(cookie) {
         return {
             "x-rpc-client_type": 2,
             "x-rpc-app_version": "2.34.1",
@@ -20,6 +20,7 @@ class MysSign {
             "x-rpc-channel": "miyousheluodi",
             "x-rpc-device_id": uuid.v1().replace(/-/g, "").toLowerCase(),
             "x-rpc-device_name": "Xiaomi Redmi Note 4",
+            "x-rpc-device_fp": "38d7edaad494f",
             "Referer": "https://app.mihoyo.com",
             "Content-Type": "application/json",
             "Host": "bbs-api.mihoyo.com",
@@ -29,7 +30,7 @@ class MysSign {
             "x-rpc-device_model": "Redmi Note 4",
             "is_Login": "true",
             "DS": Sign.getDsSign(),
-            "cookie": this.cookie,
+            "cookie": cookie,
         }
     }
     //获取游戏讨论区帖子
@@ -37,7 +38,7 @@ class MysSign {
         let url = "https://bbs-api.mihoyo.com/post/api/getForumPostList";
         let query = `forum_id=${this.forum_id}&is_good=false&is_hot=false&page_size=20&sort_type=1`;
         let param = {
-            headers: this.getHeaders(),
+            headers: MysSign.getHeaders(this.cookie),
             method: "get",
         }
         let response = await(await fetch(url + "?" + query, param)).json();
@@ -49,7 +50,7 @@ class MysSign {
         let url = "https://bbs-api.mihoyo.com/post/api/getPostFull";
         let query = `post_id=${post_id}`;
         let param = {
-            headers: this.getHeaders(),
+            headers: MysSign.getHeaders(this.cookie),
             method: "get",
         }
         let res = await(await fetch(url + "?" + query, param)).json();
@@ -64,7 +65,7 @@ class MysSign {
             "is_cancel": "false",
         }
         let param = {
-            headers: this.getHeaders(),
+            headers: MysSign.getHeaders(this.cookie),
             method: "post",
             body: JSON.stringify(data),
         }
@@ -78,7 +79,7 @@ class MysSign {
         let query = `entity_id=${post_id}&entity_type=1`;
         let param = {
             method: "get",
-            headers: this.getHeaders(),
+            headers: MysSign.getHeaders(this.cookie),
         }
         let rs = await(await fetch(url + "?" + query, param)).json();
         if (rs.message === "OK") return true;
@@ -93,7 +94,7 @@ class MysSign {
         let param = {
             method: "post",
             body: JSON.stringify(data),
-            headers: this.getHeaders(),
+            headers: MysSign.getHeaders(this.cookie),
         }
         param.headers['DS'] = Sign.getCommunityDs("", JSON.stringify(data));
         let rs = await fetch(url, param);
@@ -170,7 +171,7 @@ async function createSign(cookie, forum_id, gids, is_share) {
     else if (forum_id == "26") game = "原神";
     return `今日${game}区：\n讨论区签到：${mss}\n点赞帖子成功：${votes}\n分享贴子成功：${shares}\n浏览帖子成功：${views}`;
 }
-export { createSign };
+export { createSign, MysSign};
 
 function sleep(time) {
     return new Promise(reslove => setTimeout(reslove, time));

@@ -1,0 +1,48 @@
+import schedule from "node-schedule"
+import fetch from "node-fetch"
+
+/**
+{{annotation}}
+ * @type {Job}
+ */
+const job = schedule.scheduleJob("{{cron}}", async () => {
+    let res = await fetch("https://api-takumi.miyoushe.com/mall/v1/web/goods/exchange", {
+        method: 'post',
+        headers: {
+            "Accept": "application/json, text/plain, */*",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Accept-Language": "zh-CN,zh-Hans;q=0.9",
+            "Connection": "keep-alive",
+            "Content-Type": "application/json;charset=utf-8",
+            "Host": "api-takumi.mihoyo.com",
+            "User-Agent": "Mozilla/5.0 (Linux; Android 7.1.2; Lenovo TB-J606F Build/N2G47H; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/81.0.4044.117 Safari/537.36 miHoYoBBS/2.46.1",
+            "Origin": "https://webstatic.miyoushe.com",
+            "Referer": "https://webstatic.miyoushe.com/app/community-shop/index.html?bbs_presentation_style=no_header",
+            "x-rpc-app_version": "2.46.1",
+            "x-rpc-channel": "huawei",
+            "x-rpc-client_type": "2",
+            "x-rpc-device_fp": "38d7edaad494f",
+            "x-rpc-device_id": "17ce5b28-9318-38b4-aa4b-edca423fca14",
+            "x-rpc-device_model": "Lenovo TB-J606F",
+            "x-rpc-device_name": "LENOVO%20Lenovo%20TB-J606F",
+            "x-rpc-sys_version": "7.1.2",
+            "Cookie": "{{ck}}"
+        },
+        body: JSON.stringify({
+            "app_id": {{app_id}},
+            "point_sn": "{{point_sn}}",
+            "goods_id": "{{goods_id}}",
+            "exchange_num": 1,
+            "uid": "{{uid}}",
+            "region": "{{region}}",
+            "game_biz": "{{game_biz}}",
+            "address_id": "{{address_id}}"
+        })
+    })
+    if (!res.ok) {
+        console.log("请检查接口")
+        return
+    }
+    res = await res.json()
+    console.log(res)
+})

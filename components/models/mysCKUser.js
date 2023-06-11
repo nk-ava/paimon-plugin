@@ -17,6 +17,14 @@ export default class MysCKUser {
         this._mysCk = ck;
     }
 
+    set ck_bak(ck) {
+        this._ck_bak = ck
+    }
+
+    get ck_bak() {
+        return this._ck_bak
+    }
+
     get ltuid() {
         if (!this._ltuid) {
             if (this._mysCk) {
@@ -41,6 +49,7 @@ export default class MysCKUser {
             uid: this.gmUid,
             ltuid: this._ltuid,
             mysCK: this._mysCk,
+            ck_bak: this._ck_bak,
             autoSign: true
         }
         let yaml = YAML.stringify(data);
@@ -74,6 +83,8 @@ export default class MysCKUser {
     creatUser() {
         let yaml = MysCKUser.getCkByUid(this.uid);
         this.mysCk = yaml.mysCK;
+        this.gmUid = yaml.uid
+        this.ck_bak = yaml.ck_bak
         return this;
     }
 }
