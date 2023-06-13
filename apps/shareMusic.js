@@ -144,7 +144,6 @@ export class shareMusic extends Plugin {
                 } else {
                     let new_ck = await refresh_ck(ck)
                     if (new_ck) {
-                        console.log(new_ck)
                         this.cfg.cookie.qq.ck = new_ck
                         Cfg.set('music', this.cfg)
                     }
