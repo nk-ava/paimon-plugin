@@ -115,7 +115,7 @@ export class example extends Plugin {
                     })
                     qqInfo.recall(this.cfg.cd)
                     if (this.cfg.mute)
-                        Bot.pickFriend(Version.masterQQ).sendMsg(`匿名推送【群${e.group_id}(${e.group_name})】：\n消息内容：${e.msg}\n可疑对象：${anonymous}\n时间：${(new Date(e.time * 1000)).toLocaleString()}`)
+                        Bot.pickFriend(Version.masterQQ[0]).sendMsg(`匿名推送【群${e.group_id}(${e.group_name})】：\n消息内容：${e.msg}\n可疑对象：${anonymous}\n时间：${(new Date(e.time * 1000)).toLocaleString()}`)
                     else
                         e.reply(`可疑对象：${anonymous}`, true)
                 }

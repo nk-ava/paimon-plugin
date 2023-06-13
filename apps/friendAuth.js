@@ -56,7 +56,7 @@ export class friendAuth extends Plugin {
             }
             if ((Bot?.listenerCount?.('setAuthError') || Bot?.listeners?.("setAuthError")?.length) === 0) {
                 Bot.on("setAuthError", (msg) => {
-                    Bot.pickFriend(Version.masterQQ).sendMsg(`加好友方式设置失败：${msg}`);
+                    Bot.pickFriend(Version.masterQQ[0]).sendMsg(`加好友方式设置失败：${msg}`);
                 })
             }
         }
@@ -151,7 +151,7 @@ export class friendAuth extends Plugin {
             }
             if ((Bot?.listenerCount?.("setAuthError") || Bot?.listeners?.("setAuthError")?.length) === 0) {
                 Bot.on("setAuthError", (msg) => {
-                    Bot.pickFriend(Version.masterQQ).sendMsg(`加好友方式设置失败：${msg}`);
+                    Bot.pickFriend(Version.masterQQ[0]).sendMsg(`加好友方式设置失败：${msg}`);
                 })
             }
         }

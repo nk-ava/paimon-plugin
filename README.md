@@ -48,4 +48,5 @@ pnpm add syanten -w                     //可选
 ### 其他
 
 * 帮助界面参考了[喵喵插件 Miao-Plugin](https://github.com/yoimiya-kokomi/miao-plugin)
-* 使用协议-[我的oicq分支](https://github.com/zlh-debug/oicq) ，部分功能直接依赖于协议。
+* 使用协议-[我的oicq分支](https://github.com/zlh-debug/oicq/tree/dev) ，部分功能直接依赖于协议。
+* 使用[miao-yunzai分支](https://github.com/zlh-debug/Miao-Yunzai/tree/master) 。
