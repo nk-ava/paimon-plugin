@@ -301,7 +301,7 @@ export class help extends Plugin {
                     def: ' ',
                     type: "num",
                     value: `${musicCfg.cookie.qq.uin || "未绑定"}`,
-                    desc: "QQ音乐点歌需要登入，发送【#登入QQ音乐】完成绑定",
+                    desc: "QQ音乐点歌需要登入，发送【#登录QQ音乐】完成绑定",
                     showDesc: true
                 }]
             }, {

@@ -48,6 +48,10 @@ export class pmGachaLog extends Plugin {
         if (msg.includes("更新")) {
             let index = msg.match(/\d+/)?.[0];
             let info = await getAuthKey(e.user_id, index);
+            if (info.includes("出错了")) {
+                e.reply(info)
+                return true
+            }
             info = info?.split("\n")[1];
             if (!info) {
                 e.reply("获取断网链接失败");
@@ -61,7 +65,6 @@ export class pmGachaLog extends Plugin {
         let uid = await new GachaLog(e).getUid();
         if (!uid) return true
         let path = `./data/gachaJson/${e.user_id}/${uid}`;
-        // console.log(path);
         let aways = JSON.parse(fs.readFileSync(`${path}/200.json`, "utf8"));
         let roleUp = JSON.parse(fs.readFileSync(`${path}/301.json`, "utf8"));
         let weaponUp = JSON.parse(fs.readFileSync(`${path}/302.json`, "utf8"));
@@ -116,7 +119,7 @@ export class pmGachaLog extends Plugin {
             uid: uid,
             tplFile: './plugins/paimon-plugin/resources/html/gachaAnalyse/gachaAnalyse.html',
             pluResPath: `${_path}/plugins/genshin/resources/img`,
-            selfPath: `${_path}/plugins/paimon-plugin/resources/html/gachaAnalyse`,
+            htmlPath: `${_path}/plugins/paimon-plugin/resources/html/`,
             s_arg: arg,
             s_sum: all,
             cnt: cnt,
@@ -197,8 +200,9 @@ async function getAuthKey(qq, index) {
     let url = "https://api-takumi.mihoyo.com/binding/api/genAuthKey";
     let game_uid, region, cookie;
     let info = mysCKUser.getCkByUid(qq);
+    let role = info.uid.filter(u => u.game_biz === "hk4e_cn")
     if (!info) return false;
-    let game_info = typeof index !== "undefined" ? info['uid'][index - 1] : info['uid'].filter(a => a['is_chosen'])[0];
+    let game_info = typeof index !== "undefined" ? role[index - 1] : role.filter(a => a['is_chosen'])[0];
     try {
         game_uid = game_info['game_uid'];
         region = game_info.region;
@@ -226,11 +230,11 @@ async function getAuthKey(qq, index) {
     }
     let response = await fetch(url, {method: "post", headers: headers, body: JSON.stringify(data)});
     if (!response.ok) {
-        return false;
+        return `出错了：请检查接口`;
     }
     response = await response.json();
-    if (response.message.includes("登录失效")) {
-        return "米游社cookie失效，请重新绑定";
+    if (response.retcode !== 0) {
+        return `出错了：${response.message}`;
     }
     let authKey = response?.data?.authkey;
     if (!authKey) return false;

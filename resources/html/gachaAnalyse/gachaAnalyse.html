@@ -1,109 +1,118 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<link rel="stylesheet" type="text/css" href="{{selfPath}}/gachaAnalyse.css">
-		<title></title>
-	</head>
-	<body>
-		<div class="container" id="container">
-			<div class="first-box">
-				<div class="basic_level lv{{level}}">
-					<div class="level-text">{{text}}</div>
-					<img src="{{selfPath}}/{{level}}.png" class="img_info" />
-				</div>
-				<div style="float: left;margin-left: 15px;">
-					<div style="font-size: 40px;margin-left: 10px;font-weight: bold;margin-bottom: 20px">派蒙的分析结果</div>
-					<div class="id-style">ID:{{uid}}</div>
-					<div style="overflow: hidden;margin-top: 50px;">
-						<div class="item">
-							<div class="num">{{s_arg}}</div>
-							<div class="tabel">平均出金</div>
-						</div>
-						<div class="item item_two">
-							<div class="num">{{s_sum}}</div>
-							<div class="tabel">总抽卡数</div>
-						</div>
-						<div class="item item_two">
-							<div class="num">{{cnt}}</div>
-							<div class="tabel">金卡数</div>
-						</div>
-					</div>
-				</div>
-				<img src="{{selfPath}}/paimon.png" class="paimon"/>
-			</div>
-			{{each history val}}
-			<div class="box">
-				<div style="overflow: hidden;">
-					<div class="basic_level lv{{val.level}}">
-						<div class="level-text">{{val.text}}</div>
-						<img class="img_info" src="{{selfPath}}/{{val.level}}.png"/>
-					</div>
-					<div style="float: left;margin-left: 15px;">
-						<div style="font-size: 40px;margin-left: 10px;font-weight: bold;margin-bottom:10px;">{{val.name}}</div>
-						<div style="font-size: 20px;margin-left: 10px;margin-top: 3px;">已有{{val.noNum}}抽未出金</div>
-						<div style="overflow: hidden;margin-top: 50px;">
-							<div class="item">
-								<div class="num">{{val.arg5}}</div>
-								<div class="tabel">平均出金</div>
-							</div>
-							<div class="item item_two">
-								<div class="num">{{val.sum}}</div>
-								<div class="tabel">总抽卡数</div>
-							</div>
-							<div class="item item_two">
-								<div class="num">{{val.ret}}</div>
-								<div class="tabel">限定/五星</div>
-							</div>
-						</div>
-					</div>
-				</div>
-				{{if val.label.length>0}}
-				<div style="overflow: hidden;margin-top: 10px;width: 100%;">
-					{{each val.label label}}
-					<div class="item" style="margin-right: 25px;">
-						<div class="num">{{label.value}}</div>
-						<div class="tabel">{{label.key}}</div>
-					</div>
-					{{/each}}
-				</div>
-				{{/if}}
-				{{if val.addr.length>0}}
-				<div style="width: 100%;overflow: hidden;padding-left: 10px;margin-top: 10px;margin-bottom: 20px;">
-					{{each val.addr addr}}
-					<div class="block">
-						<div class="block-img">
-							{{if val.name=='角色UP池'}}
-							<img src="{{pluResPath}}/role/{{addr.name}}.png" style="border-radius: 5px 5px 25px 0px;width: 105px;height: 105px;"/>
-							{{/if}}{{if val.name=="武器UP池"}}
-							<img src="{{pluResPath}}/weapon/{{addr.name}}.png" style="border-radius: 5px 5px 25px 0px;width: 100%;height: 105px;object-fit: cover;"/>
-							{{/if}}{{if val.name=="常驻池"}}
-							<img src="{{selfPath}}/aways/{{addr.name}}.png" style="border-radius: 5px 5px 25px 0px;width: 105px;height: 105px;"/>
-							{{/if}}
-						</div>
-						<div class="block-text">{{addr.num}}</div>
-						{{if addr.isUP==true}}
-						<div class="UP-label">限定</div>
-						{{/if}}
-					</div>
-					{{/each}}
-				</div>
-				<div class="maxFive">
-					{{if val.name=="角色UP池"}}
-					<img src="{{pluResPath}}/role/{{val.maxFive}}.png" style="width: 115px;height: 115px;"/>
-					{{/if}}{{if val.name=="武器UP池"}}
-					<img src="{{pluResPath}}/weapon/{{val.maxFive}}.png" style="width: 100%;height: 115px;object-fit: cover;"/>
-					{{/if}}{{if val.name=="常驻池"}}
-					<img src="{{selfPath}}/aways/{{val.maxFive}}.png" style="width: 115px;height: 115px;"/>
-					{{/if}}
-					<div class="five-text">出货最多</div>
-				</div>
-				{{/if}}
-			</div>
-			<div class="time">统计了{{val.timeLast}}内的抽卡记录</div>
-			{{/each}}
-			<div style="font-size: 10px;">注：本次的记录会保存在服务器，新的数据会和保存的数据合并，所以要多上传数据就可以查到所有的数据了</div>
-			<div style="font-size: 13px;text-align: center;">Create by Painmon-Bot</div>
-		</div>
-	</body>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="{{htmlPath}}/gachaAnalyse/gachaAnalyse.css">
+    <link rel="preload" href="{{htmlPath}}/common/font/HYWH-65W.ttf" />
+    <link rel="preload" href="{{htmlPath}}/common/font/tttgbnumber.ttf" />
+    <title></title>
+</head>
+<body>
+<div class="container" id="container">
+    <div class="dim">
+        <div class="first-box">
+            <div class="basic_level lv{{level}}">
+                <div class="level-text">{{text}}</div>
+                <img src="{{htmlPath}}/gachaAnalyse/{{level}}.png" class="img_info"/>
+            </div>
+            <div style="float: left;margin-left: 15px;">
+                <div style="font-size: 40px;margin-left: 10px;font-weight: bold;margin-bottom: 20px">派蒙的分析结果</div>
+                <div class="id-style">ID:{{uid}}</div>
+                <div style="overflow: hidden;margin-top: 50px;">
+                    <div class="item">
+                        <div class="num">{{s_arg}}</div>
+                        <div class="tabel">平均出金</div>
+                    </div>
+                    <div class="item item_two">
+                        <div class="num">{{s_sum}}</div>
+                        <div class="tabel">总抽卡数</div>
+                    </div>
+                    <div class="item item_two">
+                        <div class="num">{{cnt}}</div>
+                        <div class="tabel">金卡数</div>
+                    </div>
+                </div>
+            </div>
+            <img src="{{htmlPath}}/gachaAnalyse/paimon.png" class="paimon"/>
+        </div>
+        {{each history val}}
+        <div class="box">
+            <div style="overflow: hidden;">
+                <div class="basic_level lv{{val.level}}">
+                    <div class="level-text">{{val.text}}</div>
+                    <img class="img_info" src="{{htmlPath}}/gachaAnalyse/{{val.level}}.png"/>
+                </div>
+                <div style="float: left;margin-left: 15px;">
+                    <div style="font-size: 40px;margin-left: 10px;font-weight: bold;margin-bottom:10px;">{{val.name}}
+                    </div>
+                    <div style="font-size: 20px;margin-left: 10px;margin-top: 3px;">已有{{val.noNum}}抽未出金</div>
+                    <div style="overflow: hidden;margin-top: 50px;">
+                        <div class="item">
+                            <div class="num">{{val.arg5}}</div>
+                            <div class="tabel">平均出金</div>
+                        </div>
+                        <div class="item item_two">
+                            <div class="num">{{val.sum}}</div>
+                            <div class="tabel">总抽卡数</div>
+                        </div>
+                        <div class="item item_two">
+                            <div class="num">{{val.ret}}</div>
+                            <div class="tabel">限定/五星</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{if val.label.length>0}}
+            <div style="overflow: hidden;margin-top: 10px;width: 100%;">
+                {{each val.label label}}
+                <div class="item" style="margin-right: 25px;">
+                    <div class="num">{{label.value}}</div>
+                    <div class="tabel">{{label.key}}</div>
+                </div>
+                {{/each}}
+            </div>
+            {{/if}}
+            {{if val.addr.length>0}}
+            <div style="width: 100%;overflow: hidden;padding-left: 10px;margin-top: 10px;margin-bottom: 20px;">
+                {{each val.addr addr}}
+                <div class="block">
+                    <div class="block-img">
+                        {{if val.name=='角色UP池'}}
+                        <img src="{{pluResPath}}/role/{{addr.name}}.png"
+                             style="border-radius: 5px 5px 25px 0px;width: 105px;height: 105px;"/>
+                        {{/if}}{{if val.name=="武器UP池"}}
+                        <img src="{{pluResPath}}/weapon/{{addr.name}}.png"
+                             style="border-radius: 5px 5px 25px 0px;width: 100%;height: 105px;object-fit: cover;"/>
+                        {{/if}}{{if val.name=="常驻池"}}
+                        <img src="{{htmlPath}}/gachaAnalyse/aways/{{addr.name}}.png"
+                             style="border-radius: 5px 5px 25px 0px;width: 105px;height: 105px;"/>
+                        {{/if}}
+                    </div>
+                    <div class="block-text">{{addr.num}}</div>
+                    {{if addr.isUP==true}}
+                    <div class="UP-label">限定</div>
+                    {{/if}}
+                </div>
+                {{/each}}
+            </div>
+            <div class="maxFive">
+                {{if val.name=="角色UP池"}}
+                <img src="{{pluResPath}}/role/{{val.maxFive}}.png" style="width: 115px;height: 115px;"/>
+                {{/if}}{{if val.name=="武器UP池"}}
+                <img src="{{pluResPath}}/weapon/{{val.maxFive}}.png"
+                     style="width: 100%;height: 115px;object-fit: cover;"/>
+                {{/if}}{{if val.name=="常驻池"}}
+                <img src="{{htmlPath}}/gachaAnalyse/aways/{{val.maxFive}}.png" style="width: 115px;height: 115px;"/>
+                {{/if}}
+                <div class="five-text">出货最多</div>
+            </div>
+            {{/if}}
+        </div>
+        <div class="time">统计了{{val.timeLast}}内的抽卡记录</div>
+        {{/each}}
+        <div style="font-size: 10px;">注：本次的记录会保存在服务器，新的数据会和保存的数据合并，所以要多上传数据就可以查到所有的数据了</div>
+        <div style="font-size: 13px;text-align: center;">Create by Painmon-Bot</div>
+    </div>
+</div>
+</body>
 </html>

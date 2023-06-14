@@ -31,7 +31,7 @@ export class shareMusic extends Plugin {
                     permission: "master"
                 },
                 {
-                    reg: '^(M_onlyPm_)?#登入(qq|QQ)音乐',
+                    reg: '^(M_onlyPm_)?#登录(qq|QQ)音乐',
                     fnc: 'loginQQMusic'
                 }
             ]
