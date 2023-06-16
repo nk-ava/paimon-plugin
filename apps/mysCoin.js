@@ -122,7 +122,7 @@ export class mysCoin extends Plugin {
                 e.reply(ret);
                 return true;
             }
-            e.reply("绑定米游社cookie成功\n【#米游社签到】完成米游社的每日米游币\n【#开启/关闭米游社自动签到】可以手动开启自动签到");
+            e.reply("绑定米游社cookie成功\n【#米游社签到】完成米游社的每日米游币\n【#开启/关闭米游社自动签到】手动开启自动签到\n【#米游社兑换中心】获取米游币兑换商品信息");
             return true;
         }
         return true;

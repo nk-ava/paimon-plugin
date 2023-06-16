@@ -102,7 +102,7 @@ export class example extends Plugin {
             if (e.anonymous) {
                 let qqInfo = subIdMap.get(`${e.group_id}-${e.sender.sub_id}`)
                 if ((new Date()).toLocaleDateString() !== qqInfo.date) {
-                    qqInfo.data = (new Date()).toLocaleDateString()
+                    qqInfo.date = (new Date()).toLocaleDateString()
                     qqInfo.identity = []
                 }
                 if (qqInfo && (qqInfo.state || !qqInfo.identity.includes(e.anonymous.name))) {

@@ -89,7 +89,7 @@ async function bh3DaySign(ck, role) {
         if (res.retcode !== 0) {
             return `出错了：${res.message}`;
         } else {
-            if (!(await checkSigned(ck, role))) {
+            if (res.data.is_risk) {
                 return "出错了：崩三今日签到失败，请手动过验证";
             } else {
                 return "崩三今日签到成功";
