@@ -3,6 +3,7 @@ import fs from "node:fs";
 import util from "util";
 import common from "../../../lib/common/common.js";
 import fetch from "node-fetch";
+import stringify from "string.ify"
 import iconv from "iconv-lite";
 import browserPuppeteer from "../components/models/BrowserPuppeteer.js";
 import {playerGameInfo} from "../components/models/GameDate.js";
@@ -12,6 +13,21 @@ import puppeteer from "../../../lib/puppeteer/puppeteer.js";
 const _path = process.cwd()
 let watch = {state: true}
 let subIdMap = new Map
+const stringify_config = stringify.configure({
+    pure: false,
+    json: false,
+    maxDepth: 5,
+    maxLength: 50,
+    maxArrayLength: 60,
+    maxObjectLength: 200,
+    maxStringLength: 5000,
+    precision: undefined,
+    formatter: undefined,
+    pretty: true,
+    rightAlignKeys: true,
+    fancy: false,
+    indentation: '  ',
+})
 
 class subIdNode {
     constructor(qq, nickname, state) {
@@ -181,17 +197,21 @@ export class example extends Plugin {
         body = body.slice(4)
         try {
             let msg = []
-            let decodeMsg = []
+            let decodeMsg = {}
             let decoded = deepDecode(body, 1, decodeMsg);
-            msg.push(toString(decoded));
-            for (let i = decodeMsg.length - 1; i >= 0; i--) {
-                msg.push(toString(decodeMsg[i]));
-            }
-            msg.push("buffer转string后消息：")
             msg.push(JSON.stringify(decoded, myToStr, "  "));
+            let raw_msg = []
+            raw_msg.push(stringify_config(decoded))
+            Object.entries(decodeMsg).forEach(v => {
+                v[1].forEach(vs => {
+                    raw_msg.push(stringify_config(vs))
+                })
+            })
+            let s = await common.makeForwardMsg(e, raw_msg, "若有乱码点击查看encoded")
+            msg.push(s)
             e.reply(await common.makeForwardMsg(e, msg, "点击查看解码结果"));
         } catch (err) {
-            e.reply("出错了：" + err.toString());
+            e.reply("出错了：" + toString(err));
         }
         return true;
     }
@@ -393,7 +413,7 @@ async function getQQInfo(id) {
         });
         if (!res.ok) return
         res = iconv.decode(Buffer.from(await res.arrayBuffer()), "GBK")
-        let info = eval(res.match(/\[.*\]/)[0])
+        let info = eval(res.match(/\[.*\]/)?.[0])
         return {nickname: info[6], url: info[0]}
     } catch (e) {
         Bot.logger.error(e)
@@ -419,20 +439,18 @@ function deepDecode(b, deep, msg) {
     }
     if (!o) return null;
     delete o["encoded"];
-    let flag = false;
     for (let k of Object.keys(o)) {
-        if (deep >= 3 && typeof o[k] === "object") {
-            deep = 1;
-            flag = true;
-        }
         if (o[k] instanceof core.pb.Proto) {
             let obj = deepDecode(o[k]["encoded"], deep + 1, msg);
             if (obj) o[k] = obj;
         } else if (o[k] instanceof Array) {
-            o[k] = decodeInArray(o[k], deep + 1, msg);
+            o[k] = decodeInArray(o[k], deep - 1, msg);
         }
     }
-    if (flag) msg.push(o);
+    if (deep % 5 === 0) {
+        if (msg[deep]) msg[deep].push(o)
+        else msg[deep] = [o]
+    }
     return o;
 }
 
@@ -447,19 +465,17 @@ function myToStr(key, value) {
 }
 
 function decodeInArray(arr, deep, msg) {
-    let flag = false;
     let newArr = arr.map(a => {
-        if (deep >= 3 && typeof a === "object") {
-            deep = 1;
-            flag = true;
-        }
         if (a instanceof core.pb.Proto) {
             return deepDecode(a.encoded, deep + 1, msg);
         } else if (a instanceof Array) {
-            return decodeInArray(a, deep + 1, msg)
+            return decodeInArray(a, deep - 1, msg)
         } else return a;
     });
 
-    if (flag) msg.push(newArr);
+    if (deep % 5 === 0) {
+        if (msg[deep]) msg[deep].push(newArr)
+        else msg[deep] = [newArr]
+    }
     return newArr;
 }

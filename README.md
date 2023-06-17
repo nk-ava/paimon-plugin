@@ -17,11 +17,11 @@ git clone https://github.com/zlh-debug/paimon-plugin.git
 ```
 pnpm add iconv-lite -w
 pnpm add node-uuid -w
+pnpm add string.ify -w
 ----canvas的安装过程可能有些缓慢，需要耐心等待，没有需求可以设置snadbox: false
 ----若在config/config/startCfg.yaml将sandbox修改为false则不需要安装以下依赖
 ----可选的模块可以在config/config/startCfg.yaml配置
 pnpm add canvas -w                      //可选
-pnpm add string.ify -w                  //sandbox的必需模块
 pnpm add utf-8-validate -w              //sandbox的必需模块
 pnpm add cheerio -w                     //可选
 pnpm add riichi -w                      //可选
