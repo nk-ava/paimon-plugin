@@ -1,11 +1,12 @@
 {
-  "name": "string.ify",
-  "version": "1.0.64",
+  "name": "stringify",
+  "version": "1.0.0",
   "description": "修改的string.ify模块",
   "repository": {
     "type": "git",
     "url": "https://github.com/xpl/string.ify.git"
   },
+  "main": "index.js",
   "keywords": [
     "stringify",
     "toString",

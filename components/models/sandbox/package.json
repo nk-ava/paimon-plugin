@@ -5,7 +5,7 @@
   "main": "index.js",
   "author": "takayama",
   "license": "MIT",
-  "devDependencies": {
+  "dependencies": {
     "moment": "^2.29.1",
     "string.ify": "^1.0.64",
     "lodash": "^4.17.21"
