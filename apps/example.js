@@ -18,7 +18,7 @@ const stringify_config = stringify.configure({
     json: false,
     maxDepth: 5,
     maxLength: 50,
-    maxArrayLength: 60,
+    maxArrayLength: 5000,
     maxObjectLength: 200,
     maxStringLength: 5000,
     precision: undefined,
@@ -443,8 +443,14 @@ function deepDecode(b, deep, msg) {
         if (o[k] instanceof core.pb.Proto) {
             let obj = deepDecode(o[k]["encoded"], deep + 1, msg);
             if (obj) o[k] = obj;
+            else {
+                if ((deep + 1) % 5 === 0) {
+                    if (msg[deep + 1]) msg[deep + 1].push(o[k])
+                    else msg[deep + 1] = [o[k]]
+                }
+            }
         } else if (o[k] instanceof Array) {
-            o[k] = decodeInArray(o[k], deep - 1, msg);
+            o[k] = decodeInArray(o[k], deep, msg);
         }
     }
     if (deep % 5 === 0) {
@@ -469,7 +475,7 @@ function decodeInArray(arr, deep, msg) {
         if (a instanceof core.pb.Proto) {
             return deepDecode(a.encoded, deep + 1, msg);
         } else if (a instanceof Array) {
-            return decodeInArray(a, deep - 1, msg)
+            return decodeInArray(a, deep, msg)
         } else return a;
     });
 
