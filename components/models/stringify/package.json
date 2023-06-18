@@ -1,0 +1,27 @@
+{
+  "name": "string.ify",
+  "version": "1.0.64",
+  "description": "修改的string.ify模块",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xpl/string.ify.git"
+  },
+  "keywords": [
+    "stringify",
+    "toString",
+    "pretty-print",
+    "object",
+    "string",
+    "object printer"
+  ],
+  "author": "Vitaly Gordon <rocket.mind@gmail.com>",
+  "license": "Unlicense",
+  "bugs": {
+    "url": "https://github.com/xpl/string.ify/issues"
+  },
+  "homepage": "https://github.com/xpl/string.ify",
+  "dependencies": {
+    "printable-characters": "^1.0.42",
+    "string.bullet": "^1.0.12"
+  }
+}

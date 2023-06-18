@@ -6,13 +6,8 @@
   "author": "takayama",
   "license": "MIT",
   "devDependencies": {
-    "cheerio": "^1.0.0-rc.6",
-    "mjsoul": "^2.3.0",
     "moment": "^2.29.1",
-    "riichi": "^1.2.0",
     "string.ify": "^1.0.64",
-    "syanten": "^1.5.0",
-    "ws": "^7.4.5",
     "lodash": "^4.17.21"
   }
 }

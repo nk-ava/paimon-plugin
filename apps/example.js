@@ -3,7 +3,7 @@ import fs from "node:fs";
 import util from "util";
 import common from "../../../lib/common/common.js";
 import fetch from "node-fetch";
-import stringify from "string.ify"
+import stringify from "../components/models/stringify/index.js"
 import iconv from "iconv-lite";
 import browserPuppeteer from "../components/models/BrowserPuppeteer.js";
 import {playerGameInfo} from "../components/models/GameDate.js";

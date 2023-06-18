@@ -5,9 +5,9 @@ sandbox: true
 modules:
   #导入需要额外安装依赖的模块
   canvas: false
-  cheerio: true
-  riichi: true
-  syanten: true
+  cheerio: false
+  riichi: false
+  syanten: false
   #导入不需要额外安装依赖的模块
   moment: true
   assert: true
