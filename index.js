@@ -46,12 +46,12 @@ try {
     logger.info("PaiMon-Plugin组件加载失败！！");
     logger.error(err);
 }
-let command = false;
+global.commanding = false;
 fs.watch("./plugins/paimon-plugin/components/models/cmd.js", async (event, filename) => {
-    if (command) {
+    if (commanding) {
         return;
     }
-    command = true;
+    global.commanding = true;
     setTimeout(async () => {
         try {
             await import(`./components/models/cmd.js?version=${new Date().getTime()}`);
@@ -59,13 +59,13 @@ fs.watch("./plugins/paimon-plugin/components/models/cmd.js", async (event, filen
             ev.reply(err.toString())
         }
         Bot.logger.mark(`更新${filename}成功`);
-        command = false;
+        global.commanding = false;
     }, 500);
 })
 let apps = {}
 for (let i in files) {
     let name = files[i].replace(".js", "");
-    if (ret[i].status != "fulfilled") {
+    if (ret[i].status !== "fulfilled") {
         logger.error(`载入插件错误：${logger.red(name)}`)
         logger.error(ret[i].reason)
         continue

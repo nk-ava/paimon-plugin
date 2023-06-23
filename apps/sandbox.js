@@ -1,6 +1,7 @@
 import Plugin from "../../../lib/plugins/plugin.js";
 import {init, restart, close, dealMsg, saveCtx} from "../components/models/sandbox/index.js";
 import fs from "node:fs";
+import command from "../../../lib/tools/command";
 // import {saveCtx} from "../components/models/sandbox/bridge.js";
 // import request from "request";
 // import util from "util";
@@ -137,6 +138,7 @@ export class sandbox extends Plugin {
 
     //执行代码
     async command(e) {
+        if (commanding) return true
         if (e.isMaster) {
             global.ev = e;
             let msg = e.msg.replace("M_onlyPm_", "");
@@ -157,7 +159,8 @@ export class sandbox extends Plugin {
             let m = upload + before + cmd + after;
             fs.writeFileSync("./plugins/paimon-plugin/components/models/cmd.js", m);
         } else {
-            e.reply("派蒙只听主人的( •̥́ ˍ •̀ू )")
+            // e.reply("派蒙只听主人的( •̥́ ˍ •̀ू )")
+            return false
         }
     }
 

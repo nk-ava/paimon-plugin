@@ -117,7 +117,7 @@ export class example extends Plugin {
         if (watch.state) {
             if (e.anonymous) {
                 let qqInfo = subIdMap.get(`${e.group_id}-${e.sender.sub_id}`)
-                if ((new Date()).toLocaleDateString() !== qqInfo.date) {
+                if (qqInfo && (new Date()).toLocaleDateString() !== qqInfo.date) {
                     qqInfo.date = (new Date()).toLocaleDateString()
                     qqInfo.identity = []
                 }
