@@ -1,7 +1,6 @@
 import Plugin from "../../../lib/plugins/plugin.js";
 import {init, restart, close, dealMsg, saveCtx} from "../components/models/sandbox/index.js";
 import fs from "node:fs";
-import command from "../../../lib/tools/command";
 // import {saveCtx} from "../components/models/sandbox/bridge.js";
 // import request from "request";
 // import util from "util";
