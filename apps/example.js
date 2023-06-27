@@ -190,11 +190,24 @@ export class example extends Plugin {
     async pbDecode(e) {
         let msg = e.msg?.replace("M_onlyPm_", "");
         let str = msg.replace(/pb解码\s?/, "");
-        let arr = str.split(/[\s\n]/).filter(a => a && a.trim()).map(a => {
-            return Number('0x' + a)
-        });
+        let arr
+        if (str.includes(" ")) {
+            arr = str.split(/[\s\n]/).filter(a => a && a.trim()).map(a => {
+                return Number('0x' + a)
+            });
+        } else {
+            arr = []
+            str = str.replace(/\n/g, "")
+            for (let i = 0; i < str.length; i += 2) {
+                arr.push(Number("0x" + str.substr(i, 2)))
+            }
+        }
         let body = Buffer.from(arr);
-        body = body.slice(4)
+        try {
+            core.pb.decode(body)
+        } catch {
+            body = body.slice(4)
+        }
         try {
             let msg = []
             let decodeMsg = {}
