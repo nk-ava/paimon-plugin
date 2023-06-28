@@ -1,6 +1,6 @@
 /config/config/*
 !/config/config/README.md
-/components/models/cmd.js
+/components/models/code.js
 /resources/user_functions.json
 /components/models/sandbox/context
 /components/models/sandbox/context.fn
