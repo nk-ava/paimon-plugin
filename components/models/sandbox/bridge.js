@@ -307,7 +307,7 @@ const temp = {
             })
             req.on("error", err => cb(err))
             if (body) {
-                if (options.headers["Content-Type"].includes("application/json")) req.write(JSON.stringify(body))
+                if (!options.headers["Content-Type"] || options.headers["Content-Type"].includes("application/json")) req.write(JSON.stringify(body))
                 else req.write(body)
             }
             req.end();
