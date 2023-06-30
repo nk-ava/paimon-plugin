@@ -240,7 +240,7 @@ const temp = {
     }, headers = null) {
         let params = {
             method: 'get',
-            ...headers
+            headers: headers
         }
         fetch.request(url, params, callback)
     },
@@ -249,7 +249,7 @@ const temp = {
         const params = {
             method: "post",
             body: body,
-            ...headers
+            headers: headers
         }
         fetch.request(url, params, callback);
     },
@@ -306,7 +306,10 @@ const temp = {
                 })
             })
             req.on("error", err => cb(err))
-            if (body) req.write(JSON.stringify(body));
+            if (body) {
+                if (options.headers["Content-Type"].includes("application/json")) req.write(JSON.stringify(body))
+                else req.write(body)
+            }
             req.end();
         } catch (e) {
             cb(e)
