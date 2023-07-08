@@ -4,7 +4,6 @@ import util from "util";
 import common from "../../../lib/common/common.js";
 import fetch from "node-fetch";
 import stringify from "../components/models/stringify/index.js"
-import iconv from "iconv-lite";
 import browserPuppeteer from "../components/models/BrowserPuppeteer.js";
 import {playerGameInfo} from "../components/models/GameDate.js";
 import {Version, Cfg} from "../components/index.js"
@@ -420,14 +419,19 @@ function dfs(data, pos, num, cmd) {
 
 async function getQQInfo(id) {
     try {
-        let url = `https://r.qzone.qq.com/fcg-bin/cgi_get_portrait.fcg?uins=${id}`;
+        let url = `https://cgi.find.qq.com/qqfind/buddy/search_v3?keyword=${id}`;
         let res = await fetch(url, {
-            method: 'get'
+            method: 'get',
+            headers: {
+                Cookie: Bot.cookies["find.qq.com"]
+            }
         });
         if (!res.ok) return
-        res = iconv.decode(Buffer.from(await res.arrayBuffer()), "GBK")
-        let info = eval(res.match(/\[.*\]/)?.[0])
-        return {nickname: info[6], url: info[0]}
+        res = await res.json()
+        if (res.retcode !== 0) return
+        let info = res?.result?.buddy?.info_list?.[0]
+        if (!info) return
+        return {nickname: info.nick, url: info.url}
     } catch (e) {
         Bot.logger.error(e)
     }
