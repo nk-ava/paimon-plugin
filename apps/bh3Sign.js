@@ -246,7 +246,7 @@ export class bh3Sign extends Plugin {
                 key: '五星圣痕数',
                 value: index?.stats?.['five_star_stigmata_number']
             }],
-            characters: characters
+            characters: characters.slice(0,16)
         }
         let img = await puppeteer.screenshot("bh3Index", {
             tplFile: "./plugins/paimon-plugin/resources/html/bh3Index/index.html",

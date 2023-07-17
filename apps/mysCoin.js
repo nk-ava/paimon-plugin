@@ -103,7 +103,7 @@ export class mysCoin extends Plugin {
                 return true;
             }
             let login_uid = ckJson.login_uid;
-            let mysCk = `stuid=${login_uid}; stoken=${stoken};`
+            let mysCk = `stuid=${login_uid}; stoken=${stoken}; `
             let ck_bak = `login_ticket=${ckJson.login_ticket}; login_uid=${login_uid}; `
             if (ckJson.cookie_token) ck_bak += `cookie_token=${ckJson.cookie_token}; `
             if (ckJson.cookie_token_v2) ck_bak += `cookie_token_v2=${ckJson.cookie_token_v2}; `
@@ -166,7 +166,12 @@ export class mysCoin extends Plugin {
             e.reply("未找到对应的商品信息，请查看数字是否对应")
             return true
         }
-        let addr = await getAddress(user.ck_bak)
+        let cookie_token = await getCookieTokenBySk(user.mysCk)
+        if (!cookie_token) {
+            e.reply("cookie_token获取失败，请重新绑定米游社ck")
+            return true
+        }
+        let addr = await getAddress(cookie_token)
         if (!addr) {
             e.reply("获取收货地址失败，请前往米游社添加收货地址并将其设为默认地址")
             return true
@@ -401,4 +406,17 @@ async function getAddress(ck) {
     if (!res.ok) return
     res = await res.json()
     return res?.data?.list?.filter(l => l.is_default === 1)[0]
+}
+
+async function getCookieTokenBySk(sk) {
+    sk = querystring.parse(sk, "; ", "=")
+    let res = await fetch(`https://api-takumi.mihoyo.com/auth/api/getCookieAccountInfoBySToken?stoken=${sk.stoken}&uid=${sk.stuid}`, {
+        method: 'get'
+    })
+    if (!res.ok) return
+    res = await res.json()
+    if (res.retcode !== 0) return
+    res = res?.data
+    if (!res) return
+    return `account_id=${res.uid}; cookie_token=${res.cookie_token};`
 }
