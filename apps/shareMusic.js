@@ -52,7 +52,7 @@ export class shareMusic extends Plugin {
 
     //接收json消息
     async accept(e) {
-        if (e.from_id === selfUid && e.isPrivate) {
+        if (e.from_id === selfUid) {
             let mss = e.message[0];
             let data = mss.data;
             let js = JSON.parse(data);
