@@ -12,7 +12,7 @@ export class other extends Plugin {
             priority: 0,
             rule: [
                 {
-                    reg: '^(M_onlyPm_)?#?only[-_:]Paimon[-_:](on|off)\\s?\\d*',
+                    reg: '^(M_onlyPm_)?#?only[-_:]Paimon[-_:](on|off)[-_:]\\d*',
                     fnc: 'switchOnly',
                     permission: 'master'
                 }
@@ -41,7 +41,7 @@ export class other extends Plugin {
         let msg = e.msg?.replace("M_onlyPm_", "");
         if (e.isPrivate) {
             let gid = msg.match(/\d+/)?.[0];
-            if (gid) e.group_id = gid;
+            if (gid) e.group_id = Number(gid);
             else {
                 e.reply("error: not found gid");
                 return true;
@@ -57,7 +57,7 @@ export class other extends Plugin {
                 qun.push(e.group_id)
                 Cfg.set("other", this.cfg)
             }
-            e.reply("ret：0");
+            e.reply(`{ret:0, gid:${e.group_id}}`);
         } else {
             let qun = this.cfg.qun;
             let index = qun.indexOf(e.group_id);
@@ -65,7 +65,7 @@ export class other extends Plugin {
                 qun.splice(index, 1);
                 Cfg.set("other", this.cfg)
             }
-            e.reply("ret：0");
+            e.reply(`{ret:0, gid:${e.group_id}}`);
         }
     }
 }
