@@ -40,7 +40,7 @@ export class other extends Plugin {
     switchOnly(e) {
         let msg = e.msg?.replace("M_onlyPm_", "");
         if (e.isPrivate) {
-            let gid = msg.match(/\d+/)[0];
+            let gid = msg.match(/\d+/)?.[0];
             if (gid) e.group_id = gid;
             else {
                 e.reply("error: not found gid");
