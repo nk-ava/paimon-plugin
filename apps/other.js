@@ -12,7 +12,7 @@ export class other extends Plugin {
             priority: 0,
             rule: [
                 {
-                    reg: '^(M_onlyPm_)?#?only[-_:]Paimon[-_:](on|off)',
+                    reg: '^(M_onlyPm_)?#?only[-_:]Paimon[-_:](on|off)\\s?\\d*',
                     fnc: 'switchOnly',
                     permission: 'master'
                 }
@@ -39,6 +39,14 @@ export class other extends Plugin {
 
     switchOnly(e) {
         let msg = e.msg?.replace("M_onlyPm_", "");
+        if (e.isPrivate) {
+            let gid = msg.match(/\d+/)[0];
+            if (gid) e.group_id = gid;
+            else {
+                e.reply("error: not found gid");
+                return true;
+            }
+        }
         if (!(this.cfg.qun)) {
             this.cfg.qun = []
         }

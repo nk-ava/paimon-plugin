@@ -19,7 +19,7 @@ export class sandbox extends Plugin {
                     fnc: 'cmdSwitch'
                 },
                 {
-                    reg: '^(M_onlyPm_)?_([\\s\\S]*)$',
+                    reg: '^(M_onlyPm_)?%([\\s\\S]*)$',
                     fnc: 'command'
                 },
                 {
@@ -50,7 +50,7 @@ export class sandbox extends Plugin {
             })
             if (!res) return false;
             else {
-                if (res[0]?.type === 'text' && res[0]?.text?.startsWith("_")) {
+                if (res[0]?.type === 'text' && res[0]?.text?.startsWith("%")) {
                     e.msg = res[0]?.text
                     return false;
                 }
