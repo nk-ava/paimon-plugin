@@ -193,7 +193,7 @@ export class mysCoin extends Plugin {
         let data = {
             annotation: tip,
             cron: `${d.getSeconds()} ${d.getMinutes()} ${d.getHours()} ${d.getDate()} ${d.getMonth() + 1} ?`,
-            ck: user.ck_bak,
+            ck: cookie_token,
             app_id: goods.app_id,
             point_sn: goods.point_sn,
             goods_id: goods.goods_id,
