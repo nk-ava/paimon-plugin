@@ -190,7 +190,7 @@ export class shareMusic extends Plugin {
     }
 
     setLimit(e) {
-        let limit = e.msg.match(/\d/)[0]
+        let limit = e.msg.match(/\d+/)[0]
         if (limit < 1 || limit > 10) {
             e.reply("只能是1到10的数字")
             return true
