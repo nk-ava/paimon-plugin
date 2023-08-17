@@ -12,7 +12,7 @@ export class other extends Plugin {
             priority: 0,
             rule: [
                 {
-                    reg: '^(M_onlyPm_)?#?only[-_:]Paimon[-_:](on|off)[-_:]\\d*',
+                    reg: '^(M_onlyPm_)?#?only[-_:]Paimon[-_:](on|off)[-_:]?\\d*',
                     fnc: 'switchOnly',
                     permission: 'master'
                 }
