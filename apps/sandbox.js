@@ -67,20 +67,8 @@ export class sandbox extends Plugin {
             global.ev = e;
             let msg = e.msg.replace("M_onlyPm_", "");
             let cmd = msg.substr(1, e.length);
-            let str = cmd.split("import");
             let upload = "import md5 from 'md5';\nimport fetch from 'node-fetch';\nimport fs from 'fs';\n";
-            let len = str.length;
-            if (len !== 1) {
-                let ss = str[len - 1].split('\n', 1);
-                cmd = str[len - 1].replace(ss, "");
-                str[len - 1] = ss;
-                for (let i = 1; i < len; i++) {
-                    upload += "import" + str[i];
-                }
-            }
-            let before = "\ntry{";
-            let after = "\nBot.logger.mark('命令执行成功');}catch(e){ev.reply(e.toString());}";
-            let m = upload + before + cmd + after;
+            let m = upload + cmd ;
             fs.writeFileSync("./plugins/paimon-plugin/components/models/code.js", m);
         } else {
             // e.reply("派蒙只听主人的( •̥́ ˍ •̀ू )")
