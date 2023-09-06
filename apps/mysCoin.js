@@ -368,7 +368,7 @@ async function getGoodsList(ck, game) {
     let msg = `----------------${game_map[game]}(${game})----------------`
     goodsList.forEach((goods, index) => {
         let time = goods.next_time
-        let num = goods.next_num
+        let num = goods.total === 0 && !goods.unlimit ? goods.next_num : goods.total
         if (num === 0) num = "没有数量限制"
         if (time === 0) time = "没有兑换限制"
         else time = new Date(time * 1000).toLocaleDateString()
