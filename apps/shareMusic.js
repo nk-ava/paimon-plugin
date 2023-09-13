@@ -6,6 +6,7 @@ import {Cfg} from "../components/index.js"
 const selfUid = Bot.uin;
 const availablePf = {"网易云": "163", "QQ": "qq", "酷狗": "kugou", "酷我": "kuwo"}
 const retMap = new Map
+const musicMap = new Map
 let ckLock = false
 
 export class shareMusic extends Plugin {
@@ -71,7 +72,12 @@ export class shareMusic extends Plugin {
             Bot.logger.mark(`新增相关歌曲：${platform}-${s}`);
             if (count === retMap.get(`${platform}-${s}`)) {
                 retMap.delete(`${platform}-${s}`)
-                Bot.em(`musicShare.${platform}-${s}`);
+                let obj = musicMap.get(`musicShare.${platform}-${s}`);
+                musicMap.delete(`musicShare.${platform}-${s}`);
+                await redis.expire(`Music:share-key:${platform}-${s}`, 15 * 24 * 3600);
+                let songInfo = await redis.lRange(`Music:share-key:${platform}-${s}`, -1 * count, -1);
+                clearTimeout(obj.timer)
+                obj.resolve(songInfo)
             }
             return true;
         }
@@ -135,8 +141,6 @@ export class shareMusic extends Plugin {
                 let cur_cnt = songInfo.length
                 let ck = this.cfg.cookie.qq
                 if (!ck?.ck || !ck?.uin) {
-                    // e.reply("qq音乐点歌需要登入，请发送【#登入QQ音乐】完成登入")
-                    // return
                     ck = {
                         uin: Bot.uin,
                         ck: Bot.cookies['y.qq.com']
@@ -235,22 +239,16 @@ export class shareMusic extends Plugin {
 
 async function toPreserve(songs, song, platform, limit) {
     return new Promise((resolve, reject) => {
-        let deal = async () => {
-            await redis.expire(`Music:share-key:${platform}-${song}`, 15 * 24 * 3600);
-            let songInfo = await redis.lRange(`Music:share-key:${platform}-${song}`, -1 * limit, -1);
-            clearTimeout(timer);
-            resolve(songInfo);
-        }
         retMap.set(`${platform}-${song}`, limit)
         songs.forEach(s => {
             sendSelfMusic(platform, s, song)
         })
-        Bot.once(`musicShare.${platform}-${song}`, deal)
         let timer = setTimeout(async () => {
             await redis.del(`Music:share-key:${platform}-${song}`);
-            Bot.off(`musicShare.${platform}-${song}`, deal);
+            musicMap.delete(`musicShare.${platform}-${song}`);
             resolve([]);
         }, 5000);
+        musicMap.set(`musicShare.${platform}-${song}`, {resolve, timer});
     })
 }
 
