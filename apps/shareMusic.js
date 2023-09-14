@@ -71,12 +71,12 @@ export class shareMusic extends Plugin {
             let count = await redis.lPush(`Music:share-key:${platform}-${s}`, data);
             Bot.logger.mark(`新增相关歌曲：${platform}-${s}`);
             if (count === retMap.get(`${platform}-${s}`)) {
-                retMap.delete(`${platform}-${s}`)
                 let obj = musicMap.get(`musicShare.${platform}-${s}`);
+                clearTimeout(obj.timer)
+                retMap.delete(`${platform}-${s}`)
                 musicMap.delete(`musicShare.${platform}-${s}`);
                 await redis.expire(`Music:share-key:${platform}-${s}`, 15 * 24 * 3600);
                 let songInfo = await redis.lRange(`Music:share-key:${platform}-${s}`, -1 * count, -1);
-                clearTimeout(obj.timer)
                 obj.resolve(songInfo)
             }
             return true;
@@ -246,6 +246,7 @@ async function toPreserve(songs, song, platform, limit) {
         let timer = setTimeout(async () => {
             await redis.del(`Music:share-key:${platform}-${song}`);
             musicMap.delete(`musicShare.${platform}-${song}`);
+            retMap.delete(`${platform}-${song}`);
             resolve([]);
         }, 5000);
         musicMap.set(`musicShare.${platform}-${song}`, {resolve, timer});
