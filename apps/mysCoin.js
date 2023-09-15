@@ -8,6 +8,7 @@ import MysCKUser from "../components/models/mysCKUser.js";
 import fetch from "node-fetch";
 import {createSign, MysSign} from "../components/models/MysSign.js";
 import {Common} from "../components/index.js";
+import scanQrCode from "../components/models/MysQrLogin.js";
 
 const game_map = {
     "hk4e": "原神",
@@ -51,6 +52,10 @@ export class mysCoin extends Plugin {
                 {
                     reg: "^(hk4e|hkrpg|bh3|nxx|bh2|bbs) \\d+$",
                     fnc: "getCodeFile",
+                },
+                {
+                    reg: "^#?米游社扫码登入$",
+                    fnc: "mysQrCode"
                 }
             ]
         });
@@ -207,6 +212,21 @@ export class mysCoin extends Plugin {
         await e.friend.sendFile(tmp_file)
         fs.unlink(tmp_file, () => {
         })
+    }
+
+    async mysQrCode(e) {
+        if (!e.isPrivate) {
+            e.reply("请私聊发送")
+            return true
+        }
+        let msg = await scanQrCode(e);
+        if (!msg.includes("cookie_token")) {
+            e.reply(msg, true)
+            return true
+        }
+        e.ck = msg
+        e.msg = '#绑定cookie'
+        return false
     }
 
     async goodsList(e) {
