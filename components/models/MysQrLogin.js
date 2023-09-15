@@ -17,7 +17,7 @@ async function fetchQrCode() {
         type: 'png',
         ec_level: 'H'
     })
-    const f = `./data/image/mysQr-${Date.now()}.png`
+    const f = `${Bot.config.data_dir}/mysQr-${Date.now()}.png`
     await promisify(stream.pipeline)(io, fs.createWriteStream(f));
     return {img: f, ticket: info.ticket}
 }
