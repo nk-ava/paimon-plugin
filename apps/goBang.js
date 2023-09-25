@@ -1,7 +1,7 @@
 import Plugin from "../../../lib/plugins/plugin.js";
-import GmDao from "../components/models/GameDate.js";
+import GmDao from "../components/models/GameData.js";
 import puppeteer from "../../../lib/puppeteer/puppeteer.js";
-import {gmErrorMsg} from "../components/models/GameDate.js";
+import {gmErrorMsg} from "../components/models/GameData.js";
 import {Cfg} from "../components/index.js";
 
 const _path = process.cwd()

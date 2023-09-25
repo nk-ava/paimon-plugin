@@ -5,7 +5,7 @@ import common from "../../../lib/common/common.js";
 import fetch from "node-fetch";
 import stringify from "../components/models/stringify/index.js"
 import browserPuppeteer from "../components/models/BrowserPuppeteer.js";
-import {playerGameInfo} from "../components/models/GameDate.js";
+import {playerGameInfo} from "../components/models/GameData.js";
 import {Version, Cfg} from "../components/index.js"
 import puppeteer from "../../../lib/puppeteer/puppeteer.js";
 

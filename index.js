@@ -72,4 +72,8 @@ for (let i in files) {
     }
     apps[name] = ret[i].value[Object.keys(ret[i].value)[0]]
 }
+
+process.on("uncaughtException", err => {
+    Bot.logger.error(err)
+})
 export {apps}
