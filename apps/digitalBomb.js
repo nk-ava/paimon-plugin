@@ -1,6 +1,6 @@
 import Plugin from "../../../lib/plugins/plugin.js";
-import GmDao from "../components/models/GameData.js";
-import {gmErrorMsg} from "../components/models/GameData.js";
+import GmDao from "../components/modules/GameData.js";
+import {gmErrorMsg} from "../components/modules/GameData.js";
 import {Cfg} from "../components/index.js";
 
 let isCfg = {}, isStart = {};

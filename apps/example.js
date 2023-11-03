@@ -3,9 +3,9 @@ import fs from "node:fs";
 import util from "util";
 import common from "../../../lib/common/common.js";
 import fetch from "node-fetch";
-import stringify from "../components/models/stringify/index.js"
-import browserPuppeteer from "../components/models/BrowserPuppeteer.js";
-import {playerGameInfo} from "../components/models/GameData.js";
+import stringify from "../components/modules/stringify/index.js"
+import browserPuppeteer from "../components/modules/BrowserPuppeteer.js";
+import {playerGameInfo} from "../components/modules/GameData.js";
 import {Version, Cfg} from "../components/index.js"
 import puppeteer from "../../../lib/puppeteer/puppeteer.js";
 

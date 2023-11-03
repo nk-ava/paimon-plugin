@@ -1,14 +1,14 @@
 import Plugin from "../../../lib/plugins/plugin.js";
 import querystring from "querystring";
 import artTemplate from "art-template";
-import mysCKUser from "../components/models/mysCKUser.js";
+import mysCKUser from "../components/modules/mysCKUser.js";
 import fs from "node:fs";
 import YAML from "yaml";
-import MysCKUser from "../components/models/mysCKUser.js";
+import MysCKUser from "../components/modules/mysCKUser.js";
 import fetch from "node-fetch";
-import {createSign, MysSign} from "../components/models/MysSign.js";
+import {createSign, MysSign} from "../components/modules/MysSign.js";
 import {Common} from "../components/index.js";
-import scanQrCode from "../components/models/MysQrLogin.js";
+import scanQrCode from "../components/modules/MysQrLogin.js";
 
 const game_map = {
     "hk4e": "原神",

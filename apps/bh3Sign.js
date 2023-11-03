@@ -1,11 +1,11 @@
 import Plugin from "../../../lib/plugins/plugin.js";
 import User from "../../genshin/model/mys/NoteUser.js";
-import Bh3User from "../components/models/Bh3User.js";
+import Bh3User from "../components/modules/Bh3User.js";
 import YAML from "yaml"
 import fs from "node:fs"
 import {Common} from "../components/index.js";
-import bh3Api from "../components/models/Bh3Api.js";
-import {fetchApi} from "../components/models/bh3Info.js";
+import bh3Api from "../components/modules/Bh3Api.js";
+import {fetchApi} from "../components/modules/bh3Info.js";
 import puppeteer from "../../../lib/puppeteer/puppeteer.js";
 
 const dMap = [null, "禁忌", "原罪I", "原罪II", "原罪III", "苦痛I", "苦痛II", "苦痛III", "红莲", "寂灭"]

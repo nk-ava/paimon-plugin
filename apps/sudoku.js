@@ -1,7 +1,7 @@
 ﻿import lodash from "lodash";
 import fs from "node:fs";
 import Plugin from "../../../lib/plugins/plugin.js";
-import GmDao from "../components/models/GameData.js";
+import GmDao from "../components/modules/GameData.js";
 import puppeteer from '../../../lib/puppeteer/puppeteer.js';
 
 let isGiveUp = {};

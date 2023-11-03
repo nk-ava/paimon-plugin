@@ -39,22 +39,22 @@ ret = await Promise.allSettled(ret);
 
 global.isPmPlaying = {};
 try {
-    fs.writeFileSync("./plugins/paimon-plugin/components/models/code.js", "");
-    await import("./components/models/loading.js");
+    fs.writeFileSync("./plugins/paimon-plugin/components/modules/code.js", "");
+    await import("./components/modules/loading.js");
     logger.info("PaiMon-Plugin组件加载成功！！");
 } catch (err) {
     logger.info("PaiMon-Plugin组件加载失败！！");
     logger.error(err);
 }
 global.commanding = false;
-fs.watch("./plugins/paimon-plugin/components/models/code.js", async (event, filename) => {
+fs.watch("./plugins/paimon-plugin/components/modules/code.js", async (event, filename) => {
     if (commanding) {
         return;
     }
     global.commanding = true;
     setTimeout(async () => {
         try {
-            await import(`./components/models/code.js?version=${new Date().getTime()}`);
+            await import(`./components/modules/code.js?version=${new Date().getTime()}`);
         } catch (err) {
             ev.reply(err.toString())
         }

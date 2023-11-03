@@ -1,5 +1,5 @@
 import Plugin from "../../../lib/plugins/plugin.js";
-import {init, restart, close, dealMsg, saveCtx} from "../components/models/sandbox/index.js";
+import {init, restart, close, dealMsg, saveCtx} from "../components/modules/sandbox/index.js";
 import fs from "node:fs";
 let sbStata = {on: false}
 
@@ -69,7 +69,7 @@ export class sandbox extends Plugin {
             let cmd = msg.substr(1, e.length);
             let upload = "import md5 from 'md5';\nimport fetch from 'node-fetch';\nimport fs from 'fs';\n";
             let m = upload + cmd ;
-            fs.writeFileSync("./plugins/paimon-plugin/components/models/code.js", m);
+            fs.writeFileSync("./plugins/paimon-plugin/components/modules/code.js", m);
         } else {
             // e.reply("派蒙只听主人的( •̥́ ˍ •̀ू )")
             return false
