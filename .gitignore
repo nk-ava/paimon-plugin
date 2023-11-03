@@ -1,7 +1,7 @@
 /config/config/*
 !/config/config/README.md
-/components/models/code.js
+/components/modules/code.js
 /resources/user_functions.json
-/components/models/sandbox/context
-/components/models/sandbox/context.fn
+/components/modules/sandbox/context
+/components/modules/sandbox/context.fn
 node_modules
